@@ -1,0 +1,10 @@
+node_modules
+dist
+coverage
+playwright-report
+test-results
+package-lock.json
+# Existing prompt library is user-owned reference material.
+docs/0*.md
+docs/1*.md
+docs/ALL_12_CODEX_PROMPTS.md

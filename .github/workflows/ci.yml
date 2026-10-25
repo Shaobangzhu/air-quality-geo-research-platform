@@ -1,0 +1,46 @@
+name: Foundation quality gate
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: aq_ci
+          POSTGRES_PASSWORD: ephemeral_ci_only
+          POSTGRES_DB: air_quality_geo_research_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U aq_ci -d air_quality_geo_research_test"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      DATA_MODE: sample
+      ALLOW_LIVE_API_TESTS: 'false'
+      DATABASE_URL: postgresql://aq_ci:ephemeral_ci_only@127.0.0.1:5432/air_quality_geo_research_test
+      DB_TARGET_CONFIRMED: air-quality-geo-research-platform
+      ALLOW_DB_TESTS: 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - run: npm run db:status
+      - run: npm run db:migrate
+      - run: npm run db:migrate
+      - run: npm run test:db
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-failure-traces
+          path: test-results/

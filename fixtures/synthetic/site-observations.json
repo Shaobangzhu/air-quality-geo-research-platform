@@ -1,0 +1,117 @@
+{
+  "mode": "sample",
+  "label": "SYNTHETIC SAMPLE — fictional monitoring sites; not official historical data",
+  "observations": [
+    {
+      "product": "observation",
+      "site": {
+        "kind": "monitoring-site",
+        "id": "SAMPLE-0001",
+        "name": "SYNTHETIC SAMPLE Site Alpha",
+        "coordinate": { "longitude": -118.25, "latitude": 34.05 }
+      },
+      "observedAt": "2026-01-15T20:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour arithmetic mean; no AQI conversion",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T19:00:00Z",
+        "endsAt": "2026-01-15T20:00:00Z"
+      },
+      "measurement": {
+        "kind": "concentration",
+        "pollutant": "PM2.5",
+        "value": -0.2,
+        "unit": "µg/m³"
+      },
+      "raw": {
+        "value": -0.2,
+        "unit": "ug/m3",
+        "parameter": "PM2.5",
+        "qualifier": "synthetic negative measurement example"
+      },
+      "validationStatus": "unknown",
+      "provenance": {
+        "provider": "local-synthetic-fixture",
+        "source": "fixtures/synthetic/site-observations.json",
+        "origin": "synthetic",
+        "label": "SYNTHETIC SAMPLE — invented for contract testing",
+        "fetchedAt": "2026-01-15T21:00:00Z"
+      }
+    },
+    {
+      "product": "observation",
+      "site": {
+        "kind": "monitoring-site",
+        "id": "SAMPLE-0002",
+        "name": "SYNTHETIC SAMPLE Site Beta",
+        "coordinate": { "longitude": -117.9, "latitude": 33.9 }
+      },
+      "observedAt": "2026-01-15T20:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour arithmetic mean; no AQI conversion",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T19:00:00Z",
+        "endsAt": "2026-01-15T20:00:00Z"
+      },
+      "measurement": {
+        "kind": "concentration",
+        "pollutant": "O3",
+        "value": null,
+        "unit": "ppb"
+      },
+      "raw": {
+        "value": null,
+        "unit": "ppb",
+        "parameter": "O3",
+        "qualifier": null
+      },
+      "validationStatus": "unknown",
+      "provenance": {
+        "provider": "local-synthetic-fixture",
+        "source": "fixtures/synthetic/site-observations.json",
+        "origin": "synthetic",
+        "label": "SYNTHETIC SAMPLE — missing value example",
+        "fetchedAt": "2026-01-15T21:00:00Z"
+      }
+    },
+    {
+      "product": "observation",
+      "site": {
+        "kind": "monitoring-site",
+        "id": "SAMPLE-0003",
+        "name": "SYNTHETIC SAMPLE Site Gamma",
+        "coordinate": { "longitude": -118.1, "latitude": 34.1 }
+      },
+      "observedAt": "2026-01-15T20:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour arithmetic mean; no AQI conversion",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T19:00:00Z",
+        "endsAt": "2026-01-15T20:00:00Z"
+      },
+      "measurement": {
+        "kind": "concentration",
+        "pollutant": "PM10",
+        "value": 0,
+        "unit": "µg/m³"
+      },
+      "raw": {
+        "value": 0,
+        "unit": "ug/m3",
+        "parameter": "PM10",
+        "qualifier": null
+      },
+      "validationStatus": "unknown",
+      "provenance": {
+        "provider": "local-synthetic-fixture",
+        "source": "fixtures/synthetic/site-observations.json",
+        "origin": "synthetic",
+        "label": "SYNTHETIC SAMPLE — zero value example",
+        "fetchedAt": "2026-01-15T21:00:00Z"
+      }
+    }
+  ]
+}

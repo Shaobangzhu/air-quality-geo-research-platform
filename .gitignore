@@ -147,3 +147,13 @@ vite.config.ts.timestamp-*
 
 # Turbo Repo
 .turbo
+
+# Local test output and database exports
+playwright-report/
+test-results/
+*.dump
+*.backup
+*.sql
+!db/migrations/*.sql
+*.sql.gz
+db/backups/
