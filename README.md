@@ -10,7 +10,6 @@ Use **Node 24 LTS** and npm 11+. No provider key or database is required for the
 
 ```sh
 npm ci
-cp .env.example .env
 npm run dev
 ```
 
@@ -27,25 +26,27 @@ Open [Map Explorer](http://127.0.0.1:5173/map). API health: [localhost:3001/api/
 
 ## Commands
 
-| Command              | Purpose                                                 |
-| -------------------- | ------------------------------------------------------- |
-| `npm run dev`        | Build/watch contracts, run API and Vite                 |
-| `npm run typecheck`  | Strict types for contracts, apps, scripts and tests     |
-| `npm run lint`       | ESLint + Prettier check                                 |
-| `npm test`           | Offline contract, API, migration-safety and React tests |
-| `npm run build`      | Build shared ESM/types, API and web                     |
-| `npm run start:api`  | Start built API after build                             |
-| `npm run test:e2e`   | Start local app processes; Chromium smoke               |
-| `npm run db:status`  | Redacted connectivity status; exit 1 if not connected   |
-| `npm run db:migrate` | Apply pending checksummed migrations; no drops          |
-| `npm run test:db`    | Opt-in PostgreSQL repeatability test                    |
-| `npm run format`     | Format code and newly authored docs                     |
+| Command                 | Purpose                                                    |
+| ----------------------- | ---------------------------------------------------------- |
+| `npm run dev`           | Build/watch contracts, run API and Vite                    |
+| `npm run typecheck`     | Strict types for contracts, apps, scripts and tests        |
+| `npm run lint`          | ESLint + Prettier check                                    |
+| `npm test`              | Offline contract, API, migration-safety and React tests    |
+| `npm run build`         | Build shared ESM/types, API and web                        |
+| `npm run start:api`     | Start built API after build                                |
+| `npm run test:e2e`      | Start local app processes; Chromium smoke                  |
+| `npm run db:setup`      | Provision the authorized isolated PostgreSQL target once   |
+| `npm run test:db:local` | Run integration against the separate generated test target |
+| `npm run db:status`     | Redacted connectivity status; exit 1 if not connected      |
+| `npm run db:migrate`    | Apply pending checksummed migrations; no drops             |
+| `npm run test:db`       | Opt-in PostgreSQL repeatability test                       |
+| `npm run format`        | Format code and newly authored docs                        |
 
 For browser tests install Chromium once: `npx playwright install chromium` (Linux CI also uses `--with-deps`). A busy port fails explicitly; tests do not attach to existing servers. Browser tests override DB and mode configuration. Unit tests make no external provider calls; Supertest uses local sockets.
 
 ## Database and credentials
 
-Docker inspection on **2026-10-25** succeeded and found only a MongoDB container; no PostgreSQL container or project DB configuration was identified. **Local PostgreSQL connection and migrations are unverified.** No existing database was queried or modified. Follow [database setup](docs/architecture/database.md) once you supply a dedicated PostgreSQL database in your existing infrastructure. No local Compose stack is provided.
+The dedicated Docker target **`air-quality-geo-research-platform-postgresql`** is provisioned and healthy at `127.0.0.1:55436`, with its own network/volume and separate development/test databases. Local connection, repeat migrations and PostgreSQL integration tests have passed. The user explicitly authorized creating this target; `cpi-postgres` belongs to another project and was not used. All eight pre-existing containers retained their state/configuration. For fresh provisioning and lifecycle commands see [database setup](docs/architecture/database.md). Setup writes ignored `.env` files with generated credentials; preserve them when restarting the target.
 
 Real `.env` files and DB exports are ignored. Keep `AIRNOW_API_KEY`, `AQS_EMAIL`, `AQS_API_KEY` and future `OPENAI_API_KEY` on the server. Only a deliberately public, least-privilege, referrer-restricted ArcGIS credential may use `VITE_ARCGIS_API_KEY`; it is not consumed yet. Future provider live tests require `ALLOW_LIVE_API_TESTS=true`.
 

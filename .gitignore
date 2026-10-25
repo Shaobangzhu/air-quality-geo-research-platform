@@ -155,5 +155,7 @@ test-results/
 *.backup
 *.sql
 !db/migrations/*.sql
+!db/bootstrap/*.sql
 *.sql.gz
 db/backups/
+.local/

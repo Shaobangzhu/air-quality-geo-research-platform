@@ -18,9 +18,11 @@
     "format": "prettier --write .",
     "test": "npm run build -w @aq/contracts && vitest run",
     "test:db": "npm run build -w @aq/contracts && vitest run --config vitest.db.config.ts",
+    "test:db:local": "node scripts/test-local-database.mjs",
     "build": "npm run build -w @aq/contracts && npm run build -w @aq/api && npm run build -w @aq/web",
     "start:api": "npm run start -w @aq/api",
     "test:e2e": "npm run build -w @aq/contracts && playwright test",
+    "db:setup": "node scripts/setup-local-postgresql.mjs",
     "db:status": "npm run build -w @aq/contracts && node --import tsx scripts/db-status.ts",
     "db:migrate": "npm run build -w @aq/contracts && node --import tsx scripts/db-migrate.ts"
   },
