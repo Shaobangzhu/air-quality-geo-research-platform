@@ -1,0 +1,156 @@
+{
+  "label": "SYNTHETIC SAMPLE — fictional reporting areas and predictions",
+  "fetchedAt": "2026-01-15T21:30:00Z",
+  "region": "greater-la",
+  "current": [
+    {
+      "area": {
+        "id": "ra_30d836d70a42f66f978a9ba10e4175dc",
+        "provider": "synthetic",
+        "code": "SAMPLE-AREA-001",
+        "name": "SYNTHETIC SAMPLE Reporting Area Alpha",
+        "geometry": null
+      },
+      "pollutant": "PM2.5",
+      "aqi": 62,
+      "category": "Moderate",
+      "sourceCategory": {
+        "code": null,
+        "label": "Moderate"
+      },
+      "reportingAgency": "Fictional Research Test Agency",
+      "fetchedAt": "2026-01-15T21:30:00Z",
+      "product": "reporting-area-current-aqi",
+      "observedAt": "2026-01-15T20:00:00Z",
+      "reportedTimeDescription": "Synthetic UTC reporting time; aggregated area example, not an individual monitor",
+      "aggregation": "reporting-area-aggregate",
+      "dataStatus": "unknown"
+    },
+    {
+      "area": {
+        "id": "ra_30d836d70a42f66f978a9ba10e4175dc",
+        "provider": "synthetic",
+        "code": "SAMPLE-AREA-001",
+        "name": "SYNTHETIC SAMPLE Reporting Area Alpha",
+        "geometry": null
+      },
+      "pollutant": "O3",
+      "aqi": 38,
+      "category": "Good",
+      "sourceCategory": {
+        "code": null,
+        "label": "Good"
+      },
+      "reportingAgency": "Fictional Research Test Agency",
+      "fetchedAt": "2026-01-15T21:30:00Z",
+      "product": "reporting-area-current-aqi",
+      "observedAt": null,
+      "reportedTimeDescription": "Synthetic example with no verified observation instant",
+      "aggregation": "reporting-area-aggregate",
+      "dataStatus": "unknown"
+    },
+    {
+      "area": {
+        "id": "ra_84b71b8f127b5d646742e18ba899d886",
+        "provider": "synthetic",
+        "code": "SAMPLE-AREA-00B",
+        "name": "SYNTHETIC SAMPLE Reporting Area Beta",
+        "geometry": null
+      },
+      "pollutant": "PM2.5",
+      "aqi": null,
+      "category": null,
+      "sourceCategory": {
+        "code": null,
+        "label": null
+      },
+      "reportingAgency": "Fictional Research Test Agency",
+      "fetchedAt": "2026-01-15T21:30:00Z",
+      "product": "reporting-area-current-aqi",
+      "observedAt": "2026-01-15T20:00:00Z",
+      "reportedTimeDescription": "Synthetic missing-value area aggregate",
+      "aggregation": "reporting-area-aggregate",
+      "dataStatus": "unknown"
+    }
+  ],
+  "forecast": [
+    {
+      "area": {
+        "id": "ra_30d836d70a42f66f978a9ba10e4175dc",
+        "provider": "synthetic",
+        "code": "SAMPLE-AREA-001",
+        "name": "SYNTHETIC SAMPLE Reporting Area Alpha",
+        "geometry": null
+      },
+      "pollutant": "PM2.5",
+      "aqi": null,
+      "category": "Moderate",
+      "sourceCategory": {
+        "code": null,
+        "label": "Moderate"
+      },
+      "reportingAgency": "Fictional Research Test Agency",
+      "fetchedAt": "2026-01-15T21:30:00Z",
+      "product": "reporting-area-forecast",
+      "issuedAt": null,
+      "status": "prediction",
+      "validity": {
+        "precision": "date",
+        "date": "2026-01-16",
+        "sourceTimeZone": null
+      }
+    },
+    {
+      "area": {
+        "id": "ra_30d836d70a42f66f978a9ba10e4175dc",
+        "provider": "synthetic",
+        "code": "SAMPLE-AREA-001",
+        "name": "SYNTHETIC SAMPLE Reporting Area Alpha",
+        "geometry": null
+      },
+      "pollutant": "PM2.5",
+      "aqi": 80,
+      "category": "Moderate",
+      "sourceCategory": {
+        "code": null,
+        "label": "Moderate"
+      },
+      "reportingAgency": "Fictional Research Test Agency",
+      "fetchedAt": "2026-01-15T21:30:00Z",
+      "product": "reporting-area-forecast",
+      "issuedAt": "2026-01-15T20:00:00Z",
+      "status": "prediction",
+      "validity": {
+        "precision": "date",
+        "date": "2026-01-17",
+        "sourceTimeZone": "America/Los_Angeles"
+      }
+    },
+    {
+      "area": {
+        "id": "ra_84b71b8f127b5d646742e18ba899d886",
+        "provider": "synthetic",
+        "code": "SAMPLE-AREA-00B",
+        "name": "SYNTHETIC SAMPLE Reporting Area Beta",
+        "geometry": null
+      },
+      "pollutant": "O3",
+      "aqi": 42,
+      "category": "Good",
+      "sourceCategory": {
+        "code": null,
+        "label": "Good"
+      },
+      "reportingAgency": "Fictional Research Test Agency",
+      "fetchedAt": "2026-01-15T21:30:00Z",
+      "product": "reporting-area-forecast",
+      "issuedAt": "2026-01-15T20:00:00Z",
+      "status": "prediction",
+      "validity": {
+        "precision": "date",
+        "date": "2026-01-16",
+        "sourceTimeZone": "America/Los_Angeles"
+      }
+    }
+  ]
+}

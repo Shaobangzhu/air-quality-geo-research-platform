@@ -6,6 +6,8 @@ import { AirNowHourlyAdapter, SampleProvider } from './providers.js';
 import { PgSnapshots } from './repository.js';
 import { BffService } from './service.js';
 import { Usage } from './usage.js';
+import { AreaProductService } from './area-service.js';
+import { AirNowAreaAdapter, SampleAreaProvider } from './area-providers.js';
 
 export function createBff(config: Config, pool?: Pool) {
   const usage = new Usage();
@@ -18,7 +20,7 @@ export function createBff(config: Config, pool?: Pool) {
       config.OPENAI_API_KEY,
     ].filter((key): key is string => !!key),
   });
-  return new BffService({
+  const bff = new BffService({
     mode: config.DATA_MODE,
     usage,
     cache: new BatchCache(usage, {
@@ -30,4 +32,11 @@ export function createBff(config: Config, pool?: Pool) {
     snapshots: new PgSnapshots(pool),
     hasAirNowKey: !!config.AIRNOW_API_KEY,
   });
+  const areas = new AreaProductService({
+    defaultMode: config.DATA_MODE,
+    usage,
+    sample: new SampleAreaProvider(),
+    live: new AirNowAreaAdapter(http, config.AIRNOW_API_KEY),
+  });
+  return Object.assign(bff, { areas });
 }

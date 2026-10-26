@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { MouseEvent } from 'react';
-import { pages, parseRoute, routeSearch } from './route-state.js';
+import { pages, parseRoute, routeSearch, routeForPage } from './route-state.js';
 import type { RoutePatch } from './route-state.js';
+import { useAreaProducts } from './use-area-products.js';
 import { useStations } from './use-stations.js';
 import { Icon } from './components/Icon.js';
 import { ModeBadge } from './components/ModeBadge.js';
@@ -11,13 +12,26 @@ import { useAnalysis } from './analysis/use-analysis.js';
 export { pages } from './route-state.js';
 
 export function App() {
-  const [location, setLocation] = useState(() => ({
-    path: window.location.pathname === '/' ? '/map' : window.location.pathname,
-    route: parseRoute(window.location.search),
-  }));
+  const [location, setLocation] = useState(() => {
+    const path =
+      window.location.pathname === '/' ? '/map' : window.location.pathname;
+    return {
+      path,
+      route: routeForPage(parseRoute(window.location.search), path),
+    };
+  });
   const locationRef = useRef(location);
   locationRef.current = location;
-  const data = useStations(location.route, location.path !== '/analysis');
+  const data = useStations(
+    location.route,
+    location.path !== '/analysis' &&
+      location.route.product === 'monitoring-stations',
+  );
+  const areas = useAreaProducts(
+    location.route,
+    location.path !== '/analysis' &&
+      location.route.product !== 'monitoring-stations',
+  );
   const analysis = useAnalysis(location.route, location.path === '/analysis');
   const page = pages.find((item) => item.path === location.path);
   const main = useRef<HTMLElement>(null);
@@ -28,6 +42,7 @@ export function App() {
           window.location.pathname === '/' ? '/map' : window.location.pathname,
         route: parseRoute(window.location.search),
       };
+      next.route = routeForPage(next.route, next.path);
       locationRef.current = next;
       setLocation(next);
     };
@@ -68,7 +83,10 @@ export function App() {
     event.preventDefault();
     const next = {
       path,
-      route: parseRoute(new URL(event.currentTarget.href).search),
+      route: routeForPage(
+        parseRoute(new URL(event.currentTarget.href).search),
+        path,
+      ),
     };
     locationRef.current = next;
     window.history.pushState({}, '', `${path}${routeSearch(next.route)}`);
@@ -100,7 +118,7 @@ export function App() {
           {pages.map((item) => (
             <a
               key={item.path}
-              href={`${item.path}${routeSearch(location.route)}`}
+              href={`${item.path}${routeSearch(routeForPage(location.route, item.path))}`}
               onClick={(event) => navigate(event, item.path)}
               aria-current={location.path === item.path ? 'page' : undefined}
             >
@@ -110,7 +128,13 @@ export function App() {
           ))}
         </nav>
         <ModeBadge
-          data={location.path === '/analysis' ? analysis : data}
+          data={
+            location.path === '/analysis'
+              ? analysis
+              : location.route.product === 'monitoring-stations'
+                ? data
+                : areas
+          }
           mode={location.route.mode}
         />
       </header>
@@ -119,6 +143,8 @@ export function App() {
           <MapExplorer
             route={location.route}
             data={data}
+            areas={areas}
+            methodology={(event) => navigate(event, '/data')}
             change={change}
             analyze={(event) => navigate(event, '/analysis')}
           />
@@ -143,7 +169,7 @@ export function App() {
               </h2>
               <p>
                 {page
-                  ? 'The interface for this module has not been implemented. The header shows availability of the selected station context; no analysis or results are displayed here.'
+                  ? 'The interface for this module has not been implemented. The header shows availability of the selected product context; this module has not been implemented.'
                   : 'Use the navigation to open an available workspace.'}
               </p>
             </div>

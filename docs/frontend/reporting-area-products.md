@@ -1,0 +1,31 @@
+# Reporting-area Map alternatives — milestone 07
+
+Map Explorer keeps its four-route shell, compact Region/Pollutant/Data Product toolbar and existing component-owned ArcGIS view. The Monitoring Stations path and Analysis chart semantics are preserved. `Reporting Area AQI` and `Forecast` are enabled **only in Sample**, with a synthetic label. In Live/Historical they are disabled options; a direct link to an unavailable product displays its explicit error and never silently changes modes.
+
+## Application contracts, not provider payload definitions
+
+`@aq/contracts` defines separate `areaCurrentAqiSchema` and `areaForecastSchema` records. Both have an opaque `ra_…` identity keyed by `(provider, native area code)`, preserving leading zeroes and letters. An area name, pollutant or coordinate does not define identity. They contain normalized pollutant, nullable AQI, nullable six-category label, preserved source category code/label, reporting agency, fetch UTC and batch source/provenance. Category mismatches with supplied numeric AQI are rejected. A category-only forecast does not invent an AQI number; null/missing is never zero. Unknown numeric/pollutant conventions need a reviewed decoder rather than coercion.
+
+Current aggregate records have their own product discriminator, an optional precise observation UTC instant, source time description, reporting-area aggregation label and preliminary/unknown quality status. They do not have a station ID, concentration, instrument identity or monitoring-site averaging period. Forecast records instead have a prediction discriminator/status, nullable issuance UTC and a validity union: an unchanged calendar date with nullable source time-zone description, or an explicitly bounded UTC interval. A date is not converted into midnight UTC or an assumed 24-hour local day. A source GMT offset is not treated as Los Angeles DST. Issuance, validity and fetch time remain separate.
+
+All area geometry is null until an official geometry/representative-location contract is reviewed. Neither source nor sample fixtures assert polygons, centroids or station positions. Sample scope is an explicit engineering declaration for Greater LA only; smaller preset queries return empty without pretending real data is absent there.
+
+## BFF bounds and cache policy
+
+Read-only `/api/reporting-area-aqi` and `/api/forecasts` accept `region`, `pollutant`, `mode`, optional opaque `areaCode`, `limit=1..20` (10 default) and `offset=0..39`. Other fields and duplicate parameters are rejected. There is no ZIP, broad bbox, date backfill or station query field. An unknown sample code/pollutant returns a valid empty product, never fabricated data. Live's reviewed-codec seam requires one explicit area code; it cannot enumerate a regional dataset. Mode defaults to configured server mode when omitted.
+
+Source batches are capped at 10 identities / 40 records / 125 kB. The separate product cache holds at most 16 entries (at most roughly 2 MB of serialized batches) and four distinct pending loads. Equivalent concurrent requests coalesce; sample area-code filtering and pagination happen after acquisition. Product/mode/region/pollutant partition keys; live keys also partition the explicit area code. Callers receive clones. Cache actions share the existing API usage service; synthetic/archive decisions never count as actual provider attempts.
+
+Initial engineering TTLs are **5 minutes for area observations and 30 minutes for forecasts**. These are conservative application choices, not verified provider quotas, freshness guarantees or exact update schedules. They reflect only the FAQ's broad cadence guidance. Expired data is not extended or served on refresh failure: the error remains explicit. Original observation/issuance/validity/fetch timestamps are retained, even for fixed old sample data. Provider HTTP body/attempt/timeout/Retry-After limits remain centralized; 429, timeout, malformed data and missing contracts are isolated. No area snapshots, DB migration or historical store were added.
+
+## Rendering, selection and routing
+
+`product` accepts `monitoring-stations`, `reporting-area-aqi` or `forecast`. Area modes force the metric to AQI and use a separate validated `areaId`; station IDs, comparison IDs and station snapshot IDs are removed. Switching product clears selection. `areaId` affects only local details, not the request key. A source response must match product, mode, region and pollutant; abort and generation/key guards prevent old area or station data from appearing after a change.
+
+The existing station GraphicsLayer becomes invisible and empty for area modes. No alternative source positions are guessed. The same map/view and engineering extent remain mounted. A product legend explains aggregate observations versus predictions; swatches label supplied categories, with neutral missing/category-unavailable presentation. Area identities and records appear in the existing compact result list and conditional right drawer. Forecast details show literal valid dates, unknown issuance/source timezone when appropriate, prediction status, agency and source/fetch metadata. There is no Analyze link for area records.
+
+The native product/filter controls and identity buttons are keyboard accessible. Opening an area drawer focuses Close; Escape restores its identity button. Missing/empty/error states are explicit. A methodology link preserves area product/id/mode/pollutant context in `/data`. Navigation to Analysis explicitly creates monitoring-station context, never promotes an area to a station or plots a prediction as an observation. The Analysis and wildfire implementation files were not changed.
+
+The fixture is application-only: `SAMPLE-AREA-001` / `SAMPLE-AREA-00B`, fictional names/agency, fixed January 2026 dates, no geography, no PM10 rows. It supports tests for absent observation instants, missing AQI/category, category-only forecasts, unknown issuance and multiple date-only validity records. It makes no claim about real LA reporting areas or coverage.
+
+See [official evidence/blocks](../data-sources/airnow-area-products-verification.md) and the [Prompt 07 report](../milestones/07-reporting-area-products.md). Official functional product acceptance remains blocked by unverified contracts; passing synthetic tests does not remove that block.

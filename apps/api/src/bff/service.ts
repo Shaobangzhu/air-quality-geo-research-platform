@@ -1,5 +1,6 @@
 import {
   datasetsResponseSchema,
+  AREA_PRODUCT_CAPABILITIES,
   analysisSeriesResponseSchema,
   GREATER_LA,
   STUDY_REGIONS,
@@ -82,6 +83,7 @@ export class BffService {
           },
           maxWindowHours: 72,
         },
+        ...AREA_PRODUCT_CAPABILITIES,
       ],
     });
   }

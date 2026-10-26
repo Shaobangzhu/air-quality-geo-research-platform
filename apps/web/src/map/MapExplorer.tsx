@@ -6,6 +6,8 @@ import type { RouteState, RoutePatch } from '../route-state.js';
 import { modeNames, modeDescriptions } from '../route-state.js';
 import type { DataState } from '../use-stations.js';
 import { Icon } from '../components/Icon.js';
+import { AreaCatalog, AreaDrawer, AreaLegend } from '../areas/AreaProducts.js';
+import type { AreaDataState } from '../use-area-products.js';
 import { StationDrawer } from '../components/StationDrawer.js';
 import { MapCanvas } from './MapCanvas.js';
 import { StationLegend } from './StationLegend.js';
@@ -19,12 +21,17 @@ export function MapExplorer({
   data,
   change,
   analyze,
+  areas,
+  methodology,
 }: {
   route: RouteState;
   data: DataState;
+  areas: AreaDataState;
+  methodology: (event: MouseEvent<HTMLAnchorElement>) => void;
   change: (patch: RoutePatch, replace?: boolean) => void;
   analyze: (event: MouseEvent<HTMLAnchorElement>) => void;
 }) {
+  const stationsActive = route.product === 'monitoring-stations';
   const region = selectStudyRegion(route.region);
   const [selectionNotice, setSelectionNotice] =
     useState<StationReadingsResponse | null>(null);
@@ -37,7 +44,8 @@ export function MapExplorer({
     ids: string[];
   } | null>(null);
   const stationButtons = useRef(new Map<string, HTMLButtonElement>());
-  const result = data.status === 'ready' ? data.result : undefined;
+  const result =
+    stationsActive && data.status === 'ready' ? data.result : undefined;
   const readings = result?.data ?? [];
   const selected = readings.find(
     (reading) => reading.station.id === route.station,
@@ -84,6 +92,7 @@ export function MapExplorer({
             <select
               aria-label="Map metric"
               value={route.measurementType}
+              disabled={!stationsActive}
               onChange={(event) =>
                 change({
                   measurementType: event.target
@@ -105,11 +114,15 @@ export function MapExplorer({
                   mode: event.target.value as RouteState['mode'],
                   station: undefined,
                   snapshotId: undefined,
+                  area: undefined,
                 })
               }
             >
               <option value="sample">Sample · synthetic</option>
-              <option value="historical">Historical · snapshot required</option>
+              <option value="historical">
+                Historical ·{' '}
+                {stationsActive ? 'snapshot required' : 'archive unavailable'}
+              </option>
               <option value="live">Live · unavailable</option>
             </select>
           </label>
@@ -154,7 +167,15 @@ export function MapExplorer({
             >
               <option value="PM2.5">PM2.5</option>
               <option value="O3">Ozone (O₃)</option>
-              <option value="PM10">PM10</option>
+              <option
+                value="PM10"
+                disabled={!stationsActive && route.mode === 'sample'}
+              >
+                PM10
+                {!stationsActive && route.mode === 'sample'
+                  ? ' · not supplied in sample'
+                  : ''}
+              </option>
             </select>
             <small>
               {route.measurementType === 'aqi'
@@ -169,24 +190,41 @@ export function MapExplorer({
             Data Product
             <select
               aria-label="Data Product"
-              defaultValue={route.product}
+              value={route.product}
+              onChange={(event) =>
+                change({
+                  product: event.target.value as RouteState['product'],
+                  station: undefined,
+                  compare: [],
+                  area: undefined,
+                })
+              }
               aria-describedby="product-help"
             >
               <option value="monitoring-stations">Monitoring Stations</option>
-              <option value="reporting-areas" disabled>
-                Reporting Areas · unavailable
+              <option
+                value="reporting-area-aqi"
+                disabled={route.mode !== 'sample'}
+              >
+                Reporting Area AQI ·{' '}
+                {route.mode === 'sample' ? 'synthetic sample' : 'unavailable'}
               </option>
-              <option value="forecasts" disabled>
-                Forecasts · unavailable
+              <option value="forecast" disabled={route.mode !== 'sample'}>
+                Forecast ·{' '}
+                {route.mode === 'sample' ? 'synthetic sample' : 'unavailable'}
               </option>
             </select>
             <small id="product-help">
               {route.mode === 'sample'
-                ? 'Synthetic observations'
+                ? route.product === 'forecast'
+                  ? 'Synthetic predictions'
+                  : 'Synthetic observations'
                 : route.mode === 'historical'
-                  ? 'Official snapshot required'
+                  ? stationsActive
+                    ? 'Official snapshot required'
+                    : 'No area archive configured'
                   : 'Live contract unverified'}{' '}
-              · other contracts unverified
+              · official area contracts unverified
             </small>
           </span>
         </label>
@@ -194,8 +232,14 @@ export function MapExplorer({
           <Icon name="info" />
           <p>
             {route.mode === 'sample'
-              ? 'Synthetic sample sites and readings. These are fictional development fixtures.'
-              : 'Preliminary observations may be revised. Monitoring sites do not represent complete regional coverage.'}
+              ? stationsActive
+                ? 'Synthetic sample sites and readings. These are fictional development fixtures.'
+                : 'Synthetic area aggregates and predictions from fixed January 2026 fixtures; not current conditions or forecasts.'
+              : stationsActive
+                ? 'Preliminary observations may be revised. Monitoring sites do not represent complete regional coverage.'
+                : route.product === 'forecast'
+                  ? 'Forecasts are predictions for a valid date or window, not observed station measurements. This official product is unavailable.'
+                  : 'Reporting-area AQI is an aggregate, not a specific station value. This official product is unavailable.'}
           </p>
         </div>
       </section>
@@ -207,7 +251,7 @@ export function MapExplorer({
               boundaryVisible={boundaryVisible}
               onAvailability={setMapAvailable}
               markers={markers}
-              stationsVisible={stationsVisible}
+              stationsVisible={stationsActive && stationsVisible}
               selectedId={selected?.station.id}
               onSelect={onMapSelect}
             />
@@ -239,174 +283,213 @@ export function MapExplorer({
                     </span>
                   </label>
                   <p>
-                    Engineering extent; not an air-basin boundary.
+                    Engineering extent; not a reporting-area or air-basin
+                    boundary.
                     {!mapAvailable &&
                       ' Map controls available when tiles load.'}
                   </p>
-                  <label className="layer-option">
-                    <input
-                      type="checkbox"
-                      checked={stationsVisible}
-                      disabled={!mapAvailable || !result}
-                      onChange={(event) =>
-                        setStationsVisible(event.target.checked)
+                  {stationsActive ? (
+                    <>
+                      <label className="layer-option">
+                        <input
+                          type="checkbox"
+                          checked={stationsVisible}
+                          disabled={!mapAvailable || !result}
+                          onChange={(event) =>
+                            setStationsVisible(event.target.checked)
+                          }
+                        />
+                        <span>Monitoring station readings</span>
+                      </label>
+                      <StationLegend
+                        metric={route.measurementType}
+                        readings={readings}
+                        meta={result?.meta}
+                        pollutant={route.pollutant}
+                      />
+                    </>
+                  ) : (
+                    <AreaLegend
+                      product={
+                        route.product as 'reporting-area-aqi' | 'forecast'
                       }
                     />
-                    <span>Monitoring station readings</span>
-                  </label>
-                  <StationLegend
-                    metric={route.measurementType}
-                    readings={readings}
-                    meta={result?.meta}
-                    pollutant={route.pollutant}
-                  />
+                  )}
                 </div>
               )}
             </section>
             <span className="map-shell-label">
-              {result
-                ? modeDescriptions[result.meta.dataMode]
-                : `${modeNames[route.mode]} · ${data.status === 'loading' ? 'Loading' : 'Unavailable'}`}
-              {result && ` · ${readings.length} monitor identities`}
+              {stationsActive ? (
+                <>
+                  {result
+                    ? modeDescriptions[result.meta.dataMode]
+                    : `${modeNames[route.mode]} · ${data.status === 'loading' ? 'Loading' : 'Unavailable'}`}
+                  {result && ` · ${readings.length} monitor identities`}
+                </>
+              ) : (
+                `${route.mode} · ${route.product === 'forecast' ? 'Forecast predictions' : 'Area aggregates'} · no area symbols`
+              )}
             </span>
           </div>
-          <section className="station-catalog" aria-labelledby="catalog-title">
-            <div className="catalog-heading">
-              <h2 id="catalog-title">
-                <Icon name="pin" />
-                {route.mode === 'sample'
-                  ? 'Synthetic monitor readings'
-                  : 'Available monitor readings'}
-              </h2>
-              <span className="small-tag">
-                {result ? `${readings.length} returned` : modeNames[route.mode]}
-              </span>
-            </div>
-            {data.status === 'loading' ? (
-              <p role="status">Loading station readings…</p>
-            ) : data.status === 'error' ? (
-              <p role="alert" className="inline-error">
-                {data.message}
-              </p>
-            ) : (
-              <>
-                {candidates && candidates.result === result && (
-                  <div
-                    className="co-located-choice"
-                    role="group"
-                    aria-label="Choose a monitor at this location"
-                  >
-                    <strong>Multiple monitors at this location</strong>
-                    <p>
-                      Source coordinates are retained. Choose a distinct
-                      monitor:
-                    </p>
-                    {readings
-                      .filter((reading) =>
-                        candidates.ids.includes(reading.station.id),
-                      )
-                      .map((reading) => (
-                        <button
-                          key={reading.station.id}
-                          onClick={() => choose(reading.station.id)}
-                        >
-                          {reading.station.name} · Monitor{' '}
-                          {reading.station.identity.monitorId ?? 'unspecified'}
-                        </button>
-                      ))}
-                  </div>
-                )}
-                {readings.length === 0 ? (
-                  <p role="status">
-                    No {route.pollutant} stations reported in this region and
-                    time window.
-                  </p>
-                ) : (
-                  <div className="station-list">
-                    {readings.map((reading) => {
-                      const station = reading.station;
-                      const style = readingStyle(
-                        reading,
-                        data.result.meta,
-                        route.measurementType,
-                      );
-                      return (
-                        <button
-                          key={station.id}
-                          ref={(element) => {
-                            if (element)
-                              stationButtons.current.set(station.id, element);
-                            else stationButtons.current.delete(station.id);
-                          }}
-                          className={`station-option ${station.id === selected?.station.id ? 'selected' : ''}`}
-                          aria-pressed={station.id === selected?.station.id}
-                          aria-label={`Inspect ${station.name}, monitor ${station.identity.monitorId ?? 'unspecified'}`}
-                          onClick={() => choose(station.id)}
-                        >
-                          <span
-                            className={`symbol-swatch ${style.style === 'diamond' ? 'neutral' : style.style}`}
-                            style={{ background: style.color }}
-                            aria-hidden="true"
-                          />
-                          <span>
-                            <strong>{station.name}</strong>
-                            <small>
-                              {station.identity.nativeSiteId} · Monitor{' '}
-                              {station.identity.monitorId ?? 'unspecified'}
-                            </small>
-                            <small className="reading-summary">
-                              {style.label}
-                            </small>
-                          </span>
-                          <Icon name="arrow" />
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
-                <p className="catalog-caption">
-                  {modeDescriptions[data.result.meta.dataMode]}. Latest supplied
-                  records per metric within the requested window. Select a map
-                  symbol or a monitor below; co-located monitors retain distinct
-                  identities.
+          {stationsActive ? (
+            <section
+              className="station-catalog"
+              aria-labelledby="catalog-title"
+            >
+              <div className="catalog-heading">
+                <h2 id="catalog-title">
+                  <Icon name="pin" />
+                  {route.mode === 'sample'
+                    ? 'Synthetic monitor readings'
+                    : 'Available monitor readings'}
+                </h2>
+                <span className="small-tag">
+                  {result
+                    ? `${readings.length} returned`
+                    : modeNames[route.mode]}
+                </span>
+              </div>
+              {data.status === 'loading' ? (
+                <p role="status">Loading station readings…</p>
+              ) : data.status === 'error' ? (
+                <p role="alert" className="inline-error">
+                  {data.message}
                 </p>
-                {data.result.meta.latestObservedAt && (
+              ) : (
+                <>
+                  {candidates && candidates.result === result && (
+                    <div
+                      className="co-located-choice"
+                      role="group"
+                      aria-label="Choose a monitor at this location"
+                    >
+                      <strong>Multiple monitors at this location</strong>
+                      <p>
+                        Source coordinates are retained. Choose a distinct
+                        monitor:
+                      </p>
+                      {readings
+                        .filter((reading) =>
+                          candidates.ids.includes(reading.station.id),
+                        )
+                        .map((reading) => (
+                          <button
+                            key={reading.station.id}
+                            onClick={() => choose(reading.station.id)}
+                          >
+                            {reading.station.name} · Monitor{' '}
+                            {reading.station.identity.monitorId ??
+                              'unspecified'}
+                          </button>
+                        ))}
+                    </div>
+                  )}
+                  {readings.length === 0 ? (
+                    <p role="status">
+                      No {route.pollutant} stations reported in this region and
+                      time window.
+                    </p>
+                  ) : (
+                    <div className="station-list">
+                      {readings.map((reading) => {
+                        const station = reading.station;
+                        const style = readingStyle(
+                          reading,
+                          data.result.meta,
+                          route.measurementType,
+                        );
+                        return (
+                          <button
+                            key={station.id}
+                            ref={(element) => {
+                              if (element)
+                                stationButtons.current.set(station.id, element);
+                              else stationButtons.current.delete(station.id);
+                            }}
+                            className={`station-option ${station.id === selected?.station.id ? 'selected' : ''}`}
+                            aria-pressed={station.id === selected?.station.id}
+                            aria-label={`Inspect ${station.name}, monitor ${station.identity.monitorId ?? 'unspecified'}`}
+                            onClick={() => choose(station.id)}
+                          >
+                            <span
+                              className={`symbol-swatch ${style.style === 'diamond' ? 'neutral' : style.style}`}
+                              style={{ background: style.color }}
+                              aria-hidden="true"
+                            />
+                            <span>
+                              <strong>{station.name}</strong>
+                              <small>
+                                {station.identity.nativeSiteId} · Monitor{' '}
+                                {station.identity.monitorId ?? 'unspecified'}
+                              </small>
+                              <small className="reading-summary">
+                                {style.label}
+                              </small>
+                            </span>
+                            <Icon name="arrow" />
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
                   <p className="catalog-caption">
-                    Latest supplied observation:{' '}
-                    {formatLocalTime(data.result.meta.latestObservedAt)} ·
-                    America/Los_Angeles
+                    {modeDescriptions[data.result.meta.dataMode]}. Latest
+                    supplied records per metric within the requested window.
+                    Select a map symbol or a monitor below; co-located monitors
+                    retain distinct identities.
                   </p>
-                )}
-                {data.result.meta.diagnostics.rejectedRows > 0 && (
-                  <p className="inline-error" role="status">
-                    {data.result.meta.diagnostics.rejectedRows} invalid or
-                    out-of-coverage source rows excluded. Counts describe
-                    available source data, not complete regional coverage.
-                  </p>
-                )}
-                {data.result.meta.cache.status === 'stale' && (
-                  <p className="inline-error" role="status">
-                    Stale cached observations. The source could not be
-                    refreshed.
-                  </p>
-                )}
-                {data.result.meta.pagination.nextOffset !== null && (
-                  <p className="muted">
-                    Showing the first {readings.length} identities; additional
-                    results are not displayed.
-                  </p>
-                )}
-                {selectionNotice === result && (
-                  <p role="status">
-                    The selected station is not available in this filter result.
-                    Selection cleared.
-                  </p>
-                )}
-              </>
-            )}
-          </section>
+                  {data.result.meta.latestObservedAt && (
+                    <p className="catalog-caption">
+                      Latest supplied observation:{' '}
+                      {formatLocalTime(data.result.meta.latestObservedAt)} ·
+                      America/Los_Angeles
+                    </p>
+                  )}
+                  {data.result.meta.diagnostics.rejectedRows > 0 && (
+                    <p className="inline-error" role="status">
+                      {data.result.meta.diagnostics.rejectedRows} invalid or
+                      out-of-coverage source rows excluded. Counts describe
+                      available source data, not complete regional coverage.
+                    </p>
+                  )}
+                  {data.result.meta.cache.status === 'stale' && (
+                    <p className="inline-error" role="status">
+                      Stale cached observations. The source could not be
+                      refreshed.
+                    </p>
+                  )}
+                  {data.result.meta.pagination.nextOffset !== null && (
+                    <p className="muted">
+                      Showing the first {readings.length} identities; additional
+                      results are not displayed.
+                    </p>
+                  )}
+                  {selectionNotice === result && (
+                    <p role="status">
+                      The selected station is not available in this filter
+                      result. Selection cleared.
+                    </p>
+                  )}
+                </>
+              )}
+            </section>
+          ) : (
+            <AreaCatalog route={route} data={areas} change={change} />
+          )}
         </div>
-        {selected && result && (
+        {!stationsActive && areas.status === 'ready' && (
+          <AreaDrawer
+            route={route}
+            result={areas.result}
+            close={() => {
+              change({ area: undefined });
+              if (route.area)
+                document.getElementById('area-option-' + route.area)?.focus();
+            }}
+            methodology={methodology}
+          />
+        )}
+        {stationsActive && selected && result && (
           <StationDrawer
             reading={selected}
             meta={result.meta}

@@ -8,10 +8,12 @@ loadEnvironment();
 try {
   const config = readConfig();
   const database = createDatabase(config);
+  const bff = createBff(config, database.pool);
   const app = createApp({
     config,
     databaseStatus: () => database.status(),
-    bff: createBff(config, database.pool),
+    bff,
+    areas: bff.areas,
   });
   const server = app.listen(config.PORT, config.HOST, () => {
     console.info(

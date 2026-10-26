@@ -402,3 +402,118 @@ test('Map → Analysis → 72-hour gap chart → Data preserves scientific conte
   );
   expect(external).toEqual([]);
 });
+
+test('keeps area aggregates and predictions separate from station layers, URLs and Analysis', async ({
+  page,
+  request,
+}, testInfo) => {
+  const requests: string[] = [];
+  page.on('request', (req) => {
+    const path = new URL(req.url()).pathname;
+    if (path.startsWith('/api/')) requests.push(path);
+  });
+  await page.goto('/map?mode=sample');
+  await expect(
+    page.getByRole('button', { name: /^Inspect SYNTHETIC SAMPLE/ }),
+  ).toHaveCount(3);
+  await page.getByLabel('Map canvas').evaluate((element) => {
+    (window as unknown as { areaCanvas: Element }).areaCanvas = element;
+  });
+  await page.getByLabel('Data Product').selectOption('reporting-area-aqi');
+  await expect(
+    page.getByRole('button', { name: /^Inspect reporting area/ }),
+  ).toHaveCount(2);
+  await expect(page.getByLabel('Reporting Area AQI legend')).toContainText(
+    'aggregate observations',
+  );
+  await expect(page.getByLabel('Monitoring station readings')).toHaveCount(0);
+  await expect(
+    page.getByRole('link', { name: 'Analyze This Station' }),
+  ).toHaveCount(0);
+  const count = requests.length;
+  const button = page
+    .getByRole('button', { name: /^Inspect reporting area/ })
+    .first();
+  await button.click();
+  await expect(
+    page.getByRole('button', { name: 'Close reporting area details' }),
+  ).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(button).toBeFocused();
+  expect(requests.length).toBe(count);
+  await page.getByLabel('Data Product').selectOption('forecast');
+  await page
+    .getByRole('button', { name: /^Inspect reporting area/ })
+    .first()
+    .click();
+  const drawer = page.getByRole('complementary', {
+    name: 'Reporting Area Details',
+  });
+  await expect(drawer).toContainText('AQI number not supplied · category only');
+  await expect(drawer).toContainText('2026-01-16 · date only');
+  await expect(drawer).toContainText('issuance time unknown');
+  await expect(drawer).toContainText('Prediction · not an observation');
+  expect(new URL(page.url()).searchParams.has('stationId')).toBe(false);
+  expect(
+    await page
+      .getByLabel('Map canvas')
+      .evaluate(
+        (element) =>
+          (window as unknown as { areaCanvas: Element }).areaCanvas === element,
+      ),
+  ).toBe(true);
+  const url = page.url();
+  await page.reload();
+  await expect(
+    page.getByRole('complementary', { name: 'Reporting Area Details' }),
+  ).toBeVisible();
+  await expect(page).toHaveURL(url);
+  for (const width of [1280, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+    await page.evaluate(() => scrollTo(0, 0));
+    await page.screenshot({
+      path: testInfo.outputPath(`area-forecast-${width}.png`),
+      fullPage: true,
+    });
+  }
+  await drawer.getByRole('link', { name: 'View Data & Methodology' }).click();
+  await expect(page).toHaveURL(/\/data\?.*product=forecast/);
+  await page
+    .getByRole('navigation')
+    .getByRole('link', { name: 'Analysis' })
+    .click();
+  await expect(page.getByLabel('Inspect observation time')).toBeVisible();
+  expect(new URL(page.url()).searchParams.get('product')).toBe(
+    'monitoring-stations',
+  );
+  expect(new URL(page.url()).searchParams.has('areaId')).toBe(false);
+  const usage = usageSummarySchema.parse(
+    await (await request.get('/api/usage/summary')).json(),
+  );
+  expect(usage.providers.every((provider) => provider.requests === 0)).toBe(
+    true,
+  );
+});
+
+test('rejects unavailable live and historical area products without an implicit sample fallback', async ({
+  page,
+}) => {
+  await page.goto('/map?product=forecast&mode=live');
+  await expect(page.getByRole('alert')).toContainText(
+    'contract is not verified',
+  );
+  await expect(page.getByRole('button', { name: /^Inspect/ })).toHaveCount(0);
+  await expect(
+    page.getByRole('option', { name: 'Forecast · unavailable' }),
+  ).toHaveAttribute('disabled', '');
+  await page.getByLabel('Data mode').selectOption('historical');
+  await expect(page.getByRole('alert')).toContainText(
+    'no verified reporting-area archive',
+  );
+  await expect(page.getByLabel('Data status')).toContainText('Unavailable');
+});

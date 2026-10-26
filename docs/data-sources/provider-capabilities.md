@@ -1,6 +1,6 @@
 # Provider capabilities and verification
 
-Verified against official documentation on **2026-10-25**. Documentation access is not a successful API request. **No provider endpoint was live-tested.** A guarded AirNow adapter boundary and synthetic import/normalization path now exist; no production AirNow wire codec is registered. Internal Zod schemas are application contracts, not claims about external response fields.
+Initial audit against official documentation on **2026-10-25**; AirNow reporting-area/forecast evidence refreshed on **2026-10-26**. Documentation access is not a successful API request. **No provider endpoint was live-tested.** A guarded AirNow adapter boundary and synthetic import/normalization path now exist; no production AirNow wire codec is registered. Internal Zod schemas are application contracts, not claims about external response fields.
 
 Evidence levels: **officially documented** = capability stated by the owner; **detailed contract verified** = named request/response details inspected; **live-tested** = an actual bounded authenticated request succeeded; **unverified** = no such evidence. These levels are independent: reading documentation does not prove credentials, availability, coverage or quota.
 
@@ -75,3 +75,5 @@ A browser ArcGIS credential is public by design: restrict referrers, service pri
 For each future adapter, attach the exact official specification URL and review date, a bounded credential-redacted opt-in test result (or explicit blocker), a captured response fixture with provenance, and contract tests for missing/error/time/unit semantics. Do not upgrade any evidence level merely because a link exists. Authentication, service availability and scientific fitness remain separate questions.
 
 Prompt 02 execution detail: [AirNow live verification](airnow-live-verification.md). Keys are locally present, but the smoke opt-in flag remains false. All provider HTTP verification was mocked; the runtime live guard sends no request. Existing capability evidence levels remain unchanged.
+
+Milestone 07 adds separate reporting-area/forecast application contracts and explicitly synthetic Map modes. Official new-service contracts remain unverified and live/archive paths remain unavailable. See the [per-product evidence/decision table](airnow-area-products-verification.md); no authenticated endpoint was tested.

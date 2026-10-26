@@ -64,3 +64,5 @@ See [ArcGIS lifecycle and authentication](arcgis-map.md) and the [station milest
 Milestone 05 enables the three engineering region presets, keeps unsupported products as disabled options, and reconciles pending station selection after the active filter result. See [Map interaction contract](map-interactions.md) for URL/history state and accessible interaction details.
 
 Milestone 06 implements the sole full chart page with a four-control Analysis toolbar, one lazily loaded SVG chart, a slim station/summary/comparison sidebar and contextual notes. See [Analysis series semantics](analysis-series.md) for URL/window/comparison and accessibility rules.
+
+Milestone 07 adds separate synthetic reporting-area/forecast alternatives only to Map Explorer; see [product-specific semantics and guards](reporting-area-products.md). Area identities never populate station IDs or the Analysis chart. No verified area geometry is available, so the preserved map view plots no area positions or polygons.

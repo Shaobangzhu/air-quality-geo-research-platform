@@ -1,5 +1,7 @@
 import {
   analysisWindowSchema,
+  dataProductIdSchema,
+  areaIdSchema,
   dataModeSchema,
   measurementTypeSchema,
   pollutantSchema,
@@ -43,9 +45,14 @@ export function parseRoute(search: string) {
   const one = (name: string) =>
     params.getAll(name).length === 1 ? params.get(name) : undefined;
   const mode = dataModeSchema.safeParse(one('mode')).data ?? 'sample';
-  const station = stationIdSchema.safeParse(
-    params.has('stationId') ? one('stationId') : one('station'),
-  ).data;
+  const product =
+    dataProductIdSchema.safeParse(one('product')).data ?? 'monitoring-stations';
+  const station =
+    product === 'monitoring-stations'
+      ? stationIdSchema.safeParse(
+          params.has('stationId') ? one('stationId') : one('station'),
+        ).data
+      : undefined;
   const compare =
     z.array(stationIdSchema).max(2).safeParse(one('compare')?.split(','))
       .data ?? [];
@@ -57,21 +64,30 @@ export function parseRoute(search: string) {
       : [],
     region: regionIdSchema.safeParse(one('region')).data ?? 'greater-la',
     pollutant: pollutantSchema.safeParse(one('pollutant')).data ?? 'PM2.5',
-    product: 'monitoring-stations' as const,
+    product,
+    area:
+      product !== 'monitoring-stations'
+        ? areaIdSchema.safeParse(one('areaId')).data
+        : undefined,
     mode,
     measurementType:
-      measurementTypeSchema.safeParse(one('measurementType')).data ??
-      'concentration',
+      product === 'monitoring-stations'
+        ? (measurementTypeSchema.safeParse(one('measurementType')).data ??
+          'concentration')
+        : ('aqi' as const),
     station,
     snapshotId:
-      mode === 'historical'
+      mode === 'historical' && product === 'monitoring-stations'
         ? z.uuid().safeParse(one('snapshotId')).data
         : undefined,
   };
 }
 export type RouteState = ReturnType<typeof parseRoute>;
-export type RoutePatch = Partial<Omit<RouteState, 'station' | 'snapshotId'>> & {
+export type RoutePatch = Partial<
+  Omit<RouteState, 'station' | 'snapshotId' | 'area'>
+> & {
   station?: string | undefined;
+  area?: string | undefined;
   snapshotId?: string | undefined;
 };
 export function routeSearch(state: RouteState) {
@@ -82,12 +98,19 @@ export function routeSearch(state: RouteState) {
     mode: state.mode,
     measurementType: state.measurementType,
   });
-  if (state.station) params.set('stationId', state.station);
+  if (state.station && state.product === 'monitoring-stations')
+    params.set('stationId', state.station);
+  if (state.area && state.product !== 'monitoring-stations')
+    params.set('areaId', state.area);
   if (state.windowHours !== 24)
     params.set('windowHours', String(state.windowHours));
   if (state.station && state.compare.length)
     params.set('compare', state.compare.join(','));
-  if (state.snapshotId && state.mode === 'historical')
+  if (
+    state.snapshotId &&
+    state.mode === 'historical' &&
+    state.product === 'monitoring-stations'
+  )
     params.set('snapshotId', state.snapshotId);
   return `?${params}`;
 }
@@ -99,10 +122,22 @@ export const modeNames = {
 } as const;
 
 export function analysisHref(state: RouteState, stationId: string) {
-  return `/analysis${routeSearch({ ...state, compare: [], station: stationIdSchema.parse(stationId) })}`;
+  return `/analysis${routeSearch({ ...state, product: 'monitoring-stations', area: undefined, compare: [], station: stationIdSchema.parse(stationId) })}`;
 }
 export const modeDescriptions = {
   sample: 'Synthetic sample',
   historical: 'Stored historical snapshot',
   live: 'Verified live observations',
 } as const;
+
+export function routeForPage(state: RouteState, path: string): RouteState {
+  return path === '/analysis' && state.product !== 'monitoring-stations'
+    ? {
+        ...state,
+        product: 'monitoring-stations',
+        area: undefined,
+        station: undefined,
+        compare: [],
+      }
+    : state;
+}

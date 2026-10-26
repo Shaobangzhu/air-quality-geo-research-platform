@@ -64,8 +64,8 @@ it('renders exactly four navigation routes, active map, sample availability and 
     'monitoring-stations',
   );
   expect(
-    screen.getByRole('option', { name: 'Forecasts · unavailable' }),
-  ).toBeDisabled();
+    screen.getByRole('option', { name: 'Forecast · synthetic sample' }),
+  ).toBeEnabled();
   expect(screen.queryByRole('complementary')).not.toBeInTheDocument();
   expect(screen.queryByText('AQI 78')).not.toBeInTheDocument();
 });

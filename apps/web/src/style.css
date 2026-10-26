@@ -1230,3 +1230,15 @@ dd {
   overflow: hidden;
   white-space: nowrap;
 }
+
+.area-value {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  color: var(--ink);
+  line-height: 1.5;
+}
+.area-value .symbol-swatch {
+  flex-shrink: 0;
+}

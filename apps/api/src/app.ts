@@ -3,6 +3,7 @@ import type { ErrorRequestHandler, RequestHandler } from 'express';
 import type { DatabaseStatus } from '@aq/contracts';
 import { healthSchema } from '@aq/contracts';
 import type { Config } from './config.js';
+import type { AreaProductService } from './bff/area-service.js';
 import type { BffService } from './bff/service.js';
 import { BffError, safeError } from './bff/errors.js';
 import { errorEnvelopeSchema } from '@aq/contracts';
@@ -11,6 +12,7 @@ export function createApp(options: {
   config: Pick<Config, 'DATA_MODE'>;
   databaseStatus: () => Promise<DatabaseStatus>;
   bff?: BffService;
+  areas?: AreaProductService;
 }) {
   const app = express();
   app.disable('x-powered-by');
@@ -69,6 +71,18 @@ export function createApp(options: {
     app.get('/api/usage/summary', noQuery, (_req, res) => {
       res.set('Cache-Control', 'no-store').json(bff.usage());
     });
+  }
+  if (options.areas) {
+    app.get('/api/reporting-area-aqi', async (req, res) =>
+      res
+        .set('Cache-Control', 'no-store')
+        .json(await options.areas!.read('reporting-area-aqi', req.query)),
+    );
+    app.get('/api/forecasts', async (req, res) =>
+      res
+        .set('Cache-Control', 'no-store')
+        .json(await options.areas!.read('forecast', req.query)),
+    );
   }
   app.use((_req, res) => {
     res.status(404).json(

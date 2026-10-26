@@ -14,6 +14,8 @@ All public operations are GET. Region, product, dataset, station, observation, u
 | `/api/regions`                   | `regionsResponseSchema`; three frozen EPSG:4326 engineering study presets                                                      |
 | `/api/data-products`             | `productsResponseSchema`; station observations only, with explicit mode limitations                                            |
 | `/api/analysis-series`           | `analysisSeriesResponseSchema`; one bounded batch, at most three compatible series, explicit missing slots and source coverage |
+| `/api/reporting-area-aqi`        | Separate aggregate AQI application result; synthetic sample or explicit official-product unavailability                        |
+| `/api/forecasts`                 | Separate prediction result with issuance/validity precision; synthetic sample or explicit unavailability                       |
 | `/api/station-readings`          | `stationReadingsResponseSchema`; latest supplied revisions per metric for the map, reusing the existing bounded batch cache    |
 | `/api/stations`                  | `stationsResponseSchema`; monitoring identities discovered in the selected observations                                        |
 | `/api/stations/:id/observations` | `observationsResponseSchema`; one station plus normalized observation revisions                                                |
@@ -102,3 +104,5 @@ Usage semantics, including the precise cache denominator and HTTP latency defini
 Milestone 05 defines region bounds, canonical pollutant/provider code handling and linked selection in [Map interaction contract](../frontend/map-interactions.md). Snapshot/batch region identity remains `greater-la`; response metadata identifies the selected subpreset.
 
 Milestone 06 adds [Analysis series](../frontend/analysis-series.md). Its strict query accepts only 24/48/72-hour windows and up to three unique IDs, reusing acquisition/cache and bounded snapshot reads. Historical Analysis alone permits a partial window before acquired coverage; it never extends beyond the snapshot end or creates observations. Other station endpoints keep their full-window guard.
+
+Milestone 07 uses a separate [reporting-area service and bounded cache](../frontend/reporting-area-products.md), sharing usage/HTTP controls without mixing records into the station batch/repository. Catalog mode labels distinguish synthetic-only products from unverified official capabilities. No new provider wire fields or database schema were introduced.

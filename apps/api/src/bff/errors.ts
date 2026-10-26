@@ -3,9 +3,11 @@ import type { ErrorCode } from '@aq/contracts';
 const messages: Record<ErrorCode, string> = {
   ROUTE_NOT_FOUND: 'Unknown API route.',
   INVALID_REQUEST:
-    'Invalid query or station ID. See the documented bounds and accepted fields.',
+    'Invalid query or identity. See the documented bounds and accepted fields.',
   STATION_NOT_FOUND:
     'Station is not present in the selected mode, pollutant and time window.',
+  PRODUCT_HISTORY_UNAVAILABLE:
+    'No verified reporting-area historical archive is configured for this product.',
   SNAPSHOT_REQUIRED: 'Historical mode requires an identified local snapshotId.',
   SNAPSHOT_NOT_FOUND: 'The requested local snapshot does not exist.',
   SNAPSHOT_MODE_MISMATCH:
@@ -15,7 +17,7 @@ const messages: Record<ErrorCode, string> = {
   PROVIDER_NOT_CONFIGURED:
     'The selected live provider is not configured on the server.',
   PROVIDER_CONTRACT_UNVERIFIED:
-    'AirNow hourly request/response details require verified official specifications before live access can be enabled.',
+    'AirNow request/response details require verified official specifications before live access can be enabled.',
   UPSTREAM_RATE_LIMITED: 'The provider is rate-limiting requests; retry later.',
   UPSTREAM_SERVER_ERROR: 'The provider returned a server error.',
   UPSTREAM_REJECTED:

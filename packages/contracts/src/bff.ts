@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { areaProductCapabilitySchema } from './area-products.js';
 import {
   bboxSchema,
   coordinateSchema,
@@ -232,6 +233,7 @@ export const errorCodeSchema = z.enum([
   'ROUTE_NOT_FOUND',
   'INVALID_REQUEST',
   'STATION_NOT_FOUND',
+  'PRODUCT_HISTORY_UNAVAILABLE',
   'SNAPSHOT_REQUIRED',
   'SNAPSHOT_NOT_FOUND',
   'SNAPSHOT_MODE_MISMATCH',
@@ -401,18 +403,21 @@ export const regionsResponseSchema = z.strictObject({
 });
 export const productsResponseSchema = z.strictObject({
   data: z.array(
-    z.strictObject({
-      id: z.literal('monitoring-stations'),
-      product: z.literal('observation'),
-      pollutants: z.array(pollutantSchema),
-      measurementTypes: z.array(measurementTypeSchema),
-      modes: z.strictObject({
-        sample: z.literal('available'),
-        historical: z.literal('identified-curated-snapshot-required'),
-        live: z.literal('provider-contract-unverified'),
+    z.union([
+      z.strictObject({
+        id: z.literal('monitoring-stations'),
+        product: z.literal('observation'),
+        pollutants: z.array(pollutantSchema),
+        measurementTypes: z.array(measurementTypeSchema),
+        modes: z.strictObject({
+          sample: z.literal('available'),
+          historical: z.literal('identified-curated-snapshot-required'),
+          live: z.literal('provider-contract-unverified'),
+        }),
+        maxWindowHours: z.literal(72),
       }),
-      maxWindowHours: z.literal(72),
-    }),
+      areaProductCapabilitySchema,
+    ]),
   ),
 });
 export const dataSourceSchema = z.strictObject({
