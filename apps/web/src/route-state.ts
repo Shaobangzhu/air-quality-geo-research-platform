@@ -1,4 +1,5 @@
 import {
+  analysisWindowSchema,
   dataModeSchema,
   measurementTypeSchema,
   pollutantSchema,
@@ -42,7 +43,18 @@ export function parseRoute(search: string) {
   const one = (name: string) =>
     params.getAll(name).length === 1 ? params.get(name) : undefined;
   const mode = dataModeSchema.safeParse(one('mode')).data ?? 'sample';
+  const station = stationIdSchema.safeParse(
+    params.has('stationId') ? one('stationId') : one('station'),
+  ).data;
+  const compare =
+    z.array(stationIdSchema).max(2).safeParse(one('compare')?.split(','))
+      .data ?? [];
   return {
+    windowHours:
+      analysisWindowSchema.safeParse(Number(one('windowHours'))).data ?? 24,
+    compare: station
+      ? [...new Set(compare)].filter((id) => id !== station).sort()
+      : [],
     region: regionIdSchema.safeParse(one('region')).data ?? 'greater-la',
     pollutant: pollutantSchema.safeParse(one('pollutant')).data ?? 'PM2.5',
     product: 'monitoring-stations' as const,
@@ -50,9 +62,7 @@ export function parseRoute(search: string) {
     measurementType:
       measurementTypeSchema.safeParse(one('measurementType')).data ??
       'concentration',
-    station: stationIdSchema.safeParse(
-      params.has('stationId') ? one('stationId') : one('station'),
-    ).data,
+    station,
     snapshotId:
       mode === 'historical'
         ? z.uuid().safeParse(one('snapshotId')).data
@@ -73,6 +83,10 @@ export function routeSearch(state: RouteState) {
     measurementType: state.measurementType,
   });
   if (state.station) params.set('stationId', state.station);
+  if (state.windowHours !== 24)
+    params.set('windowHours', String(state.windowHours));
+  if (state.station && state.compare.length)
+    params.set('compare', state.compare.join(','));
   if (state.snapshotId && state.mode === 'historical')
     params.set('snapshotId', state.snapshotId);
   return `?${params}`;
@@ -85,7 +99,7 @@ export const modeNames = {
 } as const;
 
 export function analysisHref(state: RouteState, stationId: string) {
-  return `/analysis${routeSearch({ ...state, station: stationIdSchema.parse(stationId) })}`;
+  return `/analysis${routeSearch({ ...state, compare: [], station: stationIdSchema.parse(stationId) })}`;
 }
 export const modeDescriptions = {
   sample: 'Synthetic sample',

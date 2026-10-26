@@ -2,7 +2,7 @@
 
 **Interdisciplinary Research & Software Engineering Workbench — v1**
 
-A local-first TypeScript research/interview PoC. Milestone 05 links engineering region presets, pollutant filters and recoverable station selection to supplied readings in the persistent ArcGIS Map Explorer, with independent AQI/concentration legends, source-aware details and an Analyze handoff. Sample sites and values are explicitly synthetic; live AirNow access remains contract-unverified. Analysis, wildfire and methodology pages are truthful placeholders. This is not a regulatory or emergency-response tool.
+A local-first TypeScript research/interview PoC. Milestone 06 adds bounded 24/48/72-hour Analysis charts for up to three compatible monitoring identities, preserving sparse records, gaps, source status and UTC/DST semantics. Map Explorer retains engineering presets, station readings and its Analyze handoff. Sample sites and values are explicitly synthetic; live AirNow access remains contract-unverified. Wildfire and methodology pages remain truthful placeholders. This is not a regulatory or emergency-response tool.
 
 ## Run locally
 
@@ -18,7 +18,7 @@ Open [Map Explorer](http://127.0.0.1:5173/map). API health: [localhost:3001/api/
 | Route       | Current behavior                                                                              |
 | ----------- | --------------------------------------------------------------------------------------------- |
 | `/map`      | ArcGIS station readings, metric/filter controls, legend, source-aware drawer and Analyze link |
-| `/analysis` | Validated station context and planned chart placeholder                                       |
+| `/analysis` | Up to three compatible station series, gap-aware chart, source summary and Data handoff       |
 | `/wildfire` | Planned Wildfire Case Study placeholder                                                       |
 | `/data`     | Planned Data & Methodology placeholder                                                        |
 
@@ -56,7 +56,7 @@ Real `.env` files and DB exports are ignored. Keep `AIRNOW_API_KEY`, `AQS_EMAIL`
 
 `apps/web` → React shell; `apps/api` → Express/config/DB status; `packages/contracts` → browser/Node schemas; `fixtures/synthetic` → fictional examples; `fixtures/historical` → empty official-snapshot reservation; `db/migrations` → SQL; `scripts` → DB tools; `tests` → unit/integration/e2e; `.github/workflows/ci.yml` → quality gate with an isolated ephemeral PostgreSQL service.
 
-Read [architecture](docs/architecture/decisions.md), [provider verification matrix](docs/data-sources/provider-capabilities.md), [scientific semantics](docs/research/data-semantics.md) and [milestone verification](docs/milestones/01-foundation.md). The numbered prompt library is preserved. Prompts 01–05 are implemented with the documented live-contract limitation. Read [BFF endpoints/contracts](docs/architecture/provider-bff.md), [data modes/imports](docs/architecture/data-modes.md), [usage definitions](docs/architecture/api-usage.md), [AirNow evidence](docs/data-sources/airnow-live-verification.md) and the [Prompt 02 report](docs/milestones/02-provider-bff.md). Read the [Prompt 03 report](docs/milestones/03-arcgis-shell.md) for SDK/browser validation. Read the [Prompt 04 report](docs/milestones/04-station-observations.md) for station selection/provenance checks. Read the [Prompt 05 report](docs/milestones/05-linked-interaction.md) and [map interaction contract](docs/frontend/map-interactions.md) for region/filter/deep-link behavior. Later milestones cover time series, reporting areas, wildfire context and export. AI/RAG and cloud hosting are outside Core V1. **GitHub Actions is configured, not verified remotely.**
+Read [architecture](docs/architecture/decisions.md), [provider verification matrix](docs/data-sources/provider-capabilities.md), [scientific semantics](docs/research/data-semantics.md) and [milestone verification](docs/milestones/01-foundation.md). The numbered prompt library is preserved. Prompts 01–06 are implemented with the documented live-contract limitation. Read [BFF endpoints/contracts](docs/architecture/provider-bff.md), [data modes/imports](docs/architecture/data-modes.md), [usage definitions](docs/architecture/api-usage.md), [AirNow evidence](docs/data-sources/airnow-live-verification.md) and the [Prompt 02 report](docs/milestones/02-provider-bff.md). Read the [Prompt 03 report](docs/milestones/03-arcgis-shell.md) for SDK/browser validation. Read the [Prompt 04 report](docs/milestones/04-station-observations.md) for station selection/provenance checks. Read the [Prompt 05 report](docs/milestones/05-linked-interaction.md) and [map interaction contract](docs/frontend/map-interactions.md) for region/filter/deep-link behavior. Read the [Prompt 06 report](docs/milestones/06-analysis-time-series.md) and [Analysis contract](docs/frontend/analysis-series.md). Later milestones cover reporting areas, wildfire context and export. AI/RAG and cloud hosting are outside Core V1. **GitHub Actions is configured, not verified remotely.**
 
 ## Troubleshooting
 

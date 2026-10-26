@@ -6,6 +6,7 @@ import {
   measurementTypeSchema,
   pollutantSchema,
   regionIdSchema,
+  stationIdSchema,
   selectStudyRegion,
   utcTimestampSchema,
 } from '@aq/contracts';
@@ -94,3 +95,27 @@ export type ProviderQuery = {
   pollutant: z.infer<typeof pollutantSchema>;
   measurementType: 'aqi' | 'concentration';
 };
+
+export const analysisQuerySchema = z.strictObject({
+  region: stationQuerySchema.shape.region,
+  pollutant: stationQuerySchema.shape.pollutant,
+  measurementType: stationQuerySchema.shape.measurementType,
+  mode: stationQuerySchema.shape.mode,
+  windowHours: z
+    .enum(['24', '48', '72'])
+    .default('24')
+    .transform((value) => Number(value) as 24 | 48 | 72),
+  endAt: stationQuerySchema.shape.endAt,
+  snapshotId: stationQuerySchema.shape.snapshotId,
+  stationIds: z
+    .string()
+    .transform((value) => value.split(','))
+    .pipe(
+      z
+        .array(stationIdSchema)
+        .min(1)
+        .max(3)
+        .refine((ids) => new Set(ids).size === ids.length),
+    )
+    .optional(),
+});

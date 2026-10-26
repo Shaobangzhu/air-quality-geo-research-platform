@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, expect, it } from 'vitest';
+import { afterAll, beforeAll, expect, it, vi } from 'vitest';
 import { createDatabase } from '../../apps/api/src/database.js';
 import { readConfig } from '../../apps/api/src/config.js';
 import { migrate } from '../../scripts/migrations.js';
@@ -7,7 +7,7 @@ import {
   importRowSchema,
   normalizeImport,
 } from '../../apps/api/src/bff/normalize.js';
-import { manifest } from '../helpers/bff.js';
+import { harness, manifest } from '../helpers/bff.js';
 
 const config = readConfig();
 const database = createDatabase(config);
@@ -85,4 +85,50 @@ it('persists literal SQL-shaped IDs safely and preserves distinct averaging peri
       )
     ).rows[0].count,
   ).toBe(1);
+});
+
+it('builds 72-hour Analysis gaps from an indexed bounded PostgreSQL snapshot without per-point reads', async () => {
+  const store = new PgSnapshots(database.pool);
+  const batch = normalizeImport(manifest());
+  const id = await store.save(batch);
+  const source = { load: vi.fn(async () => store.load(id)) };
+  const h = harness({ sample: source });
+  const ids = batch.stations
+    .filter((station) => station.identity.parameterId === 'PM2.5')
+    .map((station) => station.id);
+  const result = await h.service.analysis({
+    mode: 'sample',
+    windowHours: '72',
+    stationIds: ids.join(','),
+  });
+  expect(result.series).toHaveLength(3);
+  expect(
+    result.series.every(
+      (series) =>
+        series.slots.length === 72 &&
+        series.summary!.outsideCoverageCount === 48,
+    ),
+  ).toBe(true);
+  expect(
+    result.series
+      .flatMap((series) => series.records)
+      .some((row) => row.measurement.value === 0),
+  ).toBe(true);
+  expect(result.acquisition.origin).toBe('synthetic');
+  await h.service.analysis({
+    mode: 'sample',
+    windowHours: '72',
+    stationIds: ids[0],
+  });
+  expect(source.load).toHaveBeenCalledOnce();
+  const indexes = await database.pool!.query<{ indexname: string }>(
+    'SELECT indexname FROM pg_indexes WHERE schemaname = $1 AND tablename = $2',
+    ['aq_workbench', 'observations'],
+  );
+  expect(indexes.rows.map((row) => row.indexname)).toEqual(
+    expect.arrayContaining(['observations_pkey', 'observations_station_time']),
+  );
+  expect(
+    h.usage.summary().providers.every((provider) => provider.requests === 0),
+  ).toBe(true);
 });

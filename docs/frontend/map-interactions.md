@@ -40,7 +40,7 @@ A legacy `station` parameter still parses when `stationId` is absent. Duplicate/
 
 Region, pollutant and metric changes retain the candidate station ID while loading. The drawer and symbols clear immediately with old-context data. When the active response arrives, an exactly matching identity reopens; an absent identity is cleared from the URL with a non-alarming status message. A different monitor or pollutant-specific parameter identity is never substituted based only on name or coordinates. Errors retain the pending URL identity because a failed request cannot prove deletion. Mode changes explicitly clear selection and historical snapshot context. Reload restores a valid map deep link; Back/Forward replay validated state.
 
-All route patches merge against the latest synchronous location reference. This prevents a selection-cleanup callback from restoring an old pollutant/region during rapid updates. Native links preserve modified-click/new-tab behavior. Analyze This Station carries the exact validated station, region, pollutant, mode, metric and applicable historical snapshot into `/analysis`; that page remains a planned chart module.
+All route patches merge against the latest synchronous location reference. This prevents a selection-cleanup callback from restoring an old pollutant/region during rapid updates. Native links preserve modified-click/new-tab behavior. Analyze This Station carries the exact validated station, region, pollutant, mode, metric and applicable historical snapshot into `/analysis`; milestone 06 implements that chart module with bounded monitoring-site series.
 
 ## Interaction state machine
 

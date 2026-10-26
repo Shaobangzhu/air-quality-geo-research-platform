@@ -6,6 +6,8 @@ import { useStations } from './use-stations.js';
 import { Icon } from './components/Icon.js';
 import { ModeBadge } from './components/ModeBadge.js';
 import { MapExplorer } from './map/MapExplorer.js';
+import { Analysis } from './analysis/Analysis.js';
+import { useAnalysis } from './analysis/use-analysis.js';
 export { pages } from './route-state.js';
 
 export function App() {
@@ -15,7 +17,8 @@ export function App() {
   }));
   const locationRef = useRef(location);
   locationRef.current = location;
-  const data = useStations(location.route);
+  const data = useStations(location.route, location.path !== '/analysis');
+  const analysis = useAnalysis(location.route, location.path === '/analysis');
   const page = pages.find((item) => item.path === location.path);
   const main = useRef<HTMLElement>(null);
   useEffect(() => {
@@ -63,7 +66,10 @@ export function App() {
     )
       return;
     event.preventDefault();
-    const next = { ...locationRef.current, path };
+    const next = {
+      path,
+      route: parseRoute(new URL(event.currentTarget.href).search),
+    };
     locationRef.current = next;
     window.history.pushState({}, '', `${path}${routeSearch(next.route)}`);
     setLocation(next);
@@ -103,7 +109,10 @@ export function App() {
             </a>
           ))}
         </nav>
-        <ModeBadge data={data} mode={location.route.mode} />
+        <ModeBadge
+          data={location.path === '/analysis' ? analysis : data}
+          mode={location.route.mode}
+        />
       </header>
       <main id="main" ref={main} tabIndex={-1}>
         {location.path === '/map' ? (
@@ -113,6 +122,13 @@ export function App() {
             change={change}
             analyze={(event) => navigate(event, '/analysis')}
           />
+        ) : location.path === '/analysis' ? (
+          <Analysis
+            route={location.route}
+            data={analysis}
+            change={change}
+            navigate={navigate}
+          />
         ) : (
           <section className="placeholder-page">
             <p className="eyebrow">RESEARCH WORKBENCH · PLANNED MODULE</p>
@@ -121,20 +137,6 @@ export function App() {
             <p>
               {page?.description ?? 'Choose one of the four workbench pages.'}
             </p>
-            {location.path === '/analysis' && location.route.station && (
-              <p className="analysis-selection" role="status">
-                Selected monitor:{' '}
-                {data.status === 'ready'
-                  ? (data.result.data.find(
-                      (reading) =>
-                        reading.station.id === location.route.station,
-                    )?.station.name ?? 'Not present in this selection')
-                  : 'Availability not confirmed'}
-                <br />
-                {location.route.pollutant} · {location.route.mode} ·{' '}
-                {location.route.station}
-              </p>
-            )}
             <div className="placeholder-message">
               <h2>
                 {page ? 'This workspace is planned' : 'Return to the workbench'}

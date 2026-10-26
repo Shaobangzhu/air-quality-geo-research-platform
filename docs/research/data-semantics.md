@@ -8,7 +8,7 @@ AQI is an index, not concentration. `measurement.kind` separates `aqi` (unit AQI
 
 Site IDs are strings with leading zeroes preserved. A reporting area is not a monitoring site; its representative coordinate does not identify an instrument. Observations, forecasts and contours remain separate. Later raw-to-normalized transformations require explicit documentation.
 
-The WGS84 (EPSG:4326) box is west −119.05, south 33.35, east −116.70, north 34.60. It is an engineering study extent, not an air-basin boundary. Ordered bboxes do not support antimeridian crossing in V1; region selection accepts only Greater LA.
+The WGS84 (EPSG:4326) box is west −119.05, south 33.35, east −116.70, north 34.60. It is an engineering study extent, not an air-basin boundary. Ordered bboxes do not support antimeridian crossing in V1; three documented engineering presets remain within Greater LA.
 
 ## Quality, provenance and modes
 
@@ -31,3 +31,5 @@ AirNow's [AQI overview](https://docs.airnowapi.org/aq101) distinguishes real-tim
 Official contours are provider products. Label any later interpolated surface derived and retain its method/inputs. Neither a contour nor a nearby site establishes exact exposure at an arbitrary coordinate.
 
 [CAL FIRE historical perimeters](https://www.fire.ca.gov/what-we-do/fire-resource-assessment-program/fire-perimeters) have missing fires and attribute/geometry errors; absence of a polygon is not proof of no fire. [FHSZ layers](https://osfm.fire.ca.gov/what-we-do/community-wildfire-preparedness-and-mitigation/%E2%80%8Cfire-hazard-severity-zones) provide longer-term hazard context. Preserve SRA/LRA designation/adoption context. Hazard zones are not current spread, current risk predictions or smoke exposure. Elevation is terrain context, not evidence of pollution causation. Case studies must disclose spatial/temporal alignment and cannot infer wildfire causation from coincident AQI alone.
+
+Milestone 06 documents [hourly slot, period alignment and missing-count semantics](../frontend/analysis-series.md). Slot generation does not create environmental observations, and unverified/mixed averaging or units block hourly comparison.

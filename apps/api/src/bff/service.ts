@@ -1,5 +1,6 @@
 import {
   datasetsResponseSchema,
+  analysisSeriesResponseSchema,
   GREATER_LA,
   STUDY_REGIONS,
   selectStudyRegion,
@@ -18,7 +19,13 @@ import { BffError } from './errors.js';
 import { canonical } from './normalize.js';
 import { SAMPLE_END } from './providers.js';
 import type { StationProvider } from './providers.js';
-import { datasetsQuerySchema, stationQuerySchema, validate } from './query.js';
+import {
+  analysisQuerySchema,
+  datasetsQuerySchema,
+  stationQuerySchema,
+  validate,
+} from './query.js';
+import { buildAnalysis } from './series.js';
 import type { StationQuery } from './query.js';
 import type { SnapshotStore } from './repository.js';
 import { Usage } from './usage.js';
@@ -110,7 +117,7 @@ export class BffService {
       });
     }
   }
-  private async load(raw: unknown) {
+  private async load(raw: unknown, partialHistoricalWindow = false) {
     const query = validate(stationQuerySchema, raw);
     const mode = query.mode ?? this.options.mode;
     if (mode === 'historical' && !query.snapshotId)
@@ -199,7 +206,9 @@ export class BffService {
       ).toISOString();
     if (
       mode === 'historical' &&
-      (Date.parse(effectiveFrom) < Date.parse(cached.batch.window.from) ||
+      ((!partialHistoricalWindow &&
+        Date.parse(effectiveFrom) < Date.parse(cached.batch.window.from)) ||
+        Date.parse(effectiveTo) <= Date.parse(cached.batch.window.from) ||
         Date.parse(effectiveTo) > Date.parse(cached.batch.window.to))
     )
       throw new BffError('UNSUPPORTED_RANGE', 400);
@@ -357,6 +366,23 @@ export class BffService {
       ),
       meta: this.meta(result, readings.length, result.allObservations),
     });
+  }
+  async analysis(raw: unknown) {
+    const { stationIds, ...query } = validate(analysisQuerySchema, raw);
+    const result = await this.load(
+      { ...query, windowHours: String(query.windowHours), limit: '256' },
+      true,
+    );
+    return analysisSeriesResponseSchema.parse(
+      buildAnalysis(
+        result.cached.batch,
+        result.observations,
+        result.allObservations,
+        this.meta(result, result.stations.length, result.observations),
+        stationIds,
+        query.windowHours,
+      ),
+    );
   }
   async observations(id: unknown, raw: unknown) {
     const stationId = validate(stationIdSchema, id);

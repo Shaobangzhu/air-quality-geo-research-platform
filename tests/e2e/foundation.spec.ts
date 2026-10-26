@@ -304,3 +304,101 @@ test('filters engineering presets, preserves or clears selection, and reloads th
   );
   expect(after.cache.hits).toBeGreaterThan(before.cache.hits);
 });
+
+test('Map → Analysis → 72-hour gap chart → Data preserves scientific context offline', async ({
+  page,
+  request,
+}, testInfo) => {
+  const calls: string[] = [];
+  const external: string[] = [];
+  page.on('request', (req) => {
+    const url = new URL(req.url());
+    if (url.pathname === '/api/analysis-series') calls.push(url.search);
+    if (!/^(127\.0\.0\.1|localhost)$/.test(url.hostname))
+      external.push(url.hostname);
+  });
+  await page.goto('/map?mode=sample&measurementType=concentration');
+  await page
+    .getByRole('button', {
+      name: /^Inspect SYNTHETIC SAMPLE Alpha co-located,/,
+    })
+    .click();
+  const primary = new URL(page.url()).searchParams.get('stationId');
+  await page.getByRole('link', { name: 'Analyze This Station' }).click();
+  await expect(page.getByLabel('Primary monitoring station')).toHaveValue(
+    primary!,
+  );
+  await expect(page.getByLabel('Inspect observation time')).toBeVisible();
+  await page.getByLabel('Observation window').selectOption('72');
+  await expect(
+    page.getByLabel('Inspect observation time').locator('option'),
+  ).toHaveCount(72);
+  await expect(page).toHaveURL(/windowHours=72/);
+  await expect(
+    page.getByLabel('Observation window').locator('option'),
+  ).toHaveCount(3);
+  await expect(
+    page.getByRole('region', { name: 'Analysis summary' }),
+  ).toContainText('48');
+  const curve = page.locator('.recharts-line-curve').first();
+  await expect(curve).toBeVisible();
+  const path = (await curve.getAttribute('d'))!;
+  expect((path.match(/M/g) ?? []).length).toBe(2); // a null interior hour produces two disconnected SVG segments
+  const before = calls.length;
+  await page.locator('.recharts-line-dots .recharts-dot').first().hover();
+  await expect(page.getByRole('tooltip')).toContainText('unknown');
+  await expect(page.getByRole('tooltip')).toContainText('µg/m³');
+  await page.locator('.recharts-line-dots .recharts-dot').first().click();
+  await expect(
+    page.getByRole('region', { name: 'Observation inspection' }),
+  ).toContainText('2026-01-15T17:00:00Z');
+  await page.getByLabel('Inspect observation time').selectOption('69'); // 18:00Z, explicit null
+  await expect(
+    page.getByRole('region', { name: 'Observation inspection' }),
+  ).toContainText('Missing value');
+  await page.getByRole('button', { name: 'Previous hour' }).click();
+  expect(calls.length).toBe(before);
+  const boxes = page.getByRole('checkbox');
+  for (let i = 0; i < 2; i++) {
+    const available = boxes.filter({ visible: true });
+    for (let j = 0; j < (await available.count()); j++) {
+      const box = available.nth(j);
+      if ((await box.isEnabled()) && !(await box.isChecked())) {
+        await box.check();
+        break;
+      }
+    }
+    await expect(page.locator('.series-legend li')).toHaveCount(i + 2);
+  }
+  await expect(page.getByLabel('Series legend')).toContainText('Dashed line');
+  await expect(page.getByLabel('Series legend')).toContainText('Dotted line');
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.screenshot({
+    path: testInfo.outputPath('analysis-three-stations-1440.png'),
+    fullPage: true,
+  });
+  await page.setViewportSize({ width: 390, height: 900 });
+  await expect
+    .poll(() =>
+      page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
+    )
+    .toBe(true);
+  await page.screenshot({
+    path: testInfo.outputPath('analysis-three-stations-390.png'),
+    fullPage: true,
+  });
+  const link = page.getByRole('link', { name: 'View Data & Methodology' });
+  const target = new URL((await link.getAttribute('href'))!, page.url());
+  expect(target.searchParams.get('stationId')).toBe(primary);
+  expect(target.searchParams.get('windowHours')).toBe('72');
+  expect(target.searchParams.get('compare')!.split(',')).toHaveLength(2);
+  await link.click();
+  await expect(page).toHaveURL(target.toString());
+  const usage = usageSummarySchema.parse(
+    await (await request.get('/api/usage/summary')).json(),
+  );
+  expect(usage.providers.every((provider) => provider.requests === 0)).toBe(
+    true,
+  );
+  expect(external).toEqual([]);
+});

@@ -8,16 +8,17 @@ The current production AirNow boundary is deliberately **contract-unverified**. 
 
 All public operations are GET. Region, product, dataset, station, observation, usage and error shapes have shared Zod schemas. Invalid inputs return a static, typed error without reflecting their values.
 
-| Route                            | Response / behavior                                                                                                         |
-| -------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| `/api/health`                    | API liveness, safe DB connectivity and configured-mode capability; no provider request                                      |
-| `/api/regions`                   | `regionsResponseSchema`; three frozen EPSG:4326 engineering study presets                                                   |
-| `/api/data-products`             | `productsResponseSchema`; station observations only, with explicit mode limitations                                         |
-| `/api/station-readings`          | `stationReadingsResponseSchema`; latest supplied revisions per metric for the map, reusing the existing bounded batch cache |
-| `/api/stations`                  | `stationsResponseSchema`; monitoring identities discovered in the selected observations                                     |
-| `/api/stations/:id/observations` | `observationsResponseSchema`; one station plus normalized observation revisions                                             |
-| `/api/datasets`                  | `datasetsResponseSchema`; local snapshot metadata, static source evidence levels and the synthetic fixture descriptor       |
-| `/api/usage/summary`             | `usageSummarySchema`; completed HTTP attempts and cache counters since process start                                        |
+| Route                            | Response / behavior                                                                                                            |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `/api/health`                    | API liveness, safe DB connectivity and configured-mode capability; no provider request                                         |
+| `/api/regions`                   | `regionsResponseSchema`; three frozen EPSG:4326 engineering study presets                                                      |
+| `/api/data-products`             | `productsResponseSchema`; station observations only, with explicit mode limitations                                            |
+| `/api/analysis-series`           | `analysisSeriesResponseSchema`; one bounded batch, at most three compatible series, explicit missing slots and source coverage |
+| `/api/station-readings`          | `stationReadingsResponseSchema`; latest supplied revisions per metric for the map, reusing the existing bounded batch cache    |
+| `/api/stations`                  | `stationsResponseSchema`; monitoring identities discovered in the selected observations                                        |
+| `/api/stations/:id/observations` | `observationsResponseSchema`; one station plus normalized observation revisions                                                |
+| `/api/datasets`                  | `datasetsResponseSchema`; local snapshot metadata, static source evidence levels and the synthetic fixture descriptor          |
+| `/api/usage/summary`             | `usageSummarySchema`; completed HTTP attempts and cache counters since process start                                           |
 
 Station queries accept only:
 
@@ -99,3 +100,5 @@ Usage semantics, including the precise cache denominator and HTTP latency defini
 `/api/station-readings` uses the same query schema/cache/repository as station discovery. It returns each available identity with all latest supplied revisions separately for AQI and concentration; ties retain different periods/conflicts. A missing latest value never selects an older non-null value. The requested metric controls the upstream query/cache key; a counterpart appears only if actually present in that batch. No second provider fetch or AQI computation is used to fill it. Response schema bounds/validates IDs, source/mode, coordinates and requested context. See [map semantics and provenance](../frontend/station-observations.md).
 
 Milestone 05 defines region bounds, canonical pollutant/provider code handling and linked selection in [Map interaction contract](../frontend/map-interactions.md). Snapshot/batch region identity remains `greater-la`; response metadata identifies the selected subpreset.
+
+Milestone 06 adds [Analysis series](../frontend/analysis-series.md). Its strict query accepts only 24/48/72-hour windows and up to three unique IDs, reusing acquisition/cache and bounded snapshot reads. Historical Analysis alone permits a partial window before acquired coverage; it never extends beyond the snapshot end or creates observations. Other station endpoints keep their full-window guard.

@@ -10,7 +10,7 @@ export type DataState =
   | { status: 'loading' }
   | { status: 'ready'; result: StationResult }
   | { status: 'error'; message: string };
-export function useStations(route: RouteState): DataState {
+export function useStations(route: RouteState, enabled = true): DataState {
   const query = new URLSearchParams({
     region: route.region,
     pollutant: route.pollutant,
@@ -24,6 +24,7 @@ export function useStations(route: RouteState): DataState {
     value: { status: 'loading' },
   });
   useEffect(() => {
+    if (!enabled) return;
     const controller = new AbortController();
     let active = true;
     const deadline = setTimeout(() => controller.abort(), 12000);
@@ -73,6 +74,7 @@ export function useStations(route: RouteState): DataState {
       clearTimeout(deadline);
     };
   }, [
+    enabled,
     key,
     route.mode,
     route.region,

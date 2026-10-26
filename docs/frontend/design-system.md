@@ -28,7 +28,7 @@ Small shared `Icon`, `ModeBadge` and `StationDrawer` components keep shell patte
 | Route         | Implemented responsibility                                                                                                                                                                                               |
 | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `/` or `/map` | Map Explorer: region/pollutant/product context, page-owned data mode/metric, geographic basemap/engineering extent, station observation layer, collapsible legend, keyboard identity list and conditional reading drawer |
-| `/analysis`   | Validated Analyze selection context; truthful planned chart placeholder                                                                                                                                                  |
+| `/analysis`   | Bounded 24/48/72-hour chart, compatible comparison, source summary and Data handoff                                                                                                                                      |
 | `/wildfire`   | Truthful planned-module placeholder; no fire layer, hazard claim or study results                                                                                                                                        |
 | `/data`       | Truthful planned-module placeholder; no export, source table or usage dashboard                                                                                                                                          |
 
@@ -62,3 +62,5 @@ Primary review targets are **1440×900 and 1280×900**. At these widths the head
 See [ArcGIS lifecycle and authentication](arcgis-map.md) and the [station milestone report](../milestones/04-station-observations.md).
 
 Milestone 05 enables the three engineering region presets, keeps unsupported products as disabled options, and reconciles pending station selection after the active filter result. See [Map interaction contract](map-interactions.md) for URL/history state and accessible interaction details.
+
+Milestone 06 implements the sole full chart page with a four-control Analysis toolbar, one lazily loaded SVG chart, a slim station/summary/comparison sidebar and contextual notes. See [Analysis series semantics](analysis-series.md) for URL/window/comparison and accessibility rules.

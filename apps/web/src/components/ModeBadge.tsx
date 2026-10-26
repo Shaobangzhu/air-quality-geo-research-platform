@@ -1,11 +1,14 @@
 import type { RouteState } from '../route-state.js';
-import type { DataState } from '../use-stations.js';
+import type { DataMode } from '@aq/contracts';
+type BadgeData =
+  | { status: 'loading' | 'error' }
+  | { status: 'ready'; result: { meta: { dataMode: DataMode } } };
 import { modeNames } from '../route-state.js';
 export function ModeBadge({
   data,
   mode,
 }: {
-  data: DataState;
+  data: BadgeData;
   mode: RouteState['mode'];
 }) {
   return (

@@ -26,7 +26,10 @@ beforeEach(() => {
       try {
         return {
           ok: true,
-          json: async () => await h.service.stationReadings(query),
+          json: async () =>
+            url.startsWith('/api/analysis-series')
+              ? await h.service.analysis(query)
+              : await h.service.stationReadings(query),
         };
       } catch {
         return { ok: false };
@@ -115,7 +118,9 @@ it('validates URL defaults, strips unsupported or duplicate fields and preserves
     'aria-current',
     'page',
   );
-  expect(screen.getByText('This workspace is planned')).toBeVisible();
+  expect(
+    await screen.findByRole('heading', { name: 'Observation Trends' }),
+  ).toBeVisible();
   expect(
     parseRoute('?mode=invalid&pollutant=O3&pollutant=PM10&station=bad')
       .pollutant,
@@ -250,10 +255,10 @@ it('shows independent readings, source statuses/times and an actionable validate
   fireEvent.click(link);
   expect(window.location.pathname).toBe('/analysis');
   expect(window.location.search).toContain('stationId=s_');
-  expect(screen.getByText(/Selected monitor:/)).toHaveTextContent(
+  expect(await screen.findByText(/Selected monitor:/)).toHaveTextContent(
     'SYNTHETIC SAMPLE',
   );
-  expect(fetch).toHaveBeenCalledTimes(initialRequests);
+  expect(fetch).toHaveBeenCalledTimes(initialRequests + 1);
 });
 it('updates the metric and synchronized legend without leaking concentration bins into AQI', async () => {
   render(<App />);
