@@ -2,7 +2,7 @@
 
 **Interdisciplinary Research & Software Engineering Workbench — v1**
 
-A local-first TypeScript research/interview PoC. Milestone 01 provides contracts, synthetic test fixtures, an Express health service, a React shell and guarded PostgreSQL migrations. No provider adapter, station map, chart or real air-quality result is implemented. This is not a regulatory or emergency-response tool.
+A local-first TypeScript research/interview PoC. Milestone 02 adds a typed, read-only station-observation BFF, bounded snapshot storage, explicit modes, memory caching and usage metrics to the foundation. Sample data works through the API; historical reads require a curated local snapshot. AirNow live access is explicitly contract-unverified. Station maps/charts and the supplied four-page UI designs remain for later milestones. This is not a regulatory or emergency-response tool.
 
 ## Run locally
 
@@ -22,25 +22,27 @@ Open [Map Explorer](http://127.0.0.1:5173/map). API health: [localhost:3001/api/
 | `/wildfire` | Wildfire Case Study shell |
 | `/data`     | Data & Methodology shell  |
 
-`/` shows Map Explorer; no separate home dashboard. Links work but modules are visibly planned. `DATA_MODE=sample` means synthetic mode, not live with fallback. Health reports data **unavailable** in every mode until a later milestone loads data. If the API fails, the UI reports unknown mode. DB connectivity is separate from air-quality availability.
+`/` shows Map Explorer; no separate home dashboard. Links work but modules are visibly planned. `DATA_MODE=sample` means synthetic mode, not live with fallback. Health reports synthetic sample API data available in sample mode; historical requires a selected snapshot and live remains contract-unverified. If the API fails, the UI reports unknown mode. DB connectivity is separate from air-quality availability.
 
 ## Commands
 
-| Command                 | Purpose                                                    |
-| ----------------------- | ---------------------------------------------------------- |
-| `npm run dev`           | Build/watch contracts, run API and Vite                    |
-| `npm run typecheck`     | Strict types for contracts, apps, scripts and tests        |
-| `npm run lint`          | ESLint + Prettier check                                    |
-| `npm test`              | Offline contract, API, migration-safety and React tests    |
-| `npm run build`         | Build shared ESM/types, API and web                        |
-| `npm run start:api`     | Start built API after build                                |
-| `npm run test:e2e`      | Start local app processes; Chromium smoke                  |
-| `npm run db:setup`      | Provision the authorized isolated PostgreSQL target once   |
-| `npm run test:db:local` | Run integration against the separate generated test target |
-| `npm run db:status`     | Redacted connectivity status; exit 1 if not connected      |
-| `npm run db:migrate`    | Apply pending checksummed migrations; no drops             |
-| `npm run test:db`       | Opt-in PostgreSQL repeatability test                       |
-| `npm run format`        | Format code and newly authored docs                        |
+| Command                                              | Purpose                                                    |
+| ---------------------------------------------------- | ---------------------------------------------------------- |
+| `npm run dev`                                        | Build/watch contracts, run API and Vite                    |
+| `npm run typecheck`                                  | Strict types for contracts, apps, scripts and tests        |
+| `npm run lint`                                       | ESLint + Prettier check                                    |
+| `npm test`                                           | Offline contract, API, migration-safety and React tests    |
+| `npm run build`                                      | Build shared ESM/types, API and web                        |
+| `npm run start:api`                                  | Start built API after build                                |
+| `npm run test:e2e`                                   | Start local app processes; Chromium smoke                  |
+| `npm run snapshots:import -- --file <manifest.json>` | Import a bounded, labeled local sample/official snapshot   |
+| `npm run provider:airnow:smoke`                      | Explicit opt-in verification gate; currently no live codec |
+| `npm run db:setup`                                   | Provision the authorized isolated PostgreSQL target once   |
+| `npm run test:db:local`                              | Run integration against the separate generated test target |
+| `npm run db:status`                                  | Redacted connectivity status; exit 1 if not connected      |
+| `npm run db:migrate`                                 | Apply pending checksummed migrations; no drops             |
+| `npm run test:db`                                    | Opt-in PostgreSQL repeatability test                       |
+| `npm run format`                                     | Format code and newly authored docs                        |
 
 For browser tests install Chromium once: `npx playwright install chromium` (Linux CI also uses `--with-deps`). A busy port fails explicitly; tests do not attach to existing servers. Browser tests override DB and mode configuration. Unit tests make no external provider calls; Supertest uses local sockets.
 
@@ -48,13 +50,13 @@ For browser tests install Chromium once: `npx playwright install chromium` (Linu
 
 The dedicated Docker target **`air-quality-geo-research-platform-postgresql`** is provisioned and healthy at `127.0.0.1:55436`, with its own network/volume and separate development/test databases. Local connection, repeat migrations and PostgreSQL integration tests have passed. The user explicitly authorized creating this target; `cpi-postgres` belongs to another project and was not used. All eight pre-existing containers retained their state/configuration. For fresh provisioning and lifecycle commands see [database setup](docs/architecture/database.md). Setup writes ignored `.env` files with generated credentials; preserve them when restarting the target.
 
-Real `.env` files and DB exports are ignored. Keep `AIRNOW_API_KEY`, `AQS_EMAIL`, `AQS_API_KEY` and future `OPENAI_API_KEY` on the server. Only a deliberately public, least-privilege, referrer-restricted ArcGIS credential may use `VITE_ARCGIS_API_KEY`; it is not consumed yet. Future provider live tests require `ALLOW_LIVE_API_TESTS=true`.
+Real `.env` files and DB exports are ignored. Keep `AIRNOW_API_KEY`, `AQS_EMAIL`, `AQS_API_KEY` and future `OPENAI_API_KEY` on the server. Only a deliberately public, least-privilege, referrer-restricted ArcGIS credential may use `VITE_ARCGIS_API_KEY`; it is not consumed yet. Provider smoke verification requires `ALLOW_LIVE_API_TESTS=true`; the current false flag was preserved. A flag/key cannot bypass the unverified wire-contract guard. No provider was called.
 
 ## Structure and next steps
 
 `apps/web` → React shell; `apps/api` → Express/config/DB status; `packages/contracts` → browser/Node schemas; `fixtures/synthetic` → fictional examples; `fixtures/historical` → empty official-snapshot reservation; `db/migrations` → SQL; `scripts` → DB tools; `tests` → unit/integration/e2e; `.github/workflows/ci.yml` → quality gate with an isolated ephemeral PostgreSQL service.
 
-Read [architecture](docs/architecture/decisions.md), [provider verification matrix](docs/data-sources/provider-capabilities.md), [scientific semantics](docs/research/data-semantics.md) and [milestone verification](docs/milestones/01-foundation.md). The numbered prompt library is preserved. Only Prompt 01 is implemented; later milestones cover provider BFF contracts, ArcGIS shell, stations, pollutant interaction, time series, reporting areas, wildfire context and provenance/export. AI/RAG and cloud hosting are outside Core V1. **GitHub Actions is configured, not verified remotely.**
+Read [architecture](docs/architecture/decisions.md), [provider verification matrix](docs/data-sources/provider-capabilities.md), [scientific semantics](docs/research/data-semantics.md) and [milestone verification](docs/milestones/01-foundation.md). The numbered prompt library is preserved. Prompts 01–02 are implemented with the documented live-contract limitation. Read [BFF endpoints/contracts](docs/architecture/provider-bff.md), [data modes/imports](docs/architecture/data-modes.md), [usage definitions](docs/architecture/api-usage.md), [AirNow evidence](docs/data-sources/airnow-live-verification.md) and the [Prompt 02 report](docs/milestones/02-provider-bff.md). Later milestones cover the ArcGIS shell, station/pollutant interaction, time series, reporting areas, wildfire context and export. AI/RAG and cloud hosting are outside Core V1. **GitHub Actions is configured, not verified remotely.**
 
 ## Troubleshooting
 
@@ -62,4 +64,7 @@ Read [architecture](docs/architecture/decisions.md), [provider verification matr
 - API unavailable: run both processes with `npm run dev`; check ports 3001 and 5173.
 - Missing contracts output: root scripts build contracts first; for direct workspace commands run `npm run build -w @aq/contracts` once.
 - DB/migration rejection: verify the user-managed service, isolated DB, role privileges and schema marker. Driver errors are redacted. Restore original applied migrations for checksum failures and add a new migration; do not reset data.
-- Missing screenshots: the four supplied Downloads PNG paths did not exist. This foundation does not depend on them; later UI work needs available references.
+- UI reference images have since been supplied under `Downloads/air_quality_research_platform/`; they are design context for later page work. Their sample values and service-status labels are not evidence of live data or provider availability.
+- Live 503 / `PROVIDER_CONTRACT_UNVERIFIED`: read the AirNow verification document. The public catalog verifies the retained route, but not its complete wire schema. No legacy SDK query was copied or enabled.
+- Historical mode: supply an official curated `snapshotId`. An imported synthetic snapshot cannot be selected as historical.
+- Snapshot capacity: the store stops new imports at 32 snapshots/512 identities; no data is automatically removed.

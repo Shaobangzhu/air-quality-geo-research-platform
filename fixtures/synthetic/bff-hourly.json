@@ -1,0 +1,2438 @@
+{
+  "format": "aq-workbench-import-v1",
+  "dataMode": "sample",
+  "sourceId": "synthetic-stations-v1",
+  "region": "greater-la",
+  "bbox": {
+    "west": -119.05,
+    "south": 33.35,
+    "east": -116.7,
+    "north": 34.6
+  },
+  "window": {
+    "from": "2026-01-14T21:00:00Z",
+    "to": "2026-01-15T21:00:00Z"
+  },
+  "fetchedAt": "2026-01-15T21:30:00Z",
+  "origin": "synthetic",
+  "label": "SYNTHETIC SAMPLE — fictional monitors and values; application import format, not AirNow wire data",
+  "sourceReference": "fixture:bff-hourly-v1",
+  "importMethod": "fixture",
+  "rows": [
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00001",
+        "monitorId": "00A",
+        "parameterId": "PM2.5"
+      },
+      "name": "SYNTHETIC SAMPLE Alpha",
+      "coordinate": {
+        "longitude": -118.25,
+        "latitude": 34.05
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T17:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T17:00:00Z",
+        "endsAt": "2026-01-15T18:00:00Z"
+      },
+      "measurement": {
+        "kind": "concentration",
+        "pollutant": "PM2.5",
+        "value": 0,
+        "unit": "µg/m³"
+      },
+      "raw": {
+        "value": 0,
+        "unit": "µg/m³",
+        "parameter": "PM2.5",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00001",
+        "monitorId": "00A",
+        "parameterId": "PM2.5"
+      },
+      "name": "SYNTHETIC SAMPLE Alpha",
+      "coordinate": {
+        "longitude": -118.25,
+        "latitude": 34.05
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T17:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T17:00:00Z",
+        "endsAt": "2026-01-15T18:00:00Z"
+      },
+      "measurement": {
+        "kind": "aqi",
+        "pollutant": "PM2.5",
+        "value": 20,
+        "unit": "AQI"
+      },
+      "raw": {
+        "value": 20,
+        "unit": "AQI",
+        "parameter": "PM2.5",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00001",
+        "monitorId": "00A",
+        "parameterId": "PM2.5"
+      },
+      "name": "SYNTHETIC SAMPLE Alpha",
+      "coordinate": {
+        "longitude": -118.25,
+        "latitude": 34.05
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T18:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T18:00:00Z",
+        "endsAt": "2026-01-15T19:00:00Z"
+      },
+      "measurement": {
+        "kind": "concentration",
+        "pollutant": "PM2.5",
+        "value": -0.2,
+        "unit": "µg/m³"
+      },
+      "raw": {
+        "value": -0.2,
+        "unit": "µg/m³",
+        "parameter": "PM2.5",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00001",
+        "monitorId": "00A",
+        "parameterId": "PM2.5"
+      },
+      "name": "SYNTHETIC SAMPLE Alpha",
+      "coordinate": {
+        "longitude": -118.25,
+        "latitude": 34.05
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T18:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T18:00:00Z",
+        "endsAt": "2026-01-15T19:00:00Z"
+      },
+      "measurement": {
+        "kind": "aqi",
+        "pollutant": "PM2.5",
+        "value": 25,
+        "unit": "AQI"
+      },
+      "raw": {
+        "value": 25,
+        "unit": "AQI",
+        "parameter": "PM2.5",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00001",
+        "monitorId": "00A",
+        "parameterId": "PM2.5"
+      },
+      "name": "SYNTHETIC SAMPLE Alpha",
+      "coordinate": {
+        "longitude": -118.25,
+        "latitude": 34.05
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T19:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T19:00:00Z",
+        "endsAt": "2026-01-15T20:00:00Z"
+      },
+      "measurement": {
+        "kind": "concentration",
+        "pollutant": "PM2.5",
+        "value": 12.4,
+        "unit": "µg/m³"
+      },
+      "raw": {
+        "value": 12.4,
+        "unit": "µg/m³",
+        "parameter": "PM2.5",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00001",
+        "monitorId": "00A",
+        "parameterId": "PM2.5"
+      },
+      "name": "SYNTHETIC SAMPLE Alpha",
+      "coordinate": {
+        "longitude": -118.25,
+        "latitude": 34.05
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T19:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T19:00:00Z",
+        "endsAt": "2026-01-15T20:00:00Z"
+      },
+      "measurement": {
+        "kind": "aqi",
+        "pollutant": "PM2.5",
+        "value": 30,
+        "unit": "AQI"
+      },
+      "raw": {
+        "value": 30,
+        "unit": "AQI",
+        "parameter": "PM2.5",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00001",
+        "monitorId": "00A",
+        "parameterId": "PM2.5"
+      },
+      "name": "SYNTHETIC SAMPLE Alpha",
+      "coordinate": {
+        "longitude": -118.25,
+        "latitude": 34.05
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T20:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T20:00:00Z",
+        "endsAt": "2026-01-15T21:00:00Z"
+      },
+      "measurement": {
+        "kind": "concentration",
+        "pollutant": "PM2.5",
+        "value": 15.5,
+        "unit": "µg/m³"
+      },
+      "raw": {
+        "value": 15.5,
+        "unit": "µg/m³",
+        "parameter": "PM2.5",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00001",
+        "monitorId": "00A",
+        "parameterId": "PM2.5"
+      },
+      "name": "SYNTHETIC SAMPLE Alpha",
+      "coordinate": {
+        "longitude": -118.25,
+        "latitude": 34.05
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T20:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T20:00:00Z",
+        "endsAt": "2026-01-15T21:00:00Z"
+      },
+      "measurement": {
+        "kind": "aqi",
+        "pollutant": "PM2.5",
+        "value": 35,
+        "unit": "AQI"
+      },
+      "raw": {
+        "value": 35,
+        "unit": "AQI",
+        "parameter": "PM2.5",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00001",
+        "monitorId": "00A",
+        "parameterId": "O3"
+      },
+      "name": "SYNTHETIC SAMPLE Alpha",
+      "coordinate": {
+        "longitude": -118.25,
+        "latitude": 34.05
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T17:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T17:00:00Z",
+        "endsAt": "2026-01-15T18:00:00Z"
+      },
+      "measurement": {
+        "kind": "concentration",
+        "pollutant": "O3",
+        "value": 0,
+        "unit": "ppb"
+      },
+      "raw": {
+        "value": 0,
+        "unit": "ppb",
+        "parameter": "O3",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00001",
+        "monitorId": "00A",
+        "parameterId": "O3"
+      },
+      "name": "SYNTHETIC SAMPLE Alpha",
+      "coordinate": {
+        "longitude": -118.25,
+        "latitude": 34.05
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T17:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T17:00:00Z",
+        "endsAt": "2026-01-15T18:00:00Z"
+      },
+      "measurement": {
+        "kind": "aqi",
+        "pollutant": "O3",
+        "value": 20,
+        "unit": "AQI"
+      },
+      "raw": {
+        "value": 20,
+        "unit": "AQI",
+        "parameter": "O3",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00001",
+        "monitorId": "00A",
+        "parameterId": "O3"
+      },
+      "name": "SYNTHETIC SAMPLE Alpha",
+      "coordinate": {
+        "longitude": -118.25,
+        "latitude": 34.05
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T18:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T18:00:00Z",
+        "endsAt": "2026-01-15T19:00:00Z"
+      },
+      "measurement": {
+        "kind": "concentration",
+        "pollutant": "O3",
+        "value": -0.2,
+        "unit": "ppb"
+      },
+      "raw": {
+        "value": -0.2,
+        "unit": "ppb",
+        "parameter": "O3",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00001",
+        "monitorId": "00A",
+        "parameterId": "O3"
+      },
+      "name": "SYNTHETIC SAMPLE Alpha",
+      "coordinate": {
+        "longitude": -118.25,
+        "latitude": 34.05
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T18:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T18:00:00Z",
+        "endsAt": "2026-01-15T19:00:00Z"
+      },
+      "measurement": {
+        "kind": "aqi",
+        "pollutant": "O3",
+        "value": 25,
+        "unit": "AQI"
+      },
+      "raw": {
+        "value": 25,
+        "unit": "AQI",
+        "parameter": "O3",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00001",
+        "monitorId": "00A",
+        "parameterId": "O3"
+      },
+      "name": "SYNTHETIC SAMPLE Alpha",
+      "coordinate": {
+        "longitude": -118.25,
+        "latitude": 34.05
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T19:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T19:00:00Z",
+        "endsAt": "2026-01-15T20:00:00Z"
+      },
+      "measurement": {
+        "kind": "concentration",
+        "pollutant": "O3",
+        "value": 12.4,
+        "unit": "ppb"
+      },
+      "raw": {
+        "value": 12.4,
+        "unit": "ppb",
+        "parameter": "O3",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00001",
+        "monitorId": "00A",
+        "parameterId": "O3"
+      },
+      "name": "SYNTHETIC SAMPLE Alpha",
+      "coordinate": {
+        "longitude": -118.25,
+        "latitude": 34.05
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T19:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T19:00:00Z",
+        "endsAt": "2026-01-15T20:00:00Z"
+      },
+      "measurement": {
+        "kind": "aqi",
+        "pollutant": "O3",
+        "value": 30,
+        "unit": "AQI"
+      },
+      "raw": {
+        "value": 30,
+        "unit": "AQI",
+        "parameter": "O3",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00001",
+        "monitorId": "00A",
+        "parameterId": "O3"
+      },
+      "name": "SYNTHETIC SAMPLE Alpha",
+      "coordinate": {
+        "longitude": -118.25,
+        "latitude": 34.05
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T20:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T20:00:00Z",
+        "endsAt": "2026-01-15T21:00:00Z"
+      },
+      "measurement": {
+        "kind": "concentration",
+        "pollutant": "O3",
+        "value": 15.5,
+        "unit": "ppb"
+      },
+      "raw": {
+        "value": 15.5,
+        "unit": "ppb",
+        "parameter": "O3",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00001",
+        "monitorId": "00A",
+        "parameterId": "O3"
+      },
+      "name": "SYNTHETIC SAMPLE Alpha",
+      "coordinate": {
+        "longitude": -118.25,
+        "latitude": 34.05
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T20:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T20:00:00Z",
+        "endsAt": "2026-01-15T21:00:00Z"
+      },
+      "measurement": {
+        "kind": "aqi",
+        "pollutant": "O3",
+        "value": 35,
+        "unit": "AQI"
+      },
+      "raw": {
+        "value": 35,
+        "unit": "AQI",
+        "parameter": "O3",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00001",
+        "monitorId": "00A",
+        "parameterId": "PM10"
+      },
+      "name": "SYNTHETIC SAMPLE Alpha",
+      "coordinate": {
+        "longitude": -118.25,
+        "latitude": 34.05
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T17:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T17:00:00Z",
+        "endsAt": "2026-01-15T18:00:00Z"
+      },
+      "measurement": {
+        "kind": "concentration",
+        "pollutant": "PM10",
+        "value": 0,
+        "unit": "µg/m³"
+      },
+      "raw": {
+        "value": 0,
+        "unit": "µg/m³",
+        "parameter": "PM10",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00001",
+        "monitorId": "00A",
+        "parameterId": "PM10"
+      },
+      "name": "SYNTHETIC SAMPLE Alpha",
+      "coordinate": {
+        "longitude": -118.25,
+        "latitude": 34.05
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T17:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T17:00:00Z",
+        "endsAt": "2026-01-15T18:00:00Z"
+      },
+      "measurement": {
+        "kind": "aqi",
+        "pollutant": "PM10",
+        "value": 20,
+        "unit": "AQI"
+      },
+      "raw": {
+        "value": 20,
+        "unit": "AQI",
+        "parameter": "PM10",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00001",
+        "monitorId": "00A",
+        "parameterId": "PM10"
+      },
+      "name": "SYNTHETIC SAMPLE Alpha",
+      "coordinate": {
+        "longitude": -118.25,
+        "latitude": 34.05
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T18:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T18:00:00Z",
+        "endsAt": "2026-01-15T19:00:00Z"
+      },
+      "measurement": {
+        "kind": "concentration",
+        "pollutant": "PM10",
+        "value": -0.2,
+        "unit": "µg/m³"
+      },
+      "raw": {
+        "value": -0.2,
+        "unit": "µg/m³",
+        "parameter": "PM10",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00001",
+        "monitorId": "00A",
+        "parameterId": "PM10"
+      },
+      "name": "SYNTHETIC SAMPLE Alpha",
+      "coordinate": {
+        "longitude": -118.25,
+        "latitude": 34.05
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T18:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T18:00:00Z",
+        "endsAt": "2026-01-15T19:00:00Z"
+      },
+      "measurement": {
+        "kind": "aqi",
+        "pollutant": "PM10",
+        "value": 25,
+        "unit": "AQI"
+      },
+      "raw": {
+        "value": 25,
+        "unit": "AQI",
+        "parameter": "PM10",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00001",
+        "monitorId": "00A",
+        "parameterId": "PM10"
+      },
+      "name": "SYNTHETIC SAMPLE Alpha",
+      "coordinate": {
+        "longitude": -118.25,
+        "latitude": 34.05
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T19:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T19:00:00Z",
+        "endsAt": "2026-01-15T20:00:00Z"
+      },
+      "measurement": {
+        "kind": "concentration",
+        "pollutant": "PM10",
+        "value": 12.4,
+        "unit": "µg/m³"
+      },
+      "raw": {
+        "value": 12.4,
+        "unit": "µg/m³",
+        "parameter": "PM10",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00001",
+        "monitorId": "00A",
+        "parameterId": "PM10"
+      },
+      "name": "SYNTHETIC SAMPLE Alpha",
+      "coordinate": {
+        "longitude": -118.25,
+        "latitude": 34.05
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T19:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T19:00:00Z",
+        "endsAt": "2026-01-15T20:00:00Z"
+      },
+      "measurement": {
+        "kind": "aqi",
+        "pollutant": "PM10",
+        "value": 30,
+        "unit": "AQI"
+      },
+      "raw": {
+        "value": 30,
+        "unit": "AQI",
+        "parameter": "PM10",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00001",
+        "monitorId": "00A",
+        "parameterId": "PM10"
+      },
+      "name": "SYNTHETIC SAMPLE Alpha",
+      "coordinate": {
+        "longitude": -118.25,
+        "latitude": 34.05
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T20:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T20:00:00Z",
+        "endsAt": "2026-01-15T21:00:00Z"
+      },
+      "measurement": {
+        "kind": "concentration",
+        "pollutant": "PM10",
+        "value": 15.5,
+        "unit": "µg/m³"
+      },
+      "raw": {
+        "value": 15.5,
+        "unit": "µg/m³",
+        "parameter": "PM10",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00001",
+        "monitorId": "00A",
+        "parameterId": "PM10"
+      },
+      "name": "SYNTHETIC SAMPLE Alpha",
+      "coordinate": {
+        "longitude": -118.25,
+        "latitude": 34.05
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T20:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T20:00:00Z",
+        "endsAt": "2026-01-15T21:00:00Z"
+      },
+      "measurement": {
+        "kind": "aqi",
+        "pollutant": "PM10",
+        "value": 35,
+        "unit": "AQI"
+      },
+      "raw": {
+        "value": 35,
+        "unit": "AQI",
+        "parameter": "PM10",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00001",
+        "monitorId": "00B",
+        "parameterId": "PM2.5"
+      },
+      "name": "SYNTHETIC SAMPLE Alpha co-located",
+      "coordinate": {
+        "longitude": -118.25,
+        "latitude": 34.05
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T17:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T17:00:00Z",
+        "endsAt": "2026-01-15T18:00:00Z"
+      },
+      "measurement": {
+        "kind": "concentration",
+        "pollutant": "PM2.5",
+        "value": 6.2,
+        "unit": "µg/m³"
+      },
+      "raw": {
+        "value": 6.2,
+        "unit": "µg/m³",
+        "parameter": "PM2.5",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00001",
+        "monitorId": "00B",
+        "parameterId": "PM2.5"
+      },
+      "name": "SYNTHETIC SAMPLE Alpha co-located",
+      "coordinate": {
+        "longitude": -118.25,
+        "latitude": 34.05
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T17:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T17:00:00Z",
+        "endsAt": "2026-01-15T18:00:00Z"
+      },
+      "measurement": {
+        "kind": "aqi",
+        "pollutant": "PM2.5",
+        "value": 20,
+        "unit": "AQI"
+      },
+      "raw": {
+        "value": 20,
+        "unit": "AQI",
+        "parameter": "PM2.5",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00001",
+        "monitorId": "00B",
+        "parameterId": "PM2.5"
+      },
+      "name": "SYNTHETIC SAMPLE Alpha co-located",
+      "coordinate": {
+        "longitude": -118.25,
+        "latitude": 34.05
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T18:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T18:00:00Z",
+        "endsAt": "2026-01-15T19:00:00Z"
+      },
+      "measurement": {
+        "kind": "concentration",
+        "pollutant": "PM2.5",
+        "value": null,
+        "unit": "µg/m³"
+      },
+      "raw": {
+        "value": null,
+        "unit": "µg/m³",
+        "parameter": "PM2.5",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00001",
+        "monitorId": "00B",
+        "parameterId": "PM2.5"
+      },
+      "name": "SYNTHETIC SAMPLE Alpha co-located",
+      "coordinate": {
+        "longitude": -118.25,
+        "latitude": 34.05
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T18:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T18:00:00Z",
+        "endsAt": "2026-01-15T19:00:00Z"
+      },
+      "measurement": {
+        "kind": "aqi",
+        "pollutant": "PM2.5",
+        "value": 25,
+        "unit": "AQI"
+      },
+      "raw": {
+        "value": 25,
+        "unit": "AQI",
+        "parameter": "PM2.5",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00001",
+        "monitorId": "00B",
+        "parameterId": "PM2.5"
+      },
+      "name": "SYNTHETIC SAMPLE Alpha co-located",
+      "coordinate": {
+        "longitude": -118.25,
+        "latitude": 34.05
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T19:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T19:00:00Z",
+        "endsAt": "2026-01-15T20:00:00Z"
+      },
+      "measurement": {
+        "kind": "concentration",
+        "pollutant": "PM2.5",
+        "value": 12.4,
+        "unit": "µg/m³"
+      },
+      "raw": {
+        "value": 12.4,
+        "unit": "µg/m³",
+        "parameter": "PM2.5",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00001",
+        "monitorId": "00B",
+        "parameterId": "PM2.5"
+      },
+      "name": "SYNTHETIC SAMPLE Alpha co-located",
+      "coordinate": {
+        "longitude": -118.25,
+        "latitude": 34.05
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T19:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T19:00:00Z",
+        "endsAt": "2026-01-15T20:00:00Z"
+      },
+      "measurement": {
+        "kind": "aqi",
+        "pollutant": "PM2.5",
+        "value": 30,
+        "unit": "AQI"
+      },
+      "raw": {
+        "value": 30,
+        "unit": "AQI",
+        "parameter": "PM2.5",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00001",
+        "monitorId": "00B",
+        "parameterId": "PM2.5"
+      },
+      "name": "SYNTHETIC SAMPLE Alpha co-located",
+      "coordinate": {
+        "longitude": -118.25,
+        "latitude": 34.05
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T20:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T20:00:00Z",
+        "endsAt": "2026-01-15T21:00:00Z"
+      },
+      "measurement": {
+        "kind": "concentration",
+        "pollutant": "PM2.5",
+        "value": 15.5,
+        "unit": "µg/m³"
+      },
+      "raw": {
+        "value": 15.5,
+        "unit": "µg/m³",
+        "parameter": "PM2.5",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00001",
+        "monitorId": "00B",
+        "parameterId": "PM2.5"
+      },
+      "name": "SYNTHETIC SAMPLE Alpha co-located",
+      "coordinate": {
+        "longitude": -118.25,
+        "latitude": 34.05
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T20:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T20:00:00Z",
+        "endsAt": "2026-01-15T21:00:00Z"
+      },
+      "measurement": {
+        "kind": "aqi",
+        "pollutant": "PM2.5",
+        "value": 35,
+        "unit": "AQI"
+      },
+      "raw": {
+        "value": 35,
+        "unit": "AQI",
+        "parameter": "PM2.5",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00001",
+        "monitorId": "00B",
+        "parameterId": "O3"
+      },
+      "name": "SYNTHETIC SAMPLE Alpha co-located",
+      "coordinate": {
+        "longitude": -118.25,
+        "latitude": 34.05
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T17:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T17:00:00Z",
+        "endsAt": "2026-01-15T18:00:00Z"
+      },
+      "measurement": {
+        "kind": "concentration",
+        "pollutant": "O3",
+        "value": 6.2,
+        "unit": "ppb"
+      },
+      "raw": {
+        "value": 6.2,
+        "unit": "ppb",
+        "parameter": "O3",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00001",
+        "monitorId": "00B",
+        "parameterId": "O3"
+      },
+      "name": "SYNTHETIC SAMPLE Alpha co-located",
+      "coordinate": {
+        "longitude": -118.25,
+        "latitude": 34.05
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T17:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T17:00:00Z",
+        "endsAt": "2026-01-15T18:00:00Z"
+      },
+      "measurement": {
+        "kind": "aqi",
+        "pollutant": "O3",
+        "value": 20,
+        "unit": "AQI"
+      },
+      "raw": {
+        "value": 20,
+        "unit": "AQI",
+        "parameter": "O3",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00001",
+        "monitorId": "00B",
+        "parameterId": "O3"
+      },
+      "name": "SYNTHETIC SAMPLE Alpha co-located",
+      "coordinate": {
+        "longitude": -118.25,
+        "latitude": 34.05
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T18:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T18:00:00Z",
+        "endsAt": "2026-01-15T19:00:00Z"
+      },
+      "measurement": {
+        "kind": "concentration",
+        "pollutant": "O3",
+        "value": null,
+        "unit": "ppb"
+      },
+      "raw": {
+        "value": null,
+        "unit": "ppb",
+        "parameter": "O3",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00001",
+        "monitorId": "00B",
+        "parameterId": "O3"
+      },
+      "name": "SYNTHETIC SAMPLE Alpha co-located",
+      "coordinate": {
+        "longitude": -118.25,
+        "latitude": 34.05
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T18:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T18:00:00Z",
+        "endsAt": "2026-01-15T19:00:00Z"
+      },
+      "measurement": {
+        "kind": "aqi",
+        "pollutant": "O3",
+        "value": 25,
+        "unit": "AQI"
+      },
+      "raw": {
+        "value": 25,
+        "unit": "AQI",
+        "parameter": "O3",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00001",
+        "monitorId": "00B",
+        "parameterId": "O3"
+      },
+      "name": "SYNTHETIC SAMPLE Alpha co-located",
+      "coordinate": {
+        "longitude": -118.25,
+        "latitude": 34.05
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T19:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T19:00:00Z",
+        "endsAt": "2026-01-15T20:00:00Z"
+      },
+      "measurement": {
+        "kind": "concentration",
+        "pollutant": "O3",
+        "value": 12.4,
+        "unit": "ppb"
+      },
+      "raw": {
+        "value": 12.4,
+        "unit": "ppb",
+        "parameter": "O3",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00001",
+        "monitorId": "00B",
+        "parameterId": "O3"
+      },
+      "name": "SYNTHETIC SAMPLE Alpha co-located",
+      "coordinate": {
+        "longitude": -118.25,
+        "latitude": 34.05
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T19:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T19:00:00Z",
+        "endsAt": "2026-01-15T20:00:00Z"
+      },
+      "measurement": {
+        "kind": "aqi",
+        "pollutant": "O3",
+        "value": 30,
+        "unit": "AQI"
+      },
+      "raw": {
+        "value": 30,
+        "unit": "AQI",
+        "parameter": "O3",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00001",
+        "monitorId": "00B",
+        "parameterId": "O3"
+      },
+      "name": "SYNTHETIC SAMPLE Alpha co-located",
+      "coordinate": {
+        "longitude": -118.25,
+        "latitude": 34.05
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T20:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T20:00:00Z",
+        "endsAt": "2026-01-15T21:00:00Z"
+      },
+      "measurement": {
+        "kind": "concentration",
+        "pollutant": "O3",
+        "value": 15.5,
+        "unit": "ppb"
+      },
+      "raw": {
+        "value": 15.5,
+        "unit": "ppb",
+        "parameter": "O3",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00001",
+        "monitorId": "00B",
+        "parameterId": "O3"
+      },
+      "name": "SYNTHETIC SAMPLE Alpha co-located",
+      "coordinate": {
+        "longitude": -118.25,
+        "latitude": 34.05
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T20:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T20:00:00Z",
+        "endsAt": "2026-01-15T21:00:00Z"
+      },
+      "measurement": {
+        "kind": "aqi",
+        "pollutant": "O3",
+        "value": 35,
+        "unit": "AQI"
+      },
+      "raw": {
+        "value": 35,
+        "unit": "AQI",
+        "parameter": "O3",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00001",
+        "monitorId": "00B",
+        "parameterId": "PM10"
+      },
+      "name": "SYNTHETIC SAMPLE Alpha co-located",
+      "coordinate": {
+        "longitude": -118.25,
+        "latitude": 34.05
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T17:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T17:00:00Z",
+        "endsAt": "2026-01-15T18:00:00Z"
+      },
+      "measurement": {
+        "kind": "concentration",
+        "pollutant": "PM10",
+        "value": 6.2,
+        "unit": "µg/m³"
+      },
+      "raw": {
+        "value": 6.2,
+        "unit": "µg/m³",
+        "parameter": "PM10",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00001",
+        "monitorId": "00B",
+        "parameterId": "PM10"
+      },
+      "name": "SYNTHETIC SAMPLE Alpha co-located",
+      "coordinate": {
+        "longitude": -118.25,
+        "latitude": 34.05
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T17:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T17:00:00Z",
+        "endsAt": "2026-01-15T18:00:00Z"
+      },
+      "measurement": {
+        "kind": "aqi",
+        "pollutant": "PM10",
+        "value": 20,
+        "unit": "AQI"
+      },
+      "raw": {
+        "value": 20,
+        "unit": "AQI",
+        "parameter": "PM10",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00001",
+        "monitorId": "00B",
+        "parameterId": "PM10"
+      },
+      "name": "SYNTHETIC SAMPLE Alpha co-located",
+      "coordinate": {
+        "longitude": -118.25,
+        "latitude": 34.05
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T18:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T18:00:00Z",
+        "endsAt": "2026-01-15T19:00:00Z"
+      },
+      "measurement": {
+        "kind": "concentration",
+        "pollutant": "PM10",
+        "value": null,
+        "unit": "µg/m³"
+      },
+      "raw": {
+        "value": null,
+        "unit": "µg/m³",
+        "parameter": "PM10",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00001",
+        "monitorId": "00B",
+        "parameterId": "PM10"
+      },
+      "name": "SYNTHETIC SAMPLE Alpha co-located",
+      "coordinate": {
+        "longitude": -118.25,
+        "latitude": 34.05
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T18:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T18:00:00Z",
+        "endsAt": "2026-01-15T19:00:00Z"
+      },
+      "measurement": {
+        "kind": "aqi",
+        "pollutant": "PM10",
+        "value": 25,
+        "unit": "AQI"
+      },
+      "raw": {
+        "value": 25,
+        "unit": "AQI",
+        "parameter": "PM10",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00001",
+        "monitorId": "00B",
+        "parameterId": "PM10"
+      },
+      "name": "SYNTHETIC SAMPLE Alpha co-located",
+      "coordinate": {
+        "longitude": -118.25,
+        "latitude": 34.05
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T19:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T19:00:00Z",
+        "endsAt": "2026-01-15T20:00:00Z"
+      },
+      "measurement": {
+        "kind": "concentration",
+        "pollutant": "PM10",
+        "value": 12.4,
+        "unit": "µg/m³"
+      },
+      "raw": {
+        "value": 12.4,
+        "unit": "µg/m³",
+        "parameter": "PM10",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00001",
+        "monitorId": "00B",
+        "parameterId": "PM10"
+      },
+      "name": "SYNTHETIC SAMPLE Alpha co-located",
+      "coordinate": {
+        "longitude": -118.25,
+        "latitude": 34.05
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T19:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T19:00:00Z",
+        "endsAt": "2026-01-15T20:00:00Z"
+      },
+      "measurement": {
+        "kind": "aqi",
+        "pollutant": "PM10",
+        "value": 30,
+        "unit": "AQI"
+      },
+      "raw": {
+        "value": 30,
+        "unit": "AQI",
+        "parameter": "PM10",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00001",
+        "monitorId": "00B",
+        "parameterId": "PM10"
+      },
+      "name": "SYNTHETIC SAMPLE Alpha co-located",
+      "coordinate": {
+        "longitude": -118.25,
+        "latitude": 34.05
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T20:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T20:00:00Z",
+        "endsAt": "2026-01-15T21:00:00Z"
+      },
+      "measurement": {
+        "kind": "concentration",
+        "pollutant": "PM10",
+        "value": 15.5,
+        "unit": "µg/m³"
+      },
+      "raw": {
+        "value": 15.5,
+        "unit": "µg/m³",
+        "parameter": "PM10",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00001",
+        "monitorId": "00B",
+        "parameterId": "PM10"
+      },
+      "name": "SYNTHETIC SAMPLE Alpha co-located",
+      "coordinate": {
+        "longitude": -118.25,
+        "latitude": 34.05
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T20:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T20:00:00Z",
+        "endsAt": "2026-01-15T21:00:00Z"
+      },
+      "measurement": {
+        "kind": "aqi",
+        "pollutant": "PM10",
+        "value": 35,
+        "unit": "AQI"
+      },
+      "raw": {
+        "value": 35,
+        "unit": "AQI",
+        "parameter": "PM10",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00B02",
+        "monitorId": "00A",
+        "parameterId": "PM2.5"
+      },
+      "name": "SYNTHETIC SAMPLE Beta",
+      "coordinate": {
+        "longitude": -117.9,
+        "latitude": 33.9
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T17:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T17:00:00Z",
+        "endsAt": "2026-01-15T18:00:00Z"
+      },
+      "measurement": {
+        "kind": "concentration",
+        "pollutant": "PM2.5",
+        "value": 6.2,
+        "unit": "µg/m³"
+      },
+      "raw": {
+        "value": 6.2,
+        "unit": "µg/m³",
+        "parameter": "PM2.5",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00B02",
+        "monitorId": "00A",
+        "parameterId": "PM2.5"
+      },
+      "name": "SYNTHETIC SAMPLE Beta",
+      "coordinate": {
+        "longitude": -117.9,
+        "latitude": 33.9
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T17:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T17:00:00Z",
+        "endsAt": "2026-01-15T18:00:00Z"
+      },
+      "measurement": {
+        "kind": "aqi",
+        "pollutant": "PM2.5",
+        "value": 20,
+        "unit": "AQI"
+      },
+      "raw": {
+        "value": 20,
+        "unit": "AQI",
+        "parameter": "PM2.5",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00B02",
+        "monitorId": "00A",
+        "parameterId": "PM2.5"
+      },
+      "name": "SYNTHETIC SAMPLE Beta",
+      "coordinate": {
+        "longitude": -117.9,
+        "latitude": 33.9
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T18:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T18:00:00Z",
+        "endsAt": "2026-01-15T19:00:00Z"
+      },
+      "measurement": {
+        "kind": "concentration",
+        "pollutant": "PM2.5",
+        "value": 9.3,
+        "unit": "µg/m³"
+      },
+      "raw": {
+        "value": 9.3,
+        "unit": "µg/m³",
+        "parameter": "PM2.5",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00B02",
+        "monitorId": "00A",
+        "parameterId": "PM2.5"
+      },
+      "name": "SYNTHETIC SAMPLE Beta",
+      "coordinate": {
+        "longitude": -117.9,
+        "latitude": 33.9
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T18:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T18:00:00Z",
+        "endsAt": "2026-01-15T19:00:00Z"
+      },
+      "measurement": {
+        "kind": "aqi",
+        "pollutant": "PM2.5",
+        "value": 25,
+        "unit": "AQI"
+      },
+      "raw": {
+        "value": 25,
+        "unit": "AQI",
+        "parameter": "PM2.5",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00B02",
+        "monitorId": "00A",
+        "parameterId": "PM2.5"
+      },
+      "name": "SYNTHETIC SAMPLE Beta",
+      "coordinate": {
+        "longitude": -117.9,
+        "latitude": 33.9
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T19:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T19:00:00Z",
+        "endsAt": "2026-01-15T20:00:00Z"
+      },
+      "measurement": {
+        "kind": "aqi",
+        "pollutant": "PM2.5",
+        "value": 30,
+        "unit": "AQI"
+      },
+      "raw": {
+        "value": 30,
+        "unit": "AQI",
+        "parameter": "PM2.5",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00B02",
+        "monitorId": "00A",
+        "parameterId": "PM2.5"
+      },
+      "name": "SYNTHETIC SAMPLE Beta",
+      "coordinate": {
+        "longitude": -117.9,
+        "latitude": 33.9
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T20:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T20:00:00Z",
+        "endsAt": "2026-01-15T21:00:00Z"
+      },
+      "measurement": {
+        "kind": "concentration",
+        "pollutant": "PM2.5",
+        "value": 15.5,
+        "unit": "µg/m³"
+      },
+      "raw": {
+        "value": 15.5,
+        "unit": "µg/m³",
+        "parameter": "PM2.5",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00B02",
+        "monitorId": "00A",
+        "parameterId": "PM2.5"
+      },
+      "name": "SYNTHETIC SAMPLE Beta",
+      "coordinate": {
+        "longitude": -117.9,
+        "latitude": 33.9
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T20:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T20:00:00Z",
+        "endsAt": "2026-01-15T21:00:00Z"
+      },
+      "measurement": {
+        "kind": "aqi",
+        "pollutant": "PM2.5",
+        "value": 35,
+        "unit": "AQI"
+      },
+      "raw": {
+        "value": 35,
+        "unit": "AQI",
+        "parameter": "PM2.5",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00B02",
+        "monitorId": "00A",
+        "parameterId": "O3"
+      },
+      "name": "SYNTHETIC SAMPLE Beta",
+      "coordinate": {
+        "longitude": -117.9,
+        "latitude": 33.9
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T17:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T17:00:00Z",
+        "endsAt": "2026-01-15T18:00:00Z"
+      },
+      "measurement": {
+        "kind": "concentration",
+        "pollutant": "O3",
+        "value": 6.2,
+        "unit": "ppb"
+      },
+      "raw": {
+        "value": 6.2,
+        "unit": "ppb",
+        "parameter": "O3",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00B02",
+        "monitorId": "00A",
+        "parameterId": "O3"
+      },
+      "name": "SYNTHETIC SAMPLE Beta",
+      "coordinate": {
+        "longitude": -117.9,
+        "latitude": 33.9
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T17:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T17:00:00Z",
+        "endsAt": "2026-01-15T18:00:00Z"
+      },
+      "measurement": {
+        "kind": "aqi",
+        "pollutant": "O3",
+        "value": 20,
+        "unit": "AQI"
+      },
+      "raw": {
+        "value": 20,
+        "unit": "AQI",
+        "parameter": "O3",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00B02",
+        "monitorId": "00A",
+        "parameterId": "O3"
+      },
+      "name": "SYNTHETIC SAMPLE Beta",
+      "coordinate": {
+        "longitude": -117.9,
+        "latitude": 33.9
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T18:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T18:00:00Z",
+        "endsAt": "2026-01-15T19:00:00Z"
+      },
+      "measurement": {
+        "kind": "concentration",
+        "pollutant": "O3",
+        "value": 9.3,
+        "unit": "ppb"
+      },
+      "raw": {
+        "value": 9.3,
+        "unit": "ppb",
+        "parameter": "O3",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00B02",
+        "monitorId": "00A",
+        "parameterId": "O3"
+      },
+      "name": "SYNTHETIC SAMPLE Beta",
+      "coordinate": {
+        "longitude": -117.9,
+        "latitude": 33.9
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T18:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T18:00:00Z",
+        "endsAt": "2026-01-15T19:00:00Z"
+      },
+      "measurement": {
+        "kind": "aqi",
+        "pollutant": "O3",
+        "value": 25,
+        "unit": "AQI"
+      },
+      "raw": {
+        "value": 25,
+        "unit": "AQI",
+        "parameter": "O3",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00B02",
+        "monitorId": "00A",
+        "parameterId": "O3"
+      },
+      "name": "SYNTHETIC SAMPLE Beta",
+      "coordinate": {
+        "longitude": -117.9,
+        "latitude": 33.9
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T19:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T19:00:00Z",
+        "endsAt": "2026-01-15T20:00:00Z"
+      },
+      "measurement": {
+        "kind": "aqi",
+        "pollutant": "O3",
+        "value": 30,
+        "unit": "AQI"
+      },
+      "raw": {
+        "value": 30,
+        "unit": "AQI",
+        "parameter": "O3",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00B02",
+        "monitorId": "00A",
+        "parameterId": "O3"
+      },
+      "name": "SYNTHETIC SAMPLE Beta",
+      "coordinate": {
+        "longitude": -117.9,
+        "latitude": 33.9
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T20:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T20:00:00Z",
+        "endsAt": "2026-01-15T21:00:00Z"
+      },
+      "measurement": {
+        "kind": "concentration",
+        "pollutant": "O3",
+        "value": 15.5,
+        "unit": "ppb"
+      },
+      "raw": {
+        "value": 15.5,
+        "unit": "ppb",
+        "parameter": "O3",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00B02",
+        "monitorId": "00A",
+        "parameterId": "O3"
+      },
+      "name": "SYNTHETIC SAMPLE Beta",
+      "coordinate": {
+        "longitude": -117.9,
+        "latitude": 33.9
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T20:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T20:00:00Z",
+        "endsAt": "2026-01-15T21:00:00Z"
+      },
+      "measurement": {
+        "kind": "aqi",
+        "pollutant": "O3",
+        "value": 35,
+        "unit": "AQI"
+      },
+      "raw": {
+        "value": 35,
+        "unit": "AQI",
+        "parameter": "O3",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00B02",
+        "monitorId": "00A",
+        "parameterId": "PM10"
+      },
+      "name": "SYNTHETIC SAMPLE Beta",
+      "coordinate": {
+        "longitude": -117.9,
+        "latitude": 33.9
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T17:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T17:00:00Z",
+        "endsAt": "2026-01-15T18:00:00Z"
+      },
+      "measurement": {
+        "kind": "concentration",
+        "pollutant": "PM10",
+        "value": 6.2,
+        "unit": "µg/m³"
+      },
+      "raw": {
+        "value": 6.2,
+        "unit": "µg/m³",
+        "parameter": "PM10",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00B02",
+        "monitorId": "00A",
+        "parameterId": "PM10"
+      },
+      "name": "SYNTHETIC SAMPLE Beta",
+      "coordinate": {
+        "longitude": -117.9,
+        "latitude": 33.9
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T17:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T17:00:00Z",
+        "endsAt": "2026-01-15T18:00:00Z"
+      },
+      "measurement": {
+        "kind": "aqi",
+        "pollutant": "PM10",
+        "value": 20,
+        "unit": "AQI"
+      },
+      "raw": {
+        "value": 20,
+        "unit": "AQI",
+        "parameter": "PM10",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00B02",
+        "monitorId": "00A",
+        "parameterId": "PM10"
+      },
+      "name": "SYNTHETIC SAMPLE Beta",
+      "coordinate": {
+        "longitude": -117.9,
+        "latitude": 33.9
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T18:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T18:00:00Z",
+        "endsAt": "2026-01-15T19:00:00Z"
+      },
+      "measurement": {
+        "kind": "concentration",
+        "pollutant": "PM10",
+        "value": 9.3,
+        "unit": "µg/m³"
+      },
+      "raw": {
+        "value": 9.3,
+        "unit": "µg/m³",
+        "parameter": "PM10",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00B02",
+        "monitorId": "00A",
+        "parameterId": "PM10"
+      },
+      "name": "SYNTHETIC SAMPLE Beta",
+      "coordinate": {
+        "longitude": -117.9,
+        "latitude": 33.9
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T18:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T18:00:00Z",
+        "endsAt": "2026-01-15T19:00:00Z"
+      },
+      "measurement": {
+        "kind": "aqi",
+        "pollutant": "PM10",
+        "value": 25,
+        "unit": "AQI"
+      },
+      "raw": {
+        "value": 25,
+        "unit": "AQI",
+        "parameter": "PM10",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00B02",
+        "monitorId": "00A",
+        "parameterId": "PM10"
+      },
+      "name": "SYNTHETIC SAMPLE Beta",
+      "coordinate": {
+        "longitude": -117.9,
+        "latitude": 33.9
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T19:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T19:00:00Z",
+        "endsAt": "2026-01-15T20:00:00Z"
+      },
+      "measurement": {
+        "kind": "aqi",
+        "pollutant": "PM10",
+        "value": 30,
+        "unit": "AQI"
+      },
+      "raw": {
+        "value": 30,
+        "unit": "AQI",
+        "parameter": "PM10",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00B02",
+        "monitorId": "00A",
+        "parameterId": "PM10"
+      },
+      "name": "SYNTHETIC SAMPLE Beta",
+      "coordinate": {
+        "longitude": -117.9,
+        "latitude": 33.9
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T20:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T20:00:00Z",
+        "endsAt": "2026-01-15T21:00:00Z"
+      },
+      "measurement": {
+        "kind": "concentration",
+        "pollutant": "PM10",
+        "value": 15.5,
+        "unit": "µg/m³"
+      },
+      "raw": {
+        "value": 15.5,
+        "unit": "µg/m³",
+        "parameter": "PM10",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    },
+    {
+      "identity": {
+        "provider": "synthetic",
+        "nativeSiteId": "SAMPLE-00B02",
+        "monitorId": "00A",
+        "parameterId": "PM10"
+      },
+      "name": "SYNTHETIC SAMPLE Beta",
+      "coordinate": {
+        "longitude": -117.9,
+        "latitude": 33.9
+      },
+      "sourceAgency": "Fictional Research Test Agency",
+      "observedAt": "2026-01-15T20:00:00Z",
+      "period": {
+        "meaning": "hourly",
+        "averagingDescription": "Synthetic one-hour example; no conversion or AQI calculation",
+        "sourceTimeZone": "UTC",
+        "startsAt": "2026-01-15T20:00:00Z",
+        "endsAt": "2026-01-15T21:00:00Z"
+      },
+      "measurement": {
+        "kind": "aqi",
+        "pollutant": "PM10",
+        "value": 35,
+        "unit": "AQI"
+      },
+      "raw": {
+        "value": 35,
+        "unit": "AQI",
+        "parameter": "PM10",
+        "qualifier": "SYNTHETIC SAMPLE only"
+      },
+      "dataStatus": "unknown"
+    }
+  ]
+}

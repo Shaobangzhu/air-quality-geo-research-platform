@@ -9,3 +9,5 @@
 7. **Deterministic verification.** Default tests need no provider credentials/DB. DB integration is separate and opt-in; CI provisions only its own ephemeral PostgreSQL. Local setup uses the user-authorized dedicated PostgreSQL 18 container on the existing Docker Engine; other containers remain untouched. Remote CI has not been run.
 
 The four PNG references were absent. This milestone builds a minimal responsive shell without claiming to match unseen designs. Existing prompt documents are unchanged.
+
+8. **Station BFF and bounded snapshots.** Milestone 02 adds a single mode-aware read service, shared public contracts, per-mode canonical cache keys, in-flight coalescing, explicit stale metadata, completed-attempt usage counters and a non-destructive snapshot migration. PostgreSQL writes are bounded/idempotent; no background mirror or pruning exists. The AirNow public catalog is insufficient to verify its full wire contract, so production live access remains explicitly unavailable. No external parameter/field guesses were used. See the provider BFF and verification documents.

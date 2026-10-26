@@ -55,7 +55,13 @@ describe('API health', () => {
       }),
     ).get('/api/not-a-provider');
     expect(response.status).toBe(404);
-    expect(response.body).toEqual({ error: 'not-found' });
+    expect(response.body).toEqual({
+      error: {
+        code: 'ROUTE_NOT_FOUND',
+        message: 'Unknown API route.',
+        retryable: false,
+      },
+    });
   });
   it('does not connect when DB is unconfigured', async () => {
     const db = createDatabase(readConfig({}));

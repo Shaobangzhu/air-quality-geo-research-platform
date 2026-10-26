@@ -16,7 +16,7 @@ AirNow data is preliminary and subject to change; regulatory historical work req
 
 Retain provider, credential-free source identifier, origin, label and fetch UTC. Never persist signed/credential-bearing query URLs in provenance. Observation time and fetch time are distinct.
 
-`live` requests provider access; `historical` uses separately curated official snapshots with acquisition/quality metadata; `sample` is fictional synthetic data. `unavailable` is a state within the requested mode. The foundation loads no observations and never silently falls back. Synthetic fixtures require SAMPLE- IDs, sample labels and unknown validation status. No official historical fixtures exist yet.
+`live` requests provider access; `historical` uses separately curated official snapshots with acquisition/quality metadata; `sample` is fictional synthetic data. `unavailable` is a state within the requested mode. The BFF loads explicitly synthetic sample observations and reads identified curated historical snapshots; live is contract-unverified and never silently falls back. Synthetic fixtures require SAMPLE- IDs, sample labels and unknown validation status. No official historical fixtures exist yet.
 
 ## Time and averaging
 

@@ -33,6 +33,11 @@ it('applies and repeats migrations without changing foundation data', async () =
   const history = await pool.query(
     'SELECT name, checksum FROM aq_workbench.schema_migrations',
   );
-  expect(history.rows).toHaveLength(1);
-  expect(history.rows[0].checksum).toMatch(/^[a-f0-9]{64}$/);
+  expect(history.rows.map((row) => row.name).sort()).toEqual([
+    '001_foundation.sql',
+    '002_station_bff.sql',
+  ]);
+  expect(history.rows.every((row) => /^[a-f0-9]{64}$/.test(row.checksum))).toBe(
+    true,
+  );
 });

@@ -23,6 +23,8 @@
     "start:api": "npm run start -w @aq/api",
     "test:e2e": "npm run build -w @aq/contracts && playwright test",
     "db:setup": "node scripts/setup-local-postgresql.mjs",
+    "snapshots:import": "npm run build -w @aq/contracts && node --import tsx scripts/import-snapshot.ts",
+    "provider:airnow:smoke": "npm run build -w @aq/contracts && node --import tsx scripts/airnow-smoke.ts",
     "db:status": "npm run build -w @aq/contracts && node --import tsx scripts/db-status.ts",
     "db:migrate": "npm run build -w @aq/contracts && node --import tsx scripts/db-migrate.ts"
   },

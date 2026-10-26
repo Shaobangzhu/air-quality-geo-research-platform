@@ -67,3 +67,9 @@ Migrations use one transaction, a project advisory lock, bounded timeouts, SHA-2
 Local verification additionally checked restricted role flags and denied cross-database CONNECT privileges. The API health endpoint reports `database: connected`; data mode remains `sample` with air-quality data unavailable because no provider adapter exists.
 
 GitHub Actions still defines its own ephemeral PostgreSQL 17 service. Local PostgreSQL 18 verification is complete; the remote workflow remains **configured, not verified remotely**.
+
+## Milestone 02 station BFF schema
+
+`002_station_bff.sql` adds source/site/observation/snapshot/import tables within the same project schema. `001_foundation.sql` and its identity row are preserved. Both migrations were applied/repeated on the existing development target; the separate test DB also verifies snapshot round trips, monitor/averaging-period identity and parameterized SQL-shaped values. No Docker resources or unrelated database were changed.
+
+The store permits 32 snapshots, 512 identities and 2,000 observations per snapshot, enforced under an advisory-locked transaction. Content hashes make identical imports idempotent; there is no automatic pruning. The development database contains only an explicitly labeled synthetic BFF snapshot, not official historical or acquired live data. Use `npm run snapshots:import -- --file fixtures/synthetic/bff-hourly.json` to repeat that import safely. See [BFF architecture](provider-bff.md) and [mode/import rules](data-modes.md).

@@ -20,6 +20,25 @@ export const configSchema = z
       .default('false')
       .transform((value) => value === 'true'),
     AIRNOW_API_KEY: optionalText,
+    BFF_CACHE_TTL_SECONDS: z.coerce
+      .number()
+      .int()
+      .min(30)
+      .max(3600)
+      .default(300),
+    BFF_CACHE_STALE_SECONDS: z.coerce
+      .number()
+      .int()
+      .min(0)
+      .max(3600)
+      .default(900),
+    UPSTREAM_TIMEOUT_MS: z.coerce
+      .number()
+      .int()
+      .min(100)
+      .max(10000)
+      .default(3000),
+    UPSTREAM_MAX_ATTEMPTS: z.coerce.number().int().min(1).max(3).default(2),
     AQS_EMAIL: z.preprocess(
       (v) => (v === '' ? undefined : v),
       z.email().optional(),

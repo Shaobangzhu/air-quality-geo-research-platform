@@ -1,5 +1,7 @@
 # Prompt 01 — implementation and verification
 
+Historical Prompt 01 report. Current BFF behavior and subsequent verification are documented in [Prompt 02](02-provider-bff.md).
+
 Date: **2026-10-25**. Scope: foundation only. No commits or pushes were made. Original numbered prompt documents are unchanged. The four supplied Downloads PNG paths did not exist; this milestone does not depend on them or claim visual fidelity to unseen designs.
 
 ## Delivered and verified decisions

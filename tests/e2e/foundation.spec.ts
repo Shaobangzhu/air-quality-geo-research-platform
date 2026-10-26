@@ -1,4 +1,9 @@
 import { expect, test } from '@playwright/test';
+import {
+  observationsResponseSchema,
+  stationsResponseSchema,
+  usageSummarySchema,
+} from '@aq/contracts';
 
 test('starts both local services, navigates planned pages and makes no provider requests', async ({
   page,
@@ -13,8 +18,32 @@ test('starts both local services, navigates planned pages and makes no provider 
   expect(health.ok()).toBe(true);
   expect(await health.json()).toMatchObject({
     database: 'not-configured',
-    data: { mode: 'sample', state: 'unavailable' },
+    data: { mode: 'sample', state: 'available' },
   });
+  const stations = stationsResponseSchema.parse(
+    await (await request.get('/api/stations?mode=sample')).json(),
+  );
+  expect(stations.data.length).toBeGreaterThan(0);
+  expect(
+    stations.data.every((station) =>
+      station.identity.nativeSiteId.startsWith('SAMPLE-'),
+    ),
+  ).toBe(true);
+  const series = observationsResponseSchema.parse(
+    await (
+      await request.get(
+        `/api/stations/${stations.data[0]!.id}/observations?mode=sample`,
+      )
+    ).json(),
+  );
+  expect(series.meta.dataMode).toBe('sample');
+  expect(series.meta.cache.status).toBe('hit');
+  const usage = usageSummarySchema.parse(
+    await (await request.get('/api/usage/summary')).json(),
+  );
+  expect(usage.providers.every((provider) => provider.requests === 0)).toBe(
+    true,
+  );
   await page.goto('/map');
   await expect(page.getByRole('heading', { level: 1 })).toContainText(
     'Greater LA Air Quality',

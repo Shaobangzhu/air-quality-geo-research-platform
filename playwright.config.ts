@@ -7,6 +7,11 @@ const env = {
   PORT: '3001',
   HOST: '127.0.0.1',
   ALLOW_LIVE_API_TESTS: 'false',
+  AIRNOW_API_KEY: '',
+  AQS_EMAIL: '',
+  AQS_API_KEY: '',
+  OPENAI_API_KEY: '',
+  VITE_ARCGIS_API_KEY: '',
 };
 export default defineConfig({
   testDir: './tests/e2e',

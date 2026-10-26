@@ -1,6 +1,6 @@
 # Provider capabilities and verification
 
-Verified against official documentation on **2026-10-25**. Documentation access is not a successful API request. **No provider endpoint was live-tested.** No adapter is implemented. Internal Zod schemas are application contracts, not claims about external response fields.
+Verified against official documentation on **2026-10-25**. Documentation access is not a successful API request. **No provider endpoint was live-tested.** A guarded AirNow adapter boundary and synthetic import/normalization path now exist; no production AirNow wire codec is registered. Internal Zod schemas are application contracts, not claims about external response fields.
 
 Evidence levels: **officially documented** = capability stated by the owner; **detailed contract verified** = named request/response details inspected; **live-tested** = an actual bounded authenticated request succeeded; **unverified** = no such evidence. These levels are independent: reading documentation does not prove credentials, availability, coverage or quota.
 
@@ -32,7 +32,7 @@ The notice announced six replacements for June 17, 2026 and scheduled six legacy
 | `/aq/observation/zipCode/historical/` | Historical state             |
 | `/aq/observation/latLong/historical/` | Historical state             |
 
-The notice warns that parameters and response handling can change; swapping a legacy URL is insufficient. It is not a full endpoint contract. The unauthenticated catalog available during this task did not expose detailed service specifications. Before Prompt 02 adapters: inspect the current per-service documentation/query tool, record exact parameter names/types/requiredness, response schema, units, time basis, error/empty behavior, geographic bounds, request limits and provenance rules. Do not infer these from old examples, file products or the internal contracts. **No parameter names, response fields, numeric rate limits or guaranteed historical retention are asserted for these routes.**
+The notice warns that parameters and response handling can change; swapping a legacy URL is insufficient. It is not a full endpoint contract. The unauthenticated catalog available during this task did not expose detailed service specifications. Before enabling an AirNow wire codec: inspect the current per-service documentation/query tool, record exact parameter names/types/requiredness, response schema, units, time basis, error/empty behavior, geographic bounds, request limits and provenance rules. Do not infer these from old examples, file products or the internal contracts. **No parameter names, response fields, numeric rate limits or guaranteed historical retention are asserted for these routes.**
 
 The [official FAQ](https://docs.airnowapi.org/faq) makes per-service quota documentation authoritative and recommends bounded cached access; do not loop through ZIP codes to build a reporting-area database. Numeric limits remain unverified per route. The [AirNow policy](https://docs.airnowapi.org/) describes observations as preliminary; official regulatory historical sources are AQS/AirData. These policy claims are **officially documented**. Keys remain server-only, and future live tests require explicit `ALLOW_LIVE_API_TESTS=true` plus credentials. No request is automatically made by startup/tests.
 
@@ -73,3 +73,5 @@ A browser ArcGIS credential is public by design: restrict referrers, service pri
 ## Follow-up evidence checklist
 
 For each future adapter, attach the exact official specification URL and review date, a bounded credential-redacted opt-in test result (or explicit blocker), a captured response fixture with provenance, and contract tests for missing/error/time/unit semantics. Do not upgrade any evidence level merely because a link exists. Authentication, service availability and scientific fitness remain separate questions.
+
+Prompt 02 execution detail: [AirNow live verification](airnow-live-verification.md). Keys are locally present, but the smoke opt-in flag remains false. All provider HTTP verification was mocked; the runtime live guard sends no request. Existing capability evidence levels remain unchanged.

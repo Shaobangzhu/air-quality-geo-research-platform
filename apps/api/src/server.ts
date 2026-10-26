@@ -2,12 +2,17 @@ import { createApp } from './app.js';
 import { readConfig } from './config.js';
 import { createDatabase } from './database.js';
 import { loadEnvironment } from './environment.js';
+import { createBff } from './bff/runtime.js';
 
 loadEnvironment();
 try {
   const config = readConfig();
   const database = createDatabase(config);
-  const app = createApp({ config, databaseStatus: () => database.status() });
+  const app = createApp({
+    config,
+    databaseStatus: () => database.status(),
+    bff: createBff(config, database.pool),
+  });
   const server = app.listen(config.PORT, config.HOST, () => {
     console.info(
       `Air quality research API listening on ${config.HOST}:${config.PORT}`,
