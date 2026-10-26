@@ -7,6 +7,7 @@ import {
   periodSchema,
   pollutantSchema,
   rawMeasurementSchema,
+  regionIdSchema,
   utcTimestampSchema,
   validationStatusSchema,
 } from './domain.js';
@@ -274,7 +275,7 @@ export const snapshotSchema = z.strictObject({
 export const responseMetaSchema = z.strictObject({
   dataMode: dataModeSchema,
   resultState: resultStateSchema,
-  region: z.literal('greater-la'),
+  region: regionIdSchema,
   bbox: bboxSchema,
   pollutant: pollutantSchema,
   measurementType: measurementTypeSchema,
@@ -391,7 +392,7 @@ export const observationsResponseSchema = z.strictObject({
 export const regionsResponseSchema = z.strictObject({
   data: z.array(
     z.strictObject({
-      id: z.literal('greater-la'),
+      id: regionIdSchema,
       name: z.string(),
       crs: z.literal('EPSG:4326'),
       bbox: bboxSchema,

@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
-import { stationReadingsResponseSchema } from '@aq/contracts';
+import {
+  selectStudyRegion,
+  stationReadingsResponseSchema,
+} from '@aq/contracts';
 import type { z } from 'zod';
 import type { RouteState } from './route-state.js';
 export type StationResult = z.infer<typeof stationReadingsResponseSchema>;
@@ -40,6 +43,11 @@ export function useStations(route: RouteState): DataState {
             await response.json(),
           );
           if (
+            result.meta.region !== route.region ||
+            JSON.stringify(result.meta.bbox) !==
+              JSON.stringify(selectStudyRegion(route.region).bbox) ||
+            (route.snapshotId !== undefined &&
+              result.meta.snapshotId !== route.snapshotId) ||
             result.meta.dataMode !== route.mode ||
             result.meta.pollutant !== route.pollutant ||
             result.meta.measurementType !== route.measurementType
@@ -67,6 +75,7 @@ export function useStations(route: RouteState): DataState {
   }, [
     key,
     route.mode,
+    route.region,
     route.pollutant,
     route.snapshotId,
     route.measurementType,

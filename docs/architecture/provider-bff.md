@@ -11,7 +11,7 @@ All public operations are GET. Region, product, dataset, station, observation, u
 | Route                            | Response / behavior                                                                                                         |
 | -------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
 | `/api/health`                    | API liveness, safe DB connectivity and configured-mode capability; no provider request                                      |
-| `/api/regions`                   | `regionsResponseSchema`; the frozen Greater LA EPSG:4326 engineering extent                                                 |
+| `/api/regions`                   | `regionsResponseSchema`; three frozen EPSG:4326 engineering study presets                                                   |
 | `/api/data-products`             | `productsResponseSchema`; station observations only, with explicit mode limitations                                         |
 | `/api/station-readings`          | `stationReadingsResponseSchema`; latest supplied revisions per metric for the map, reusing the existing bounded batch cache |
 | `/api/stations`                  | `stationsResponseSchema`; monitoring identities discovered in the selected observations                                     |
@@ -21,17 +21,17 @@ All public operations are GET. Region, product, dataset, station, observation, u
 
 Station queries accept only:
 
-| Input             | Default / bound                                                                              |
-| ----------------- | -------------------------------------------------------------------------------------------- |
-| `region`          | `greater-la`; no world/other-region query                                                    |
-| `pollutant`       | `PM2.5`; also `O3`, `PM10`                                                                   |
-| `measurementType` | `concentration`; also `aqi`                                                                  |
-| `mode`            | Server `DATA_MODE`; explicit `sample`, `historical`, `live` overrides                        |
-| `windowHours`     | 24; integer 1–72; an application bound, not a provider retention claim                       |
-| `endAt`           | Valid UTC ISO instant at an hour boundary; dates 1970–2100; live cannot request the future   |
-| `bbox`            | Entire study region; optional `west,south,east,north` subset, with ordered valid coordinates |
-| `snapshotId`      | Required UUID only in historical mode; forbidden in other modes                              |
-| `limit`, `offset` | 200 / 0; maximum 500 / 1999                                                                  |
+| Input             | Default / bound                                                                            |
+| ----------------- | ------------------------------------------------------------------------------------------ |
+| `region`          | `greater-la`; also `coastal-la`, `inland-empire`; no arbitrary regions                     |
+| `pollutant`       | `PM2.5`; also `O3`, `PM10`                                                                 |
+| `measurementType` | `concentration`; also `aqi`                                                                |
+| `mode`            | Server `DATA_MODE`; explicit `sample`, `historical`, `live` overrides                      |
+| `windowHours`     | 24; integer 1–72; an application bound, not a provider retention claim                     |
+| `endAt`           | Valid UTC ISO instant at an hour boundary; dates 1970–2100; live cannot request the future |
+| `bbox`            | Selected preset; optional `west,south,east,north` subset, with ordered valid coordinates   |
+| `snapshotId`      | Required UUID only in historical mode; forbidden in other modes                            |
+| `limit`, `offset` | 200 / 0; maximum 500 / 1999                                                                |
 
 Intervals are `[from, to)`. Equivalent UTC spellings are canonicalized. Sample defaults to the fixed fixture end `2026-01-15T21:00:00Z`; historical defaults to the identified snapshot end; live would default to the previous UTC hour. Historical intervals outside the snapshot fail explicitly. These defaults are engineering choices and do not imply source availability.
 
@@ -61,7 +61,7 @@ Response metadata contains requested window/bbox, available source coverage, lat
 
 ## Cache and provider isolation
 
-There is one application service. A single bounded region load supplies both station discovery and station observations. Caller sub-bboxes, station selection and pagination filter that shared result instead of causing new provider fan-out. Cache identity includes data mode, region/upstream bbox, pollutant, measurement kind, requested time/window and historical snapshot ID.
+There is one application service. A single bounded region load supplies both station discovery and station observations. Caller sub-bboxes, station selection and pagination filter that shared result instead of causing new provider fan-out. The three engineering presets share the parent Greater LA acquisition; requested preset bounds clip the cached batch. Cache identity includes data mode, parent region/upstream bbox, pollutant, measurement kind, requested time/window and historical snapshot ID.
 
 The LRU cache holds at most 32 entries / 8 MB with at most four distinct in-flight loads. Identical concurrent loads join one promise. Default TTL is 300 seconds with 900 seconds of stale grace. The [official AirNow FAQ](https://docs.airnowapi.org/faq) describes generally hourly observation updates and recommends caching; these TTL values are initial engineering choices, not mandated quotas. Production tuning remains unmeasured. Mock tests demonstrate reduced HTTP invocation counts under concurrent callers and cache hits.
 
@@ -97,3 +97,5 @@ Usage semantics, including the precise cache denominator and HTTP latency defini
 ## Milestone 04 map read
 
 `/api/station-readings` uses the same query schema/cache/repository as station discovery. It returns each available identity with all latest supplied revisions separately for AQI and concentration; ties retain different periods/conflicts. A missing latest value never selects an older non-null value. The requested metric controls the upstream query/cache key; a counterpart appears only if actually present in that batch. No second provider fetch or AQI computation is used to fill it. Response schema bounds/validates IDs, source/mode, coordinates and requested context. See [map semantics and provenance](../frontend/station-observations.md).
+
+Milestone 05 defines region bounds, canonical pollutant/provider code handling and linked selection in [Map interaction contract](../frontend/map-interactions.md). Snapshot/batch region identity remains `greater-la`; response metadata identifies the selected subpreset.

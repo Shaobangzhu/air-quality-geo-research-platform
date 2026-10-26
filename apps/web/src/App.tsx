@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { MouseEvent } from 'react';
 import { pages, parseRoute, routeSearch } from './route-state.js';
 import type { RoutePatch } from './route-state.js';
@@ -13,27 +13,46 @@ export function App() {
     path: window.location.pathname === '/' ? '/map' : window.location.pathname,
     route: parseRoute(window.location.search),
   }));
+  const locationRef = useRef(location);
+  locationRef.current = location;
   const data = useStations(location.route);
   const page = pages.find((item) => item.path === location.path);
   const main = useRef<HTMLElement>(null);
   useEffect(() => {
-    const pop = () =>
-      setLocation({
+    const pop = () => {
+      const next = {
         path:
           window.location.pathname === '/' ? '/map' : window.location.pathname,
         route: parseRoute(window.location.search),
-      });
+      };
+      locationRef.current = next;
+      setLocation(next);
+    };
     window.addEventListener('popstate', pop);
     return () => window.removeEventListener('popstate', pop);
   }, []);
   useEffect(() => {
     document.title = `${page?.name ?? 'Page not found'} | Greater LA Air Quality`;
   }, [page]);
-  const change = (patch: RoutePatch) => {
-    const route = parseRoute(routeSearch({ ...location.route, ...patch }));
-    window.history.pushState({}, '', `${location.path}${routeSearch(route)}`);
-    setLocation({ ...location, route });
-  };
+  useEffect(() => {
+    const current = locationRef.current;
+    const url = `${current.path}${routeSearch(current.route)}`;
+    if (`${window.location.pathname}${window.location.search}` !== url)
+      window.history.replaceState({}, '', url);
+  }, [location]);
+  const change = useCallback((patch: RoutePatch, replace = false) => {
+    const current = locationRef.current;
+    const route = parseRoute(routeSearch({ ...current.route, ...patch }));
+    if (routeSearch(route) === routeSearch(current.route)) return;
+    const next = { ...current, route };
+    locationRef.current = next;
+    window.history[replace ? 'replaceState' : 'pushState'](
+      {},
+      '',
+      `${current.path}${routeSearch(route)}`,
+    );
+    setLocation(next);
+  }, []);
   const navigate = (event: MouseEvent<HTMLAnchorElement>, path: string) => {
     if (
       event.button !== 0 ||
@@ -44,8 +63,10 @@ export function App() {
     )
       return;
     event.preventDefault();
-    window.history.pushState({}, '', `${path}${routeSearch(location.route)}`);
-    setLocation({ ...location, path });
+    const next = { ...locationRef.current, path };
+    locationRef.current = next;
+    window.history.pushState({}, '', `${path}${routeSearch(next.route)}`);
+    setLocation(next);
     main.current?.focus();
   };
   return (

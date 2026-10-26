@@ -1,4 +1,5 @@
 import {
+  act,
   fireEvent,
   render,
   screen,
@@ -55,8 +56,13 @@ it('renders exactly four navigation routes, active map, sample availability and 
   ).toHaveAttribute('aria-current', 'page');
   expect(await screen.findByText('Sample · Synthetic')).toBeVisible();
   expect(screen.getByText('Basemap unavailable')).toBeVisible();
-  expect(screen.getByLabelText('Region')).toBeDisabled();
-  expect(screen.getByLabelText('Data Product')).toBeDisabled();
+  expect(screen.getByLabelText('Region')).toBeEnabled();
+  expect(screen.getByLabelText('Data Product')).toHaveValue(
+    'monitoring-stations',
+  );
+  expect(
+    screen.getByRole('option', { name: 'Forecasts · unavailable' }),
+  ).toBeDisabled();
   expect(screen.queryByRole('complementary')).not.toBeInTheDocument();
   expect(screen.queryByText('AQI 78')).not.toBeInTheDocument();
 });
@@ -185,10 +191,14 @@ it('renders a valid empty selection and rejects an absent linked station', async
   );
   render(<App />);
   expect(
-    await screen.findByText('No monitor readings match this selection.'),
+    await screen.findByText(
+      'No PM2.5 stations reported in this region and time window.',
+    ),
   ).toBeVisible();
   expect(
-    screen.getByText('The linked station is not present in this selection.'),
+    await screen.findByText(
+      'The selected station is not available in this filter result. Selection cleared.',
+    ),
   ).toBeVisible();
   expect(screen.queryByRole('complementary')).not.toBeInTheDocument();
 });
@@ -291,4 +301,207 @@ it('does not render mismatched context and labels a valid stale response explici
   expect(
     screen.queryByRole('button', { name: /^Inspect/ }),
   ).not.toBeInTheDocument();
+});
+
+it('preserves a supported station across region and metric changes, and reloads its canonical deep link', async () => {
+  const view = render(<App />);
+  fireEvent.click(
+    (await screen.findAllByRole('button', { name: /^Inspect/ }))[0]!,
+  );
+  const id = new URLSearchParams(window.location.search).get('stationId');
+  fireEvent.change(screen.getByLabelText('Region'), {
+    target: { value: 'coastal-la' },
+  });
+  await screen.findByRole('complementary');
+  expect(new URLSearchParams(window.location.search).get('stationId')).toBe(id);
+  fireEvent.change(screen.getByLabelText('Map metric'), {
+    target: { value: 'aqi' },
+  });
+  await screen.findByRole('complementary');
+  expect(new URLSearchParams(window.location.search).get('stationId')).toBe(id);
+  const target = screen
+    .getByRole('link', { name: 'Analyze This Station' })
+    .getAttribute('href')!;
+  expect(target).toContain('region=coastal-la');
+  expect(target).toContain('mode=sample');
+  expect(target).toContain('measurementType=aqi');
+  expect(fetch).toHaveBeenCalledTimes(3);
+  const url = window.location.pathname + window.location.search;
+  view.unmount();
+  window.history.replaceState({}, '', url);
+  render(<App />);
+  expect(await screen.findByRole('complementary')).toHaveTextContent('PM2.5');
+  expect(screen.getByLabelText('Region')).toHaveValue('coastal-la');
+});
+
+it('clears an unavailable pollutant identity only after the active result, with no selection refetch', async () => {
+  render(<App />);
+  fireEvent.click(
+    (await screen.findAllByRole('button', { name: /^Inspect/ }))[0]!,
+  );
+  fireEvent.change(screen.getByLabelText('Pollutant'), {
+    target: { value: 'O3' },
+  });
+  expect(await screen.findByText(/Selection cleared\./)).toBeVisible();
+  expect(new URLSearchParams(window.location.search).has('stationId')).toBe(
+    false,
+  );
+  expect(screen.queryByRole('complementary')).not.toBeInTheDocument();
+  expect(screen.getByLabelText('Concentration legend')).toHaveTextContent(
+    'ppb',
+  );
+  expect(screen.getByLabelText('Concentration legend')).not.toHaveTextContent(
+    'µg/m³',
+  );
+  expect(fetch).toHaveBeenCalledTimes(2);
+  fireEvent.click(screen.getAllByRole('button', { name: /^Inspect/ })[0]!);
+  expect(screen.queryByText(/Selection cleared\./)).not.toBeInTheDocument();
+  expect(screen.getByRole('complementary')).toHaveTextContent('O3');
+});
+
+it('renders only the final active filter result when an aborted mock responds late', async () => {
+  const h = webHarness();
+  const initial = await h.service.stationReadings({ mode: 'sample' });
+  const inland = await h.service.stationReadings({
+    mode: 'sample',
+    region: 'inland-empire',
+  });
+  const coastal = await h.service.stationReadings({
+    mode: 'sample',
+    region: 'coastal-la',
+    pollutant: 'PM10',
+  });
+  const pending: {
+    resolve: (response: unknown) => void;
+    signal: AbortSignal;
+  }[] = [];
+  const mock = vi
+    .fn()
+    .mockResolvedValueOnce({ ok: true, json: async () => initial })
+    .mockImplementation(
+      (_url: string, options: { signal: AbortSignal }) =>
+        new Promise((resolve) =>
+          pending.push({ resolve, signal: options.signal }),
+        ),
+    );
+  vi.stubGlobal('fetch', mock);
+  render(<App />);
+  await screen.findAllByRole('button', { name: /^Inspect/ });
+  fireEvent.change(screen.getByLabelText('Region'), {
+    target: { value: 'inland-empire' },
+  });
+  fireEvent.change(screen.getByLabelText('Region'), {
+    target: { value: 'coastal-la' },
+  });
+  fireEvent.change(screen.getByLabelText('Pollutant'), {
+    target: { value: 'PM10' },
+  });
+  expect(pending).toHaveLength(3);
+  expect(pending[0]!.signal.aborted).toBe(true);
+  expect(pending[1]!.signal.aborted).toBe(true);
+  await act(async () => {
+    pending[2]!.resolve({ ok: true, json: async () => coastal });
+  });
+  expect(screen.getAllByRole('button', { name: /^Inspect/ })).toHaveLength(2);
+  fireEvent.click(screen.getAllByRole('button', { name: /^Inspect/ })[0]!);
+  const selectedId = new URLSearchParams(window.location.search).get(
+    'stationId',
+  );
+  await act(async () => {
+    pending[0]!.resolve({ ok: true, json: async () => inland });
+    pending[1]!.resolve({ ok: true, json: async () => inland });
+  });
+  expect(screen.getByLabelText('Pollutant')).toHaveValue('PM10');
+  expect(screen.getByLabelText('Region')).toHaveValue('coastal-la');
+  expect(screen.getAllByRole('button', { name: /^Inspect/ })).toHaveLength(2);
+  expect(screen.queryByText(/No .* stations reported/)).not.toBeInTheDocument();
+  expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  expect(screen.getByRole('complementary')).toHaveTextContent('PM10');
+  expect(new URLSearchParams(window.location.search).get('stationId')).toBe(
+    selectedId,
+  );
+});
+
+it('reports an honest empty PM10 preset and rejects a response for another region', async () => {
+  render(<App />);
+  await screen.findByText('Sample · Synthetic');
+  fireEvent.change(screen.getByLabelText('Pollutant'), {
+    target: { value: 'PM10' },
+  });
+  await screen.findByText('Sample · Synthetic');
+  fireEvent.change(screen.getByLabelText('Region'), {
+    target: { value: 'inland-empire' },
+  });
+  expect(
+    await screen.findByText(
+      'No PM10 stations reported in this region and time window.',
+    ),
+  ).toBeVisible();
+  expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  const wrongRegion = await webHarness().service.stationReadings({
+    mode: 'sample',
+    pollutant: 'PM10',
+  });
+  vi.stubGlobal(
+    'fetch',
+    vi.fn().mockResolvedValue({ ok: true, json: async () => wrongRegion }),
+  );
+  fireEvent.change(screen.getByLabelText('Region'), {
+    target: { value: 'coastal-la' },
+  });
+  expect(await screen.findByRole('alert')).toHaveTextContent(
+    'Sample observations unavailable',
+  );
+  expect(
+    screen.queryByRole('button', { name: /^Inspect/ }),
+  ).not.toBeInTheDocument();
+});
+
+it('canonicalizes safe URL state and ignores repeated identical filters', async () => {
+  expect(parseRoute('?region=coastal-la&region=inland-empire').region).toBe(
+    'greater-la',
+  );
+  expect(parseRoute('?product=forecasts').product).toBe('monitoring-stations');
+  window.history.replaceState(
+    {},
+    '',
+    '/map?region=coastal-la&pollutant=PM10&mode=sample&token=discard',
+  );
+  render(<App />);
+  await screen.findByText('Sample · Synthetic');
+  expect(window.location.search).not.toContain('token');
+  fireEvent.change(screen.getByLabelText('Region'), {
+    target: { value: 'coastal-la' },
+  });
+  fireEvent.change(screen.getByLabelText('Pollutant'), {
+    target: { value: 'PM10' },
+  });
+  fireEvent.click(screen.getByRole('button', { name: 'Layers & Legend' }));
+  expect(fetch).toHaveBeenCalledOnce();
+});
+
+it('merges rapid region and pollutant updates while a selected station is being reconciled', async () => {
+  render(<App />);
+  fireEvent.click(
+    (await screen.findAllByRole('button', { name: /^Inspect/ }))[0]!,
+  );
+  act(() => {
+    fireEvent.change(screen.getByLabelText('Region'), {
+      target: { value: 'inland-empire' },
+    });
+    fireEvent.change(screen.getByLabelText('Pollutant'), {
+      target: { value: 'PM10' },
+    });
+  });
+  expect(
+    await screen.findByText(
+      'No PM10 stations reported in this region and time window.',
+    ),
+  ).toBeVisible();
+  expect(await screen.findByText(/Selection cleared\./)).toBeVisible();
+  expect(screen.getByLabelText('Region')).toHaveValue('inland-empire');
+  const query = new URLSearchParams(window.location.search);
+  expect(query.get('region')).toBe('inland-empire');
+  expect(query.get('pollutant')).toBe('PM10');
+  expect(query.has('stationId')).toBe(false);
 });

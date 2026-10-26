@@ -2,6 +2,7 @@ import {
   dataModeSchema,
   measurementTypeSchema,
   pollutantSchema,
+  regionIdSchema,
   stationIdSchema,
 } from '@aq/contracts';
 import { z } from 'zod';
@@ -42,7 +43,7 @@ export function parseRoute(search: string) {
     params.getAll(name).length === 1 ? params.get(name) : undefined;
   const mode = dataModeSchema.safeParse(one('mode')).data ?? 'sample';
   return {
-    region: 'greater-la' as const,
+    region: regionIdSchema.safeParse(one('region')).data ?? 'greater-la',
     pollutant: pollutantSchema.safeParse(one('pollutant')).data ?? 'PM2.5',
     product: 'monitoring-stations' as const,
     mode,

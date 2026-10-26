@@ -22,6 +22,7 @@ import type {
   StationIdentity,
 } from '@aq/contracts';
 import { BffError } from './errors.js';
+import { normalizePollutant } from './pollutants.js';
 
 // Application import format only. These are not asserted to be AirNow wire fields.
 export const importRowSchema = z.strictObject({
@@ -113,6 +114,16 @@ export function normalizeImport(input: unknown, secrets: string[] = []): Batch {
       return;
     }
     const row = parsedRow.data;
+    const aqsPollutant =
+      row.identity.provider === 'aqs'
+        ? normalizePollutant(row.raw.parameter, 'aqs')
+        : undefined;
+    if (aqsPollutant && aqsPollutant !== row.measurement.pollutant) {
+      diagnostics.rejectedRows++;
+      if (diagnostics.rejectedRowIndexes.length < 20)
+        diagnostics.rejectedRowIndexes.push(index);
+      return;
+    }
     const id = stationId(row.identity);
     const station: Station = {
       id,

@@ -1,6 +1,8 @@
 import {
   datasetsResponseSchema,
   GREATER_LA,
+  STUDY_REGIONS,
+  selectStudyRegion,
   observationsResponseSchema,
   productsResponseSchema,
   regionsResponseSchema,
@@ -56,7 +58,7 @@ export class BffService {
     };
   }
   regions() {
-    return regionsResponseSchema.parse({ data: [GREATER_LA] });
+    return regionsResponseSchema.parse({ data: STUDY_REGIONS });
   }
   products() {
     return productsResponseSchema.parse({
@@ -135,7 +137,7 @@ export class BffService {
     // Sub-bboxes, station selection and pagination only filter a single region fetch.
     const key = canonical({
       mode,
-      region: query.region,
+      region: GREATER_LA.id,
       bbox: GREATER_LA.bbox,
       pollutant: query.pollutant,
       measurementType: query.measurementType,
@@ -161,7 +163,7 @@ export class BffService {
       const batch = await (
         mode === 'sample' ? this.options.sample : this.options.live
       ).load({
-        region: query.region,
+        region: GREATER_LA.id,
         bbox: GREATER_LA.bbox,
         from: from!,
         to: to!,
@@ -201,7 +203,7 @@ export class BffService {
         Date.parse(effectiveTo) > Date.parse(cached.batch.window.to))
     )
       throw new BffError('UNSUPPORTED_RANGE', 400);
-    const bbox = query.bbox ?? GREATER_LA.bbox;
+    const bbox = query.bbox ?? selectStudyRegion(query.region).bbox;
     const stationIds = new Set(
       cached.batch.stations
         .filter(

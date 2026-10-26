@@ -223,3 +223,84 @@ test('selects clearly synthetic readings and opens Analyze with validated contex
     true,
   );
 });
+
+test('filters engineering presets, preserves or clears selection, and reloads the Analysis handoff', async ({
+  page,
+  request,
+}) => {
+  const calls: string[] = [];
+  page.on('request', (req) => {
+    if (new URL(req.url()).pathname === '/api/station-readings')
+      calls.push(req.url());
+  });
+  const before = usageSummarySchema.parse(
+    await (await request.get('/api/usage/summary')).json(),
+  );
+  await page.goto('/map?mode=sample&pollutant=PM2.5');
+  await expect(page.getByLabel('Data status')).toHaveText('Sample · Synthetic');
+  await page
+    .getByRole('button', { name: /^Inspect SYNTHETIC SAMPLE Alpha,/ })
+    .first()
+    .click();
+  const stationId = new URL(page.url()).searchParams.get('stationId');
+  const initial = calls.length;
+  await page.getByLabel('Region', { exact: true }).selectOption('coastal-la');
+  await expect(page.getByRole('button', { name: /^Inspect/ })).toHaveCount(2);
+  await expect(page.getByRole('complementary')).toBeVisible();
+  expect(new URL(page.url()).searchParams.get('stationId')).toBe(stationId);
+  expect(calls.length).toBe(initial + 1);
+  await page.reload();
+  await expect(page.getByRole('complementary')).toBeVisible();
+  const afterReload = calls.length;
+  await expect(page.getByLabel('Region', { exact: true })).toHaveValue(
+    'coastal-la',
+  );
+  await page.getByLabel('Pollutant', { exact: true }).selectOption('O3');
+  await expect(page.getByText(/Selection cleared\./)).toBeVisible();
+  await expect(page.getByRole('complementary')).toHaveCount(0);
+  expect(new URL(page.url()).searchParams.has('stationId')).toBe(false);
+  await expect(page.getByLabel('Concentration legend')).toContainText('ppb');
+  await page.goBack();
+  await expect(page.getByRole('complementary')).toBeVisible();
+  expect(new URL(page.url()).searchParams.get('stationId')).toBe(stationId);
+  await page.goForward();
+  await expect(page.getByRole('complementary')).toHaveCount(0);
+  await expect(page.getByLabel('Pollutant', { exact: true })).toHaveValue('O3');
+  await page
+    .getByLabel('Region', { exact: true })
+    .selectOption('inland-empire');
+  await page.getByLabel('Pollutant', { exact: true }).selectOption('PM10');
+  await expect(
+    page.getByText('No PM10 stations reported in this region and time window.'),
+  ).toBeVisible();
+  await page.getByLabel('Region', { exact: true }).selectOption('coastal-la');
+  await expect(page.getByRole('button', { name: /^Inspect/ })).toHaveCount(2);
+  await page
+    .getByRole('button', { name: /^Inspect/ })
+    .first()
+    .click();
+  const passive = calls.length;
+  await page.getByRole('button', { name: 'Layers & Legend' }).click();
+  const link = page.getByRole('link', { name: 'Analyze This Station' });
+  const target = new URL((await link.getAttribute('href'))!, page.url());
+  expect(Object.fromEntries(target.searchParams)).toMatchObject({
+    region: 'coastal-la',
+    pollutant: 'PM10',
+    mode: 'sample',
+    product: 'monitoring-stations',
+  });
+  expect(target.searchParams.get('stationId')).toMatch(/^s_/);
+  await link.click();
+  await expect(page).toHaveURL(target.toString());
+  expect(calls.length).toBe(passive);
+  expect(calls.length).toBe(afterReload + 6); // one read per changed filter; development reload may cancel an initial read
+  await page.reload();
+  await expect(page.getByText(/Selected monitor:/)).toContainText('PM10');
+  const after = usageSummarySchema.parse(
+    await (await request.get('/api/usage/summary')).json(),
+  );
+  expect(after.providers.map((p) => p.requests)).toEqual(
+    before.providers.map((p) => p.requests),
+  );
+  expect(after.cache.hits).toBeGreaterThan(before.cache.hits);
+});

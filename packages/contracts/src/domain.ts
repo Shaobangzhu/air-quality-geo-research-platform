@@ -28,9 +28,44 @@ export const GREATER_LA = Object.freeze({
     }),
   ),
 });
+export const regionIdSchema = z.enum([
+  'greater-la',
+  'coastal-la',
+  'inland-empire',
+]);
+// Rectangular engineering presets inside the parent study extent, not legal/basin boundaries.
+export const STUDY_REGIONS = Object.freeze([
+  GREATER_LA,
+  Object.freeze({
+    id: 'coastal-la' as const,
+    name: 'Coastal LA',
+    crs: 'EPSG:4326' as const,
+    bbox: Object.freeze(
+      bboxSchema.parse({
+        west: -118.65,
+        south: 33.65,
+        east: -118.1,
+        north: 34.15,
+      }),
+    ),
+  }),
+  Object.freeze({
+    id: 'inland-empire' as const,
+    name: 'Inland Empire',
+    crs: 'EPSG:4326' as const,
+    bbox: Object.freeze(
+      bboxSchema.parse({
+        west: -117.85,
+        south: 33.75,
+        east: -116.7,
+        north: 34.35,
+      }),
+    ),
+  }),
+]);
 export function selectStudyRegion(id: string) {
-  z.literal('greater-la').parse(id);
-  return GREATER_LA;
+  const valid = regionIdSchema.parse(id);
+  return STUDY_REGIONS.find((region) => region.id === valid)!;
 }
 export function isWithinStudyExtent(
   point: z.infer<typeof coordinateSchema>,

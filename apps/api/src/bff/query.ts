@@ -5,9 +5,12 @@ import {
   dataModeSchema,
   measurementTypeSchema,
   pollutantSchema,
+  regionIdSchema,
+  selectStudyRegion,
   utcTimestampSchema,
 } from '@aq/contracts';
 import { BffError } from './errors.js';
+import { normalizePollutant } from './pollutants.js';
 
 const integer = (min: number, max: number) =>
   z
@@ -30,26 +33,48 @@ const boundedBbox = z
       b.south >= GREATER_LA.bbox.south &&
       b.north <= GREATER_LA.bbox.north,
   );
-export const stationQuerySchema = z.strictObject({
-  region: z.literal('greater-la').default('greater-la'),
-  pollutant: pollutantSchema.default('PM2.5'),
-  measurementType: measurementTypeSchema.default('concentration'),
-  mode: dataModeSchema.optional(),
-  windowHours: integer(1, 72).default(24),
-  endAt: utcTimestampSchema
-    .refine(
-      (date) =>
-        Date.parse(date) % 3_600_000 === 0 &&
-        Date.parse(date) >= Date.parse('1970-01-01T00:00:00Z') &&
-        Date.parse(date) < Date.parse('2101-01-01T00:00:00Z'),
-    )
-    .transform((value) => new Date(value).toISOString())
-    .optional(),
-  snapshotId: z.uuid().optional(),
-  bbox: boundedBbox.optional(),
-  limit: integer(1, 500).default(200),
-  offset: integer(0, 1999).default(0),
-});
+export const stationQuerySchema = z
+  .strictObject({
+    region: regionIdSchema.default('greater-la'),
+    pollutant: z
+      .string()
+      .default('PM2.5')
+      .transform((code, ctx) => {
+        const value = normalizePollutant(code, 'domain');
+        if (value) return value;
+        ctx.addIssue({
+          code: 'custom',
+          message: 'Unsupported canonical pollutant.',
+        });
+        return z.NEVER;
+      }),
+    measurementType: measurementTypeSchema.default('concentration'),
+    mode: dataModeSchema.optional(),
+    windowHours: integer(1, 72).default(24),
+    endAt: utcTimestampSchema
+      .refine(
+        (date) =>
+          Date.parse(date) % 3_600_000 === 0 &&
+          Date.parse(date) >= Date.parse('1970-01-01T00:00:00Z') &&
+          Date.parse(date) < Date.parse('2101-01-01T00:00:00Z'),
+      )
+      .transform((value) => new Date(value).toISOString())
+      .optional(),
+    snapshotId: z.uuid().optional(),
+    bbox: boundedBbox.optional(),
+    limit: integer(1, 500).default(200),
+    offset: integer(0, 1999).default(0),
+  })
+  .refine((query) => {
+    if (!query.bbox) return true;
+    const b = selectStudyRegion(query.region).bbox;
+    return (
+      query.bbox.west >= b.west &&
+      query.bbox.east <= b.east &&
+      query.bbox.south >= b.south &&
+      query.bbox.north <= b.north
+    );
+  }, 'Requested bbox must stay within the selected engineering preset.');
 export const datasetsQuerySchema = z.strictObject({
   mode: dataModeSchema.optional(),
   limit: integer(1, 20).default(20),

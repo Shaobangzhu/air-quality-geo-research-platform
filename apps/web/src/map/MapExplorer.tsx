@@ -1,6 +1,6 @@
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { MouseEvent } from 'react';
-import { GREATER_LA } from '@aq/contracts';
+import { STUDY_REGIONS, selectStudyRegion } from '@aq/contracts';
 import type { StationReadingsResponse } from '@aq/contracts';
 import type { RouteState, RoutePatch } from '../route-state.js';
 import { modeNames, modeDescriptions } from '../route-state.js';
@@ -22,9 +22,12 @@ export function MapExplorer({
 }: {
   route: RouteState;
   data: DataState;
-  change: (patch: RoutePatch) => void;
+  change: (patch: RoutePatch, replace?: boolean) => void;
   analyze: (event: MouseEvent<HTMLAnchorElement>) => void;
 }) {
+  const region = selectStudyRegion(route.region);
+  const [selectionNotice, setSelectionNotice] =
+    useState<StationReadingsResponse | null>(null);
   const [legendOpen, setLegendOpen] = useState(true);
   const [boundaryVisible, setBoundaryVisible] = useState(true);
   const [stationsVisible, setStationsVisible] = useState(true);
@@ -39,6 +42,16 @@ export function MapExplorer({
   const selected = readings.find(
     (reading) => reading.station.id === route.station,
   );
+  useEffect(() => {
+    if (
+      result &&
+      route.station &&
+      !result.data.some((item) => item.station.id === route.station)
+    ) {
+      setSelectionNotice(result);
+      change({ station: undefined }, true);
+    }
+  }, [result, route.station, change]);
   const markers = useMemo(
     () =>
       result ? markersFor(result.data, result.meta, route.measurementType) : [],
@@ -46,6 +59,7 @@ export function MapExplorer({
   );
   const choose = (id: string) => {
     setCandidates(null);
+    setSelectionNotice(null);
     change({ station: id });
   };
   const onMapSelect = (ids: string[]) => {
@@ -110,11 +124,19 @@ export function MapExplorer({
               aria-label="Region"
               value={route.region}
               aria-describedby="region-help"
-              disabled
+              onChange={(event) =>
+                change({ region: event.target.value as RouteState['region'] })
+              }
             >
-              <option value="greater-la">Greater LA</option>
+              {STUDY_REGIONS.map((preset) => (
+                <option key={preset.id} value={preset.id}>
+                  {preset.id === 'greater-la' ? 'Greater LA' : preset.name}
+                </option>
+              ))}
             </select>
-            <small id="region-help">Only supported study extent</small>
+            <small id="region-help">
+              Engineering preset · not an official basin
+            </small>
           </span>
         </label>
         <label className="filter">
@@ -127,7 +149,6 @@ export function MapExplorer({
               onChange={(event) =>
                 change({
                   pollutant: event.target.value as RouteState['pollutant'],
-                  station: undefined,
                 })
               }
             >
@@ -148,13 +169,25 @@ export function MapExplorer({
             Data Product
             <select
               aria-label="Data Product"
-              value={route.product}
+              defaultValue={route.product}
               aria-describedby="product-help"
-              disabled
             >
               <option value="monitoring-stations">Monitoring Stations</option>
+              <option value="reporting-areas" disabled>
+                Reporting Areas · unavailable
+              </option>
+              <option value="forecasts" disabled>
+                Forecasts · unavailable
+              </option>
             </select>
-            <small id="product-help">Other products are not implemented</small>
+            <small id="product-help">
+              {route.mode === 'sample'
+                ? 'Synthetic observations'
+                : route.mode === 'historical'
+                  ? 'Official snapshot required'
+                  : 'Live contract unverified'}{' '}
+              · other contracts unverified
+            </small>
           </span>
         </label>
         <div className="disclaimer">
@@ -170,6 +203,7 @@ export function MapExplorer({
         <div className="map-column">
           <div className="map-panel">
             <MapCanvas
+              bounds={region.bbox}
               boundaryVisible={boundaryVisible}
               onAvailability={setMapAvailable}
               markers={markers}
@@ -283,7 +317,10 @@ export function MapExplorer({
                   </div>
                 )}
                 {readings.length === 0 ? (
-                  <p role="status">No monitor readings match this selection.</p>
+                  <p role="status">
+                    No {route.pollutant} stations reported in this region and
+                    time window.
+                  </p>
                 ) : (
                   <div className="station-list">
                     {readings.map((reading) => {
@@ -359,9 +396,10 @@ export function MapExplorer({
                     results are not displayed.
                   </p>
                 )}
-                {route.station && !selected && (
+                {selectionNotice === result && (
                   <p role="status">
-                    The linked station is not present in this selection.
+                    The selected station is not available in this filter result.
+                    Selection cleared.
                   </p>
                 )}
               </>
@@ -381,7 +419,7 @@ export function MapExplorer({
       <footer className="workspace-footer">
         <span>
           <Icon name="map" />
-          {GREATER_LA.name} · WGS84
+          {region.name} · WGS84
         </span>
         <span>
           Research workbench · Not for regulatory or emergency decisions
