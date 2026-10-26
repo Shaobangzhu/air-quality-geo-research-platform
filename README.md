@@ -2,7 +2,7 @@
 
 **Interdisciplinary Research & Software Engineering Workbench — v1**
 
-A local-first TypeScript research/interview PoC. Milestone 02 adds a typed, read-only station-observation BFF, bounded snapshot storage, explicit modes, memory caching and usage metrics to the foundation. Sample data works through the API; historical reads require a curated local snapshot. AirNow live access is explicitly contract-unverified. Station maps/charts and the supplied four-page UI designs remain for later milestones. This is not a regulatory or emergency-response tool.
+A local-first TypeScript research/interview PoC. Milestone 03 adds the shared four-page research shell and a persistent ArcGIS 2D Map Explorer to the typed BFF. Sample station metadata is explicitly synthetic; live AirNow access remains contract-unverified. Analysis, wildfire and methodology pages are truthful placeholders. This is not a regulatory or emergency-response tool.
 
 ## Run locally
 
@@ -13,16 +13,16 @@ npm ci
 npm run dev
 ```
 
-Open [Map Explorer](http://127.0.0.1:5173/map). API health: [localhost:3001/api/health](http://127.0.0.1:3001/api/health). Vite proxies `/api` to the API. Startup makes no provider or DB query. Stop with Ctrl-C. Changing API port 3001 also requires changing Vite's proxy target.
+Open [Map Explorer](http://127.0.0.1:5173/map). API health: [localhost:3001/api/health](http://127.0.0.1:3001/api/health). Vite proxies `/api` to the API. Server startup makes no provider or DB query; opening the map loads local sample metadata and, when configured, ArcGIS basemap tiles. Stop with Ctrl-C. For another API port, set the server-only `AQ_API_PROXY_TARGET` environment variable on the Vite process.
 
-| Route       | Milestone 01 behavior     |
-| ----------- | ------------------------- |
-| `/map`      | Map Explorer shell        |
-| `/analysis` | Analysis shell            |
-| `/wildfire` | Wildfire Case Study shell |
-| `/data`     | Data & Methodology shell  |
+| Route       | Current behavior                                                                     |
+| ----------- | ------------------------------------------------------------------------------------ |
+| `/map`      | ArcGIS 2D shell, filters, collapsible legend and conditional station metadata drawer |
+| `/analysis` | Planned Analysis placeholder                                                         |
+| `/wildfire` | Planned Wildfire Case Study placeholder                                              |
+| `/data`     | Planned Data & Methodology placeholder                                               |
 
-`/` shows Map Explorer; no separate home dashboard. Links work but modules are visibly planned. `DATA_MODE=sample` means synthetic mode, not live with fallback. Health reports synthetic sample API data available in sample mode; historical requires a selected snapshot and live remains contract-unverified. If the API fails, the UI reports unknown mode. DB connectivity is separate from air-quality availability.
+`/` shows Map Explorer. URL state preserves validated region/pollutant/mode and optional station/snapshot context. The UI explicitly defaults to Sample and labels the fictional metadata. Select Live or Historical on the map page to see their actual availability; no sample fallback occurs. A missing or rejected ArcGIS token shows a map-unavailable state while station metadata remains usable. Read the [frontend design system](docs/frontend/design-system.md) and [ArcGIS setup/lifecycle](docs/frontend/arcgis-map.md).
 
 ## Commands
 
@@ -44,19 +44,19 @@ Open [Map Explorer](http://127.0.0.1:5173/map). API health: [localhost:3001/api/
 | `npm run test:db`                                    | Opt-in PostgreSQL repeatability test                       |
 | `npm run format`                                     | Format code and newly authored docs                        |
 
-For browser tests install Chromium once: `npx playwright install chromium` (Linux CI also uses `--with-deps`). A busy port fails explicitly; tests do not attach to existing servers. Browser tests override DB and mode configuration. Unit tests make no external provider calls; Supertest uses local sockets.
+For browser tests install Chromium once: `npx playwright install chromium` (Linux CI also uses `--with-deps`). Tests use dedicated ports 5174/3103; a busy test port fails explicitly, and tests do not attach to existing development servers. Browser tests override DB and mode configuration. Unit tests make no external provider calls; Supertest uses local sockets.
 
 ## Database and credentials
 
 The dedicated Docker target **`air-quality-geo-research-platform-postgresql`** is provisioned and healthy at `127.0.0.1:55436`, with its own network/volume and separate development/test databases. Local connection, repeat migrations and PostgreSQL integration tests have passed. The user explicitly authorized creating this target; `cpi-postgres` belongs to another project and was not used. All eight pre-existing containers retained their state/configuration. For fresh provisioning and lifecycle commands see [database setup](docs/architecture/database.md). Setup writes ignored `.env` files with generated credentials; preserve them when restarting the target.
 
-Real `.env` files and DB exports are ignored. Keep `AIRNOW_API_KEY`, `AQS_EMAIL`, `AQS_API_KEY` and future `OPENAI_API_KEY` on the server. Only a deliberately public, least-privilege, referrer-restricted ArcGIS credential may use `VITE_ARCGIS_API_KEY`; it is not consumed yet. Provider smoke verification requires `ALLOW_LIVE_API_TESTS=true`; the current false flag was preserved. A flag/key cannot bypass the unverified wire-contract guard. No provider was called.
+Real `.env` files and DB exports are ignored. Keep `AIRNOW_API_KEY`, `AQS_EMAIL`, `AQS_API_KEY` and future `OPENAI_API_KEY` on the server. Only a deliberately public, least-privilege, referrer-restricted ArcGIS credential may use `VITE_ARCGIS_API_KEY`; it is now consumed from the root `.env` by the map SDK. Basemap verification is separate from live air-quality provider verification. Provider smoke verification requires `ALLOW_LIVE_API_TESTS=true`; the current false flag was preserved. A flag/key cannot bypass the unverified wire-contract guard. No AirNow/AQS/OpenAI provider was called; the browser ArcGIS basemap was verified.
 
 ## Structure and next steps
 
 `apps/web` → React shell; `apps/api` → Express/config/DB status; `packages/contracts` → browser/Node schemas; `fixtures/synthetic` → fictional examples; `fixtures/historical` → empty official-snapshot reservation; `db/migrations` → SQL; `scripts` → DB tools; `tests` → unit/integration/e2e; `.github/workflows/ci.yml` → quality gate with an isolated ephemeral PostgreSQL service.
 
-Read [architecture](docs/architecture/decisions.md), [provider verification matrix](docs/data-sources/provider-capabilities.md), [scientific semantics](docs/research/data-semantics.md) and [milestone verification](docs/milestones/01-foundation.md). The numbered prompt library is preserved. Prompts 01–02 are implemented with the documented live-contract limitation. Read [BFF endpoints/contracts](docs/architecture/provider-bff.md), [data modes/imports](docs/architecture/data-modes.md), [usage definitions](docs/architecture/api-usage.md), [AirNow evidence](docs/data-sources/airnow-live-verification.md) and the [Prompt 02 report](docs/milestones/02-provider-bff.md). Later milestones cover the ArcGIS shell, station/pollutant interaction, time series, reporting areas, wildfire context and export. AI/RAG and cloud hosting are outside Core V1. **GitHub Actions is configured, not verified remotely.**
+Read [architecture](docs/architecture/decisions.md), [provider verification matrix](docs/data-sources/provider-capabilities.md), [scientific semantics](docs/research/data-semantics.md) and [milestone verification](docs/milestones/01-foundation.md). The numbered prompt library is preserved. Prompts 01–03 are implemented with the documented live-contract limitation. Read [BFF endpoints/contracts](docs/architecture/provider-bff.md), [data modes/imports](docs/architecture/data-modes.md), [usage definitions](docs/architecture/api-usage.md), [AirNow evidence](docs/data-sources/airnow-live-verification.md) and the [Prompt 02 report](docs/milestones/02-provider-bff.md). Read the [Prompt 03 report](docs/milestones/03-arcgis-shell.md) for SDK/browser validation. Later milestones cover station/pollutant interaction, time series, reporting areas, wildfire context and export. AI/RAG and cloud hosting are outside Core V1. **GitHub Actions is configured, not verified remotely.**
 
 ## Troubleshooting
 

@@ -11,3 +11,7 @@
 The four PNG references were absent. This milestone builds a minimal responsive shell without claiming to match unseen designs. Existing prompt documents are unchanged.
 
 8. **Station BFF and bounded snapshots.** Milestone 02 adds a single mode-aware read service, shared public contracts, per-mode canonical cache keys, in-flight coalescing, explicit stale metadata, completed-attempt usage counters and a non-destructive snapshot migration. PostgreSQL writes are bounded/idempotent; no background mirror or pruning exists. The AirNow public catalog is insufficient to verify its full wire contract, so production live access remains explicitly unavailable. No external parameter/field guesses were used. See the provider BFF and verification documents.
+
+## Milestone 03: frontend shell and ArcGIS
+
+The shell uses small React components and CSS tokens instead of a new UI library. The four routes share validated History API context. The current ArcGIS 5.1.27 map/zoom Web Components own one persistent 2D view per Map Explorer mount, with explicit disposal and a lazy SDK boundary. Root Vite environment injection is limited to the deliberately public ArcGIS token prefix; server credentials remain in the BFF. Sample identity metadata is usable independently of basemap availability. Station symbols, analysis, wildfire and data-page workflows remain future scope. See [frontend design system](../frontend/design-system.md) and [ArcGIS authentication/lifecycle](../frontend/arcgis-map.md).
