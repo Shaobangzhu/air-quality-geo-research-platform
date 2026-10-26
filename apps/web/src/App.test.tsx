@@ -23,7 +23,10 @@ beforeEach(() => {
         new URL(url, 'http://localhost').searchParams,
       );
       try {
-        return { ok: true, json: async () => await h.service.stations(query) };
+        return {
+          ok: true,
+          json: async () => await h.service.stationReadings(query),
+        };
       } catch {
         return { ok: false };
       }
@@ -67,7 +70,7 @@ it('opens only a selected identity, retains co-located monitors, and returns key
   expect(
     screen.getByRole('button', { name: 'Close station details' }),
   ).toHaveFocus();
-  expect(new URLSearchParams(window.location.search).get('station')).toMatch(
+  expect(new URLSearchParams(window.location.search).get('stationId')).toMatch(
     /^s_/,
   );
   fireEvent.keyDown(drawer, { key: 'Escape' });
@@ -78,7 +81,7 @@ it('collapses legend with semantic expanded state and disables unsupported layer
   render(<App />);
   const legend = screen.getByRole('button', { name: 'Layers & Legend' });
   expect(legend).toHaveAttribute('aria-expanded', 'true');
-  expect(screen.getByLabelText('Monitoring station symbols')).toBeDisabled();
+  expect(screen.getByLabelText('Monitoring station readings')).toBeDisabled();
   expect(screen.getByLabelText('Study extent')).toBeDisabled();
   fireEvent.click(legend);
   expect(legend).toHaveAttribute('aria-expanded', 'false');
@@ -171,7 +174,7 @@ it('rejects malformed and mismatched responses without rendering provider errors
   expect(screen.queryByText(/DO_NOT_DISPLAY/)).not.toBeInTheDocument();
 });
 it('renders a valid empty selection and rejects an absent linked station', async () => {
-  const result = await webHarness().service.stations({ mode: 'sample' });
+  const result = await webHarness().service.stationReadings({ mode: 'sample' });
   result.data = [];
   result.meta.resultState = 'empty';
   result.meta.pagination.total = 0;
@@ -182,7 +185,7 @@ it('renders a valid empty selection and rejects an absent linked station', async
   );
   render(<App />);
   expect(
-    await screen.findByText('No monitor identities match this selection.'),
+    await screen.findByText('No monitor readings match this selection.'),
   ).toBeVisible();
   expect(
     screen.getByText('The linked station is not present in this selection.'),
@@ -190,8 +193,12 @@ it('renders a valid empty selection and rejects an absent linked station', async
   expect(screen.queryByRole('complementary')).not.toBeInTheDocument();
 });
 it('restores a validated sample station deep link and prevents stale data while a new context loads', async () => {
-  const result = await webHarness().service.stations({ mode: 'sample' });
-  window.history.replaceState({}, '', `/map?station=${result.data[0]!.id}`);
+  const result = await webHarness().service.stationReadings({ mode: 'sample' });
+  window.history.replaceState(
+    {},
+    '',
+    `/map?station=${result.data[0]!.station.id}`,
+  );
   render(<App />);
   expect(await screen.findByRole('complementary')).toBeVisible();
   vi.stubGlobal(
@@ -203,5 +210,85 @@ it('restores a validated sample station deep link and prevents stale data while 
   });
   expect(screen.queryByRole('complementary')).not.toBeInTheDocument();
   expect(screen.queryByText('Sample · Synthetic')).not.toBeInTheDocument();
-  expect(screen.getByText('Loading station metadata…')).toBeVisible();
+  expect(screen.getByText('Loading station readings…')).toBeVisible();
+});
+
+it('shows independent readings, source statuses/times and an actionable validated Analyze link without another fetch', async () => {
+  const { rerender } = render(<App />);
+  const options = await screen.findAllByRole('button', { name: /^Inspect/ });
+  const initialRequests = vi.mocked(fetch).mock.calls.length;
+  fireEvent.click(options[0]!);
+  const drawer = screen.getByRole('complementary');
+  expect(drawer).toHaveTextContent('Synthetic sample');
+  expect(
+    within(drawer).getByRole('region', { name: 'AQI observation' }),
+  ).toBeVisible();
+  expect(
+    within(drawer).getByRole('region', { name: 'Concentration observation' }),
+  ).toBeVisible();
+  expect(drawer).toHaveTextContent('unknown');
+  expect(drawer).toHaveTextContent('PST');
+  expect(drawer).toHaveTextContent('2026-01-15T20:00:00Z');
+  const link = within(drawer).getByRole('link', {
+    name: 'Analyze This Station',
+  });
+  expect(link).toHaveAttribute('href', expect.stringContaining('/analysis?'));
+  expect(link).toHaveAttribute('href', expect.stringContaining('stationId=s_'));
+  rerender(<App />);
+  fireEvent.click(screen.getByRole('button', { name: 'Layers & Legend' }));
+  expect(fetch).toHaveBeenCalledTimes(initialRequests);
+  fireEvent.click(link);
+  expect(window.location.pathname).toBe('/analysis');
+  expect(window.location.search).toContain('stationId=s_');
+  expect(screen.getByText(/Selected monitor:/)).toHaveTextContent(
+    'SYNTHETIC SAMPLE',
+  );
+  expect(fetch).toHaveBeenCalledTimes(initialRequests);
+});
+it('updates the metric and synchronized legend without leaking concentration bins into AQI', async () => {
+  render(<App />);
+  await screen.findByText('Sample · Synthetic');
+  expect(screen.getByLabelText('Concentration legend')).toHaveTextContent(
+    'µg/m³',
+  );
+  fireEvent.change(screen.getByLabelText('Map metric'), {
+    target: { value: 'aqi' },
+  });
+  await screen.findByText('Sample · Synthetic');
+  expect(screen.getByLabelText('AQI legend')).toHaveTextContent(
+    '51–100 · Moderate',
+  );
+  expect(
+    screen.queryByLabelText('Concentration legend'),
+  ).not.toBeInTheDocument();
+  expect(String(vi.mocked(fetch).mock.calls.at(-1)?.[0])).toContain(
+    'measurementType=aqi',
+  );
+  expect(parseRoute('?measurementType=invalid').measurementType).toBe(
+    'concentration',
+  );
+});
+it('does not render mismatched context and labels a valid stale response explicitly', async () => {
+  const result = await webHarness().service.stationReadings({ mode: 'sample' });
+  result.meta.cache.status = 'stale';
+  result.meta.cache.staleReason = 'UPSTREAM_NETWORK';
+  vi.stubGlobal(
+    'fetch',
+    vi.fn().mockResolvedValue({ ok: true, json: async () => result }),
+  );
+  render(<App />);
+  expect(
+    await screen.findByText(
+      'Stale cached observations. The source could not be refreshed.',
+    ),
+  ).toBeVisible();
+  fireEvent.change(screen.getByLabelText('Pollutant'), {
+    target: { value: 'O3' },
+  });
+  expect(await screen.findByRole('alert')).toHaveTextContent(
+    'Sample observations unavailable',
+  );
+  expect(
+    screen.queryByRole('button', { name: /^Inspect/ }),
+  ).not.toBeInTheDocument();
 });

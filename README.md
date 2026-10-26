@@ -2,7 +2,7 @@
 
 **Interdisciplinary Research & Software Engineering Workbench — v1**
 
-A local-first TypeScript research/interview PoC. Milestone 03 adds the shared four-page research shell and a persistent ArcGIS 2D Map Explorer to the typed BFF. Sample station metadata is explicitly synthetic; live AirNow access remains contract-unverified. Analysis, wildfire and methodology pages are truthful placeholders. This is not a regulatory or emergency-response tool.
+A local-first TypeScript research/interview PoC. Milestone 04 maps supplied station readings in the persistent ArcGIS Map Explorer, with independent AQI/concentration legends, source-aware details and an Analyze handoff. Sample sites and values are explicitly synthetic; live AirNow access remains contract-unverified. Analysis, wildfire and methodology pages are truthful placeholders. This is not a regulatory or emergency-response tool.
 
 ## Run locally
 
@@ -15,14 +15,14 @@ npm run dev
 
 Open [Map Explorer](http://127.0.0.1:5173/map). API health: [localhost:3001/api/health](http://127.0.0.1:3001/api/health). Vite proxies `/api` to the API. Server startup makes no provider or DB query; opening the map loads local sample metadata and, when configured, ArcGIS basemap tiles. Stop with Ctrl-C. For another API port, set the server-only `AQ_API_PROXY_TARGET` environment variable on the Vite process.
 
-| Route       | Current behavior                                                                     |
-| ----------- | ------------------------------------------------------------------------------------ |
-| `/map`      | ArcGIS 2D shell, filters, collapsible legend and conditional station metadata drawer |
-| `/analysis` | Planned Analysis placeholder                                                         |
-| `/wildfire` | Planned Wildfire Case Study placeholder                                              |
-| `/data`     | Planned Data & Methodology placeholder                                               |
+| Route       | Current behavior                                                                              |
+| ----------- | --------------------------------------------------------------------------------------------- |
+| `/map`      | ArcGIS station readings, metric/filter controls, legend, source-aware drawer and Analyze link |
+| `/analysis` | Validated station context and planned chart placeholder                                       |
+| `/wildfire` | Planned Wildfire Case Study placeholder                                                       |
+| `/data`     | Planned Data & Methodology placeholder                                                        |
 
-`/` shows Map Explorer. URL state preserves validated region/pollutant/mode and optional station/snapshot context. The UI explicitly defaults to Sample and labels the fictional metadata. Select Live or Historical on the map page to see their actual availability; no sample fallback occurs. A missing or rejected ArcGIS token shows a map-unavailable state while station metadata remains usable. Read the [frontend design system](docs/frontend/design-system.md) and [ArcGIS setup/lifecycle](docs/frontend/arcgis-map.md).
+`/` shows Map Explorer. URL state preserves validated region/pollutant/mode and optional station/snapshot context. The UI explicitly defaults to Sample and labels the fictional metadata. Select Live or Historical on the map page to see their actual availability; no sample fallback occurs. A missing or rejected ArcGIS token shows a map-unavailable state while station readings remain usable. Read [station observation semantics](docs/frontend/station-observations.md), the [frontend design system](docs/frontend/design-system.md) and [ArcGIS setup/lifecycle](docs/frontend/arcgis-map.md).
 
 ## Commands
 
@@ -56,7 +56,7 @@ Real `.env` files and DB exports are ignored. Keep `AIRNOW_API_KEY`, `AQS_EMAIL`
 
 `apps/web` → React shell; `apps/api` → Express/config/DB status; `packages/contracts` → browser/Node schemas; `fixtures/synthetic` → fictional examples; `fixtures/historical` → empty official-snapshot reservation; `db/migrations` → SQL; `scripts` → DB tools; `tests` → unit/integration/e2e; `.github/workflows/ci.yml` → quality gate with an isolated ephemeral PostgreSQL service.
 
-Read [architecture](docs/architecture/decisions.md), [provider verification matrix](docs/data-sources/provider-capabilities.md), [scientific semantics](docs/research/data-semantics.md) and [milestone verification](docs/milestones/01-foundation.md). The numbered prompt library is preserved. Prompts 01–03 are implemented with the documented live-contract limitation. Read [BFF endpoints/contracts](docs/architecture/provider-bff.md), [data modes/imports](docs/architecture/data-modes.md), [usage definitions](docs/architecture/api-usage.md), [AirNow evidence](docs/data-sources/airnow-live-verification.md) and the [Prompt 02 report](docs/milestones/02-provider-bff.md). Read the [Prompt 03 report](docs/milestones/03-arcgis-shell.md) for SDK/browser validation. Later milestones cover station/pollutant interaction, time series, reporting areas, wildfire context and export. AI/RAG and cloud hosting are outside Core V1. **GitHub Actions is configured, not verified remotely.**
+Read [architecture](docs/architecture/decisions.md), [provider verification matrix](docs/data-sources/provider-capabilities.md), [scientific semantics](docs/research/data-semantics.md) and [milestone verification](docs/milestones/01-foundation.md). The numbered prompt library is preserved. Prompts 01–04 are implemented with the documented live-contract limitation. Read [BFF endpoints/contracts](docs/architecture/provider-bff.md), [data modes/imports](docs/architecture/data-modes.md), [usage definitions](docs/architecture/api-usage.md), [AirNow evidence](docs/data-sources/airnow-live-verification.md) and the [Prompt 02 report](docs/milestones/02-provider-bff.md). Read the [Prompt 03 report](docs/milestones/03-arcgis-shell.md) for SDK/browser validation. Read the [Prompt 04 report](docs/milestones/04-station-observations.md) for station selection/provenance checks. Later milestones cover workflow refinement, time series, reporting areas, wildfire context and export. AI/RAG and cloud hosting are outside Core V1. **GitHub Actions is configured, not verified remotely.**
 
 ## Troubleshooting
 

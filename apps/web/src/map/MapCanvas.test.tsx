@@ -10,13 +10,29 @@ import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { GREATER_LA } from '@aq/contracts';
 const sdk = vi.hoisted(() => ({
   update: vi.fn(),
+  updateStations: vi.fn(),
   destroy: vi.fn(),
+  select: undefined as undefined | ((ids: string[]) => void),
   status: undefined as undefined | ((value: 'ready' | 'unavailable') => void),
 }));
-const mountMap = vi.fn((_host, _key, _bounds, _visible, status) => {
-  sdk.status = status;
-  return { update: sdk.update, destroy: sdk.destroy };
-});
+const mountMap = vi.fn(
+  (
+    _host,
+    _key,
+    _bounds,
+    _visible,
+    status,
+    select?: (ids: string[]) => void,
+  ) => {
+    sdk.select = select;
+    sdk.status = status;
+    return {
+      update: sdk.update,
+      updateStations: sdk.updateStations,
+      destroy: sdk.destroy,
+    };
+  },
+);
 const loadRuntime = async () => ({ mountMap });
 import { MapCanvas } from './MapCanvas.js';
 beforeEach(() => {
@@ -108,4 +124,44 @@ it('reports successful loading and later tile failure without recreating the vie
   expect(screen.getByText('Basemap unavailable')).toBeVisible();
   expect(mountMap).toHaveBeenCalledOnce();
   expect(sdk.destroy).toHaveBeenCalledOnce();
+});
+
+it('applies latest readings and selection to the existing map without remounting', async () => {
+  const marker = {
+    id: 's_a',
+    longitude: -118.25,
+    latitude: 34.05,
+    symbol: { color: '#00e400', style: 'circle' as const, label: '20 AQI' },
+  };
+  const onSelect = vi.fn();
+  const { rerender } = render(
+    <MapCanvas
+      loadRuntime={loadRuntime}
+      boundaryVisible
+      markers={[marker]}
+      onAvailability={vi.fn()}
+      onSelect={onSelect}
+    />,
+  );
+  await waitFor(() => expect(mountMap).toHaveBeenCalledOnce());
+  expect(sdk.updateStations).toHaveBeenLastCalledWith(
+    [marker],
+    true,
+    undefined,
+  );
+  rerender(
+    <MapCanvas
+      loadRuntime={loadRuntime}
+      boundaryVisible
+      markers={[marker]}
+      selectedId="s_a"
+      stationsVisible={false}
+      onAvailability={vi.fn()}
+      onSelect={onSelect}
+    />,
+  );
+  expect(sdk.updateStations).toHaveBeenLastCalledWith([marker], false, 's_a');
+  sdk.select?.(['s_a']);
+  expect(onSelect).toHaveBeenCalledWith(['s_a']);
+  expect(mountMap).toHaveBeenCalledOnce();
 });

@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { stationsResponseSchema } from '@aq/contracts';
+import { stationReadingsResponseSchema } from '@aq/contracts';
 import type { z } from 'zod';
 import type { RouteState } from './route-state.js';
-export type StationResult = z.infer<typeof stationsResponseSchema>;
+export type StationResult = z.infer<typeof stationReadingsResponseSchema>;
 export type DataState =
   | { status: 'loading' }
   | { status: 'ready'; result: StationResult }
@@ -11,7 +11,7 @@ export function useStations(route: RouteState): DataState {
   const query = new URLSearchParams({
     region: route.region,
     pollutant: route.pollutant,
-    measurementType: 'concentration',
+    measurementType: route.measurementType,
     mode: route.mode,
   });
   if (route.snapshotId) query.set('snapshotId', route.snapshotId);
@@ -33,14 +33,16 @@ export function useStations(route: RouteState): DataState {
     if (route.mode === 'historical' && !route.snapshotId) {
       setState({ key, value: { status: 'error', message: errorMessage } });
     } else {
-      void fetch(`/api/stations?${key}`, { signal: controller.signal })
+      void fetch(`/api/station-readings?${key}`, { signal: controller.signal })
         .then(async (response) => {
           if (!response.ok) throw new Error('Unavailable');
-          const result = stationsResponseSchema.parse(await response.json());
+          const result = stationReadingsResponseSchema.parse(
+            await response.json(),
+          );
           if (
             result.meta.dataMode !== route.mode ||
             result.meta.pollutant !== route.pollutant ||
-            result.meta.measurementType !== 'concentration'
+            result.meta.measurementType !== route.measurementType
           )
             throw new Error('Unexpected context');
           return result;
@@ -62,6 +64,12 @@ export function useStations(route: RouteState): DataState {
       controller.abort();
       clearTimeout(deadline);
     };
-  }, [key, route.mode, route.pollutant, route.snapshotId]);
+  }, [
+    key,
+    route.mode,
+    route.pollutant,
+    route.snapshotId,
+    route.measurementType,
+  ]);
   return state.key === key ? state.value : { status: 'loading' };
 }

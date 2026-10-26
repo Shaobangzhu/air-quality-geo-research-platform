@@ -163,3 +163,63 @@ for (const width of [1440, 1280, 390]) {
     });
   });
 }
+
+test('selects clearly synthetic readings and opens Analyze with validated context and no passive refetch', async ({
+  page,
+  request,
+}) => {
+  const calls: string[] = [];
+  page.on('request', (req) => {
+    if (new URL(req.url()).pathname === '/api/station-readings')
+      calls.push(new URL(req.url()).search);
+  });
+  await page.goto('/map?mode=sample&pollutant=PM2.5');
+  await expect(page.getByLabel('Data status')).toHaveText('Sample · Synthetic');
+  await expect(page.getByLabel('Concentration legend')).toContainText(
+    'Display bins only',
+  );
+  const initial = calls.length;
+  await page
+    .getByRole('button', { name: /^Inspect/ })
+    .first()
+    .click();
+  const drawer = page.getByRole('complementary', { name: 'Station Details' });
+  await expect(drawer).toContainText('Synthetic sample');
+  await expect(
+    drawer.getByRole('region', { name: 'AQI observation', exact: true }),
+  ).toBeVisible();
+  await expect(
+    drawer.getByRole('region', {
+      name: 'Concentration observation',
+      exact: true,
+    }),
+  ).toContainText('µg/m³');
+  await expect(drawer).toContainText('unknown');
+  await expect(drawer).toContainText('2026-01-15T20:00:00Z');
+  await expect(drawer).toContainText('PST');
+  await page.getByRole('button', { name: 'Layers & Legend' }).click();
+  expect(calls).toHaveLength(initial);
+  const link = drawer.getByRole('link', { name: 'Analyze This Station' });
+  const target = new URL(
+    (await link.getAttribute('href'))!,
+    'http://localhost',
+  );
+  expect(target.searchParams.get('stationId')).toMatch(/^s_[a-f0-9]{32}$/);
+  expect(target.searchParams.get('pollutant')).toBe('PM2.5');
+  expect(target.searchParams.get('mode')).toBe('sample');
+  await link.click();
+  await expect(page).toHaveURL(/\/analysis\?.*stationId=s_/);
+  await expect(
+    page.getByRole('heading', { level: 1, name: 'Analysis' }),
+  ).toBeVisible();
+  await expect(page.getByText(/Selected monitor:/)).toContainText(
+    'SYNTHETIC SAMPLE',
+  );
+  expect(calls).toHaveLength(initial);
+  const usage = usageSummarySchema.parse(
+    await (await request.get('/api/usage/summary')).json(),
+  );
+  expect(usage.providers.every((provider) => provider.requests === 0)).toBe(
+    true,
+  );
+});

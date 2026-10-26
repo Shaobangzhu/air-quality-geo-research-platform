@@ -1,4 +1,4 @@
-# Frontend workbench — milestone 03
+# Frontend workbench — milestones 03–04
 
 The four supplied screens in `docs/uiux/` establish the visual direction: white and pale blue surfaces, dark blue text, restrained cobalt actions, rounded panels, a horizontal four-page header, a compact page toolbar and a generous map canvas. They are layout references only. Their stations, measurements, dates and availability badges are not verified data.
 
@@ -25,12 +25,12 @@ Small shared `Icon`, `ModeBadge` and `StationDrawer` components keep shell patte
 
 ## Route responsibilities
 
-| Route         | Implemented responsibility                                                                                                                                                               |
-| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `/` or `/map` | Map Explorer: region/pollutant/product context, page-owned data mode, geographic basemap/engineering extent, collapsible legend, available identity list and conditional metadata drawer |
-| `/analysis`   | Truthful planned-module placeholder; no interactive charts or linked analysis                                                                                                            |
-| `/wildfire`   | Truthful planned-module placeholder; no fire layer, hazard claim or study results                                                                                                        |
-| `/data`       | Truthful planned-module placeholder; no export, source table or usage dashboard                                                                                                          |
+| Route         | Implemented responsibility                                                                                                                                                                                               |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `/` or `/map` | Map Explorer: region/pollutant/product context, page-owned data mode/metric, geographic basemap/engineering extent, station observation layer, collapsible legend, keyboard identity list and conditional reading drawer |
+| `/analysis`   | Validated Analyze selection context; truthful planned chart placeholder                                                                                                                                                  |
+| `/wildfire`   | Truthful planned-module placeholder; no fire layer, hazard claim or study results                                                                                                                                        |
+| `/data`       | Truthful planned-module placeholder; no export, source table or usage dashboard                                                                                                                                          |
 
 There is no fifth page. Unknown paths show a recovery message within the same shell. The header badge reports the selected station context across routes; placeholders explicitly say they display no results. It is not an API health badge or a basemap availability claim.
 
@@ -44,19 +44,19 @@ There is no fifth page. Unknown paths show a recovery message within the same sh
 | `pollutant`  | `PM2.5`, `O3`, `PM10`; defaults to `PM2.5`                                                                 |
 | `product`    | Only `monitoring-stations`                                                                                 |
 | `mode`       | `sample`, `historical`, `live`; defaults explicitly to `sample`, independent of server default             |
-| `station`    | Shared opaque station-ID schema; ignored when malformed, selected only if returned for the current context |
+| `stationId`  | Shared opaque station-ID schema; ignored when malformed, selected only if returned for the current context |
 | `snapshotId` | UUID, preserved only in historical mode                                                                    |
 
-Duplicate values are rejected to defaults. Unknown parameters are ignored and omitted from generated links. Invalid values are never reflected in the UI. Initial URLs are parsed safely; the first navigation/filter action writes the canonical allowed parameters. Datasets, credentials and full station records are never serialized into URLs.
+Canonical station selection uses `stationId`; legacy `station` links remain valid. `measurementType` accepts `aqi` or `concentration` (default). Duplicate values are rejected to defaults. Unknown parameters are ignored and omitted from generated links. Invalid values are never reflected in the UI. Initial URLs are parsed safely; the first navigation/filter action writes the canonical allowed parameters. Datasets, credentials and full station records are never serialized into URLs.
 
-`useStations` requests only `/api/stations`, with explicit mode, concentration semantics and the selected pollutant. BFF defaults provide the bounded 24-hour window and pagination. No station-observation values are fetched or plotted in this milestone. Responses are parsed using `@aq/contracts`, and mode/pollutant/measurement context must match the request. Requests have a 12-second browser deadline and are aborted/ignored on context change or unmount. The result is keyed by request context to prevent transient display of another pollutant or mode. Map navigation, a layer toggle, drawer selection and page navigation do not trigger BFF provider fan-out; the shared context remains mounted across pages. React StrictMode may initiate and cancel an initial development request; the BFF still provides cache/coalescing isolation.
+`useStations` requests only `/api/station-readings`, with explicit mode, selected metric and pollutant. BFF defaults provide the bounded 24-hour window and pagination. Latest supplied AQI/concentration records drive the map symbols and detail drawer. Responses are parsed using `@aq/contracts`, and mode/pollutant/measurement context must match the request. Requests have a 12-second browser deadline and are aborted/ignored on context change or unmount. The result is keyed by request context to prevent transient display of another pollutant or mode. Map navigation, a layer toggle, drawer selection and page navigation do not trigger BFF provider fan-out; the shared context remains mounted across pages. React StrictMode may initiate and cancel an initial development request; the BFF still provides cache/coalescing isolation.
 
-Sample has three fictional monitor identities per pollutant, including co-located monitors. Each is labeled synthetic; coordinate equality does not merge identity. The identity list is usable even without tiles. The engineering extent is the only rendered operational layer. The station-symbol checkbox is visibly disabled pending Prompt 04. No AQI category colors, concentration scale, measurements or source-provenance table are fabricated.
+Sample has three fictional monitor identities per pollutant, including co-located monitors. Each is labeled synthetic; coordinate equality does not merge identity. The identity list is usable even without tiles. The engineering extent and one station-readings layer are rendered. Both have functional visibility controls when tiles are available. AQI colors and independent concentration display bins follow the supplied readings; neutral symbols mark missing/stale/ambiguous records. See [station observation semantics](station-observations.md).
 
-Live requests currently produce the BFF's contract-unverified error. Historical mode requires an official `snapshotId`; no synthetic fallback occurs. The mode selector clears station/snapshot context when explicitly switching modes. A valid historical deep link retains its UUID. Empty results remain explicit. Stale metadata receives a visible stale warning, and a truncated page says additional identities are not displayed.
+Live requests currently produce the BFF's contract-unverified error. Historical mode requires an official `snapshotId`; no synthetic fallback occurs. The mode selector clears station/snapshot context when explicitly switching modes. A valid historical deep link retains its UUID. Empty results remain explicit. Stale observations receive a visible stale warning, and a truncated page says additional identities are not displayed.
 
 ## Viewport support
 
-Primary review targets are **1440×900 and 1280×900**. At these widths the header uses a compact brand/status row plus horizontal navigation, and the selected drawer sits to the right of the map. Larger desktops can use a single header row. At ≤1100px filters reflow; at ≤750px navigation becomes a two-column grid, filters stack and the drawer follows the map. A 390×900 smoke check verifies overflow and navigation. The minimum supported CSS width is 320px; 320px and other browser engines were not separately verified. Pages may scroll vertically. All three checked widths retain usable controls with and without selection.
+Primary review targets are **1440×900 and 1280×900**. At these widths the header uses a compact brand/status row plus horizontal navigation, and the selected drawer sits to the right of the map. Larger desktops can use a single header row. At ≤1100px filters reflow; at ≤750px navigation becomes a two-column grid, filters stack and the drawer follows the map. A 390×900 smoke check verifies overflow and navigation. The minimum supported CSS width is 320px; 320px and other browser engines were not separately verified. Pages may scroll vertically. Desktop drawers scroll internally and remain sticky; narrow drawers stack without an internal height cap. All three checked widths retain usable controls with and without selection.
 
-See [ArcGIS lifecycle and authentication](arcgis-map.md) and the [milestone report](../milestones/03-arcgis-shell.md).
+See [ArcGIS lifecycle and authentication](arcgis-map.md) and the [station milestone report](../milestones/04-station-observations.md).

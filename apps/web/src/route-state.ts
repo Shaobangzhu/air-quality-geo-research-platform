@@ -1,5 +1,6 @@
 import {
   dataModeSchema,
+  measurementTypeSchema,
   pollutantSchema,
   stationIdSchema,
 } from '@aq/contracts';
@@ -45,7 +46,12 @@ export function parseRoute(search: string) {
     pollutant: pollutantSchema.safeParse(one('pollutant')).data ?? 'PM2.5',
     product: 'monitoring-stations' as const,
     mode,
-    station: stationIdSchema.safeParse(one('station')).data,
+    measurementType:
+      measurementTypeSchema.safeParse(one('measurementType')).data ??
+      'concentration',
+    station: stationIdSchema.safeParse(
+      params.has('stationId') ? one('stationId') : one('station'),
+    ).data,
     snapshotId:
       mode === 'historical'
         ? z.uuid().safeParse(one('snapshotId')).data
@@ -63,8 +69,9 @@ export function routeSearch(state: RouteState) {
     pollutant: state.pollutant,
     product: state.product,
     mode: state.mode,
+    measurementType: state.measurementType,
   });
-  if (state.station) params.set('station', state.station);
+  if (state.station) params.set('stationId', state.station);
   if (state.snapshotId && state.mode === 'historical')
     params.set('snapshotId', state.snapshotId);
   return `?${params}`;
@@ -74,4 +81,13 @@ export const modeNames = {
   sample: 'Sample',
   historical: 'Historical',
   live: 'Live',
+} as const;
+
+export function analysisHref(state: RouteState, stationId: string) {
+  return `/analysis${routeSearch({ ...state, station: stationIdSchema.parse(stationId) })}`;
+}
+export const modeDescriptions = {
+  sample: 'Synthetic sample',
+  historical: 'Stored historical snapshot',
+  live: 'Verified live observations',
 } as const;

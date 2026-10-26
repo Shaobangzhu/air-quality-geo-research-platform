@@ -8,15 +8,16 @@ The current production AirNow boundary is deliberately **contract-unverified**. 
 
 All public operations are GET. Region, product, dataset, station, observation, usage and error shapes have shared Zod schemas. Invalid inputs return a static, typed error without reflecting their values.
 
-| Route                            | Response / behavior                                                                                                   |
-| -------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| `/api/health`                    | API liveness, safe DB connectivity and configured-mode capability; no provider request                                |
-| `/api/regions`                   | `regionsResponseSchema`; the frozen Greater LA EPSG:4326 engineering extent                                           |
-| `/api/data-products`             | `productsResponseSchema`; station observations only, with explicit mode limitations                                   |
-| `/api/stations`                  | `stationsResponseSchema`; monitoring identities discovered in the selected observations                               |
-| `/api/stations/:id/observations` | `observationsResponseSchema`; one station plus normalized observation revisions                                       |
-| `/api/datasets`                  | `datasetsResponseSchema`; local snapshot metadata, static source evidence levels and the synthetic fixture descriptor |
-| `/api/usage/summary`             | `usageSummarySchema`; completed HTTP attempts and cache counters since process start                                  |
+| Route                            | Response / behavior                                                                                                         |
+| -------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `/api/health`                    | API liveness, safe DB connectivity and configured-mode capability; no provider request                                      |
+| `/api/regions`                   | `regionsResponseSchema`; the frozen Greater LA EPSG:4326 engineering extent                                                 |
+| `/api/data-products`             | `productsResponseSchema`; station observations only, with explicit mode limitations                                         |
+| `/api/station-readings`          | `stationReadingsResponseSchema`; latest supplied revisions per metric for the map, reusing the existing bounded batch cache |
+| `/api/stations`                  | `stationsResponseSchema`; monitoring identities discovered in the selected observations                                     |
+| `/api/stations/:id/observations` | `observationsResponseSchema`; one station plus normalized observation revisions                                             |
+| `/api/datasets`                  | `datasetsResponseSchema`; local snapshot metadata, static source evidence levels and the synthetic fixture descriptor       |
+| `/api/usage/summary`             | `usageSummarySchema`; completed HTTP attempts and cache counters since process start                                        |
 
 Station queries accept only:
 
@@ -92,3 +93,7 @@ Errors follow `{ error: { code, message, retryable } }`. Validation/range/snapsh
 AirNow/AQS/OpenAI secrets remain server-only. Source references are credential-free official HTTPS references with no query/userinfo, or the named synthetic fixture identifier. Normalization rejects reflected configured secrets and credential query fragments. Unknown raw objects are never persisted as diagnostics. No access logs with URLs, keys or client IPs are introduced. The browser ArcGIS credential exception and its future SDK integration remain unchanged.
 
 Usage semantics, including the precise cache denominator and HTTP latency definition, are documented in [API usage](api-usage.md). DB queries and client ArcGIS tile calls are not counted as outbound AirNow/AQS calls.
+
+## Milestone 04 map read
+
+`/api/station-readings` uses the same query schema/cache/repository as station discovery. It returns each available identity with all latest supplied revisions separately for AQI and concentration; ties retain different periods/conflicts. A missing latest value never selects an older non-null value. The requested metric controls the upstream query/cache key; a counterpart appears only if actually present in that batch. No second provider fetch or AQI computation is used to fill it. Response schema bounds/validates IDs, source/mode, coordinates and requested context. See [map semantics and provenance](../frontend/station-observations.md).

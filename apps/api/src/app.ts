@@ -47,6 +47,11 @@ export function createApp(options: {
     app.get('/api/data-products', noQuery, (_req, res) => {
       res.json(bff.products());
     });
+    app.get('/api/station-readings', async (req, res) => {
+      res
+        .set('Cache-Control', 'no-store')
+        .json(await bff.stationReadings(req.query));
+    });
     app.get('/api/stations', async (req, res) => {
       res.set('Cache-Control', 'no-store').json(await bff.stations(req.query));
     });

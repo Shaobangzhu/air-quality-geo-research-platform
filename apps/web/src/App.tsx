@@ -86,7 +86,12 @@ export function App() {
       </header>
       <main id="main" ref={main} tabIndex={-1}>
         {location.path === '/map' ? (
-          <MapExplorer route={location.route} data={data} change={change} />
+          <MapExplorer
+            route={location.route}
+            data={data}
+            change={change}
+            analyze={(event) => navigate(event, '/analysis')}
+          />
         ) : (
           <section className="placeholder-page">
             <p className="eyebrow">RESEARCH WORKBENCH · PLANNED MODULE</p>
@@ -95,6 +100,20 @@ export function App() {
             <p>
               {page?.description ?? 'Choose one of the four workbench pages.'}
             </p>
+            {location.path === '/analysis' && location.route.station && (
+              <p className="analysis-selection" role="status">
+                Selected monitor:{' '}
+                {data.status === 'ready'
+                  ? (data.result.data.find(
+                      (reading) =>
+                        reading.station.id === location.route.station,
+                    )?.station.name ?? 'Not present in this selection')
+                  : 'Availability not confirmed'}
+                <br />
+                {location.route.pollutant} · {location.route.mode} ·{' '}
+                {location.route.station}
+              </p>
+            )}
             <div className="placeholder-message">
               <h2>
                 {page ? 'This workspace is planned' : 'Return to the workbench'}

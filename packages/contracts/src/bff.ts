@@ -320,6 +320,67 @@ export const stationsResponseSchema = z.strictObject({
   data: z.array(stationSchema),
   meta: responseMetaSchema,
 });
+// Latest supplied revisions for each metric, retaining ties/period distinctions.
+export const stationReadingSchema = z.strictObject({
+  station: stationSchema,
+  observations: z.array(observationSchema).max(2000),
+});
+export const stationReadingsResponseSchema = z
+  .strictObject({
+    data: z.array(stationReadingSchema).max(500),
+    meta: responseMetaSchema,
+  })
+  .superRefine(({ data, meta }, ctx) => {
+    const ids = new Set<string>();
+    let count = 0;
+    for (const reading of data) {
+      const { station } = reading;
+      const { longitude, latitude } = station.coordinate;
+      if (
+        ids.has(station.id) ||
+        longitude < meta.bbox.west ||
+        longitude > meta.bbox.east ||
+        latitude < meta.bbox.south ||
+        latitude > meta.bbox.north
+      )
+        ctx.addIssue({
+          code: 'custom',
+          message: 'Invalid map identity or extent.',
+        });
+      ids.add(station.id);
+      for (const row of reading.observations) {
+        count++;
+        if (
+          row.stationId !== station.id ||
+          row.measurement.pollutant !== meta.pollutant ||
+          row.dataMode !== meta.dataMode ||
+          row.provenance.sourceId !== meta.sourceId ||
+          row.provenance.sourceAgency !== station.sourceAgency ||
+          row.provenance.transportProvider !== station.identity.provider ||
+          Date.parse(row.observedAt) < Date.parse(meta.window.from) ||
+          Date.parse(row.observedAt) >= Date.parse(meta.window.to) ||
+          (meta.dataMode === 'sample'
+            ? row.provenance.origin !== 'synthetic' ||
+              !station.identity.nativeSiteId.startsWith('SAMPLE-')
+            : row.provenance.origin !==
+                (meta.dataMode === 'live'
+                  ? 'provider-live'
+                  : 'official-historical') ||
+              station.identity.provider === 'synthetic')
+        )
+          ctx.addIssue({
+            code: 'custom',
+            message: 'Reading does not match map context.',
+          });
+      }
+    }
+    if (count > 2000)
+      ctx.addIssue({ code: 'custom', message: 'Too many map revisions.' });
+  });
+export type StationReading = z.infer<typeof stationReadingSchema>;
+export type StationReadingsResponse = z.infer<
+  typeof stationReadingsResponseSchema
+>;
 export const observationsResponseSchema = z.strictObject({
   data: z.strictObject({
     station: stationSchema,

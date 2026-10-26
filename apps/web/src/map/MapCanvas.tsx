@@ -3,6 +3,8 @@ import { GREATER_LA } from '@aq/contracts';
 import { Icon } from '../components/Icon.js';
 import type { Bounds, MapHandle, mountMap } from './arcgis-runtime.js';
 
+import type { StationMarker } from './station-presentation.js';
+const EMPTY_MARKERS: StationMarker[] = [];
 type RuntimeLoader = () => Promise<{ mountMap: typeof mountMap }>;
 const loadArcgis: RuntimeLoader = () => import('./arcgis-runtime.js');
 
@@ -11,16 +13,40 @@ export function MapCanvas({
   boundaryVisible,
   onAvailability,
   loadRuntime = loadArcgis,
+  markers = EMPTY_MARKERS,
+  stationsVisible = true,
+  selectedId,
+  onSelect,
 }: {
   bounds?: Bounds;
   boundaryVisible: boolean;
   onAvailability: (available: boolean) => void;
   loadRuntime?: RuntimeLoader;
+  markers?: StationMarker[];
+  stationsVisible?: boolean;
+  selectedId?: string | undefined;
+  onSelect?: ((ids: string[]) => void) | undefined;
 }) {
   const host = useRef<HTMLDivElement>(null);
   const handle = useRef<MapHandle | null>(null);
-  const latest = useRef({ bounds, boundaryVisible, onAvailability });
-  latest.current = { bounds, boundaryVisible, onAvailability };
+  const latest = useRef({
+    bounds,
+    boundaryVisible,
+    onAvailability,
+    markers,
+    stationsVisible,
+    selectedId,
+    onSelect,
+  });
+  latest.current = {
+    bounds,
+    boundaryVisible,
+    onAvailability,
+    markers,
+    stationsVisible,
+    selectedId,
+    onSelect,
+  };
   const key = import.meta.env.VITE_ARCGIS_API_KEY?.trim();
   const enabled = Boolean(key);
   const [state, setState] = useState<'loading' | 'ready' | 'unavailable'>(
@@ -57,6 +83,12 @@ export function MapCanvas({
               latest.current.onAvailability(true);
             }
           },
+          (ids) => latest.current.onSelect?.(ids),
+        );
+        handle.current.updateStations(
+          latest.current.markers,
+          latest.current.stationsVisible,
+          latest.current.selectedId,
         );
         if (failed) {
           handle.current.destroy();
@@ -74,6 +106,9 @@ export function MapCanvas({
   useEffect(() => {
     handle.current?.update(bounds, boundaryVisible);
   }, [bounds, boundaryVisible]);
+  useEffect(() => {
+    handle.current?.updateStations(markers, stationsVisible, selectedId);
+  }, [markers, stationsVisible, selectedId]);
   return (
     <div className="map-canvas" aria-label="Map canvas">
       <div className="arcgis-host" ref={host} />
@@ -100,7 +135,7 @@ export function MapCanvas({
             {bounds.north}°
           </span>
           <p className="fallback-note">
-            Station metadata remains available below. This view has no offline
+            Station readings remain available below. This view has no offline
             tile cache.
           </p>
         </div>

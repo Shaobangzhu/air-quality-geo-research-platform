@@ -6,6 +6,7 @@ import {
   regionsResponseSchema,
   stationIdSchema,
   stationsResponseSchema,
+  stationReadingsResponseSchema,
   usageSummarySchema,
 } from '@aq/contracts';
 import type { Batch, DataMode, ErrorCode, ResponseMeta } from '@aq/contracts';
@@ -41,7 +42,7 @@ export class BffService {
         mode,
         state: 'available' as const,
         label:
-          'SYNTHETIC SAMPLE fixtures available through the read-only API; visual modules remain planned.',
+          'SYNTHETIC SAMPLE station observations available through the read-only API.',
       };
     return {
       mode,
@@ -212,13 +213,15 @@ export class BffService {
         )
         .map((s) => s.id),
     );
-    const observations = cached.batch.observations.filter(
+    const allObservations = cached.batch.observations.filter(
       (row) =>
         stationIds.has(row.stationId) &&
         row.measurement.pollutant === query.pollutant &&
-        row.measurement.kind === query.measurementType &&
         Date.parse(row.observedAt) >= Date.parse(effectiveFrom) &&
         Date.parse(row.observedAt) < Date.parse(effectiveTo),
+    );
+    const observations = allObservations.filter(
+      (row) => row.measurement.kind === query.measurementType,
     );
     const present = new Set(observations.map((row) => row.stationId));
     const stations = cached.batch.stations.filter((station) =>
@@ -228,6 +231,7 @@ export class BffService {
       query,
       cached,
       observations,
+      allObservations,
       stations,
       window: { from: effectiveFrom, to: effectiveTo },
       bbox,
@@ -314,6 +318,42 @@ export class BffService {
         result.query.offset + result.query.limit,
       ),
       meta: this.meta(result, result.stations.length, result.observations),
+    });
+  }
+  async stationReadings(raw: unknown) {
+    const result = await this.load(raw);
+    const byStation = new Map<string, Batch['observations']>();
+    for (const row of result.allObservations) {
+      const rows = byStation.get(row.stationId) ?? [];
+      rows.push(row);
+      byStation.set(row.stationId, rows);
+    }
+    const readings = result.cached.batch.stations
+      .filter((station) => byStation.has(station.id))
+      .map((station) => {
+        const rows = byStation.get(station.id)!;
+        const observations: Batch['observations'] = [];
+        for (const kind of ['aqi', 'concentration'] as const) {
+          const metric = rows.filter((row) => row.measurement.kind === kind);
+          const latest = Math.max(
+            ...metric.map((row) => Date.parse(row.observedAt)),
+          );
+          // Never fall back to an older non-null reading or select an arbitrary tie.
+          observations.push(
+            ...metric.filter((row) => Date.parse(row.observedAt) === latest),
+          );
+        }
+        return {
+          station,
+          observations: observations.sort((a, b) => a.id.localeCompare(b.id)),
+        };
+      });
+    return stationReadingsResponseSchema.parse({
+      data: readings.slice(
+        result.query.offset,
+        result.query.offset + result.query.limit,
+      ),
+      meta: this.meta(result, readings.length, result.allObservations),
     });
   }
   async observations(id: unknown, raw: unknown) {
