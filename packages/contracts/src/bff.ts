@@ -447,6 +447,7 @@ const cacheCountersSchema = z.strictObject({
   staleResponses: z.number().int().nonnegative(),
 });
 export const usageSummarySchema = z.strictObject({
+  lastUpdatedAt: utcTimestampSchema,
   startedAt: utcTimestampSchema,
   scope: z.literal('since-process-start'),
   definitions: z.strictObject({
@@ -460,6 +461,7 @@ export const usageSummarySchema = z.strictObject({
     z.strictObject({
       provider: z.enum(['airnow', 'aqs']),
       requests: z.number().int().nonnegative(),
+      inFlight: z.number().int().nonnegative(),
       successes: z.number().int().nonnegative(),
       failures: z.number().int().nonnegative(),
       totalLatencyMs: z.number().nonnegative(),

@@ -117,7 +117,9 @@ it('renders category-only date forecasts and unknown issuance without creating o
   const count = calls.length;
   fireEvent.click(link);
   expect(window.location.pathname).toBe('/data');
-  expect(calls).toHaveLength(count);
+  expect(calls.filter((url) => !url.startsWith('/api/data/'))).toHaveLength(
+    count,
+  );
 });
 it('disables official modes, keeps explicit unavailable state, and never falls back to station samples', async () => {
   window.history.replaceState({}, '', '/map?product=forecast&mode=live');

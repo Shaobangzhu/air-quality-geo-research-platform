@@ -1,3 +1,5 @@
+import { readFile } from 'node:fs/promises';
+import { jsonExportSchema } from '@aq/contracts';
 import { expect, test } from '@playwright/test';
 import {
   observationsResponseSchema,
@@ -80,7 +82,7 @@ test('starts both local services, browses sample identities and preserves contex
       page.getByRole('navigation').getByRole('link', { name: name! }),
     ).toHaveAttribute('aria-current', 'page');
     await expect(page.getByLabel('Data status')).toHaveText(
-      'Sample · Synthetic',
+      path === '/data' ? 'Data transparency' : 'Sample · Synthetic',
     );
   }
   const usage = usageSummarySchema.parse(
@@ -581,9 +583,11 @@ test('explores the official Eaton case offline with static layers, honest checkp
   await page.getByRole('link', { name: 'View Data & Methodology' }).click();
   await expect(page).toHaveURL(/\/data\?.*case=eaton-fire-2025/);
   await expect(
-    page.getByRole('heading', { name: 'Eaton Fire historical case' }),
+    page.getByRole('heading', { name: 'Integrated data sources' }),
   ).toBeVisible();
-  await expect(page.getByText(/71 supplied hourly rows of 72/)).toBeVisible();
+  await page.getByRole('tab', { name: 'Data Preview & Export' }).click();
+  await page.getByRole('button', { name: 'Load preview' }).click();
+  await expect(page.getByText(/71 selected records · fetched/)).toBeVisible();
   expect(external).toEqual([]);
 });
 test('isolates unsupported wildfire modes and reports missing assets without a fallback', async ({
@@ -610,4 +614,108 @@ test('isolates unsupported wildfire modes and reports missing assets without a f
     page.getByText('BLOCKED — verified case unavailable'),
   ).toBeVisible();
   await expect(page.getByLabel('Context selection')).toHaveCount(0);
+});
+
+test('uses four Data tabs, previews and downloads a pinned subset with embedded provenance', async ({
+  page,
+}) => {
+  const external: string[] = [];
+  page.on('request', (r) => {
+    if (!['127.0.0.1', 'localhost'].includes(new URL(r.url()).hostname))
+      external.push(new URL(r.url()).hostname);
+  });
+  await page.goto('/data?mode=sample');
+  await expect(page.getByRole('tab')).toHaveCount(4);
+  await expect(page.getByRole('tabpanel')).toHaveCount(1);
+  await page
+    .getByRole('button', { name: /View source Eaton study · EPA/ })
+    .click();
+  await expect(
+    page.getByRole('complementary', { name: 'Source details' }),
+  ).toContainText('row certification unknown');
+  await page.getByRole('tab', { name: 'Data Preview & Export' }).click();
+  await expect(page.getByRole('complementary')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Load preview' }).click();
+  await expect(page.getByRole('button', { name: 'Export JSON' })).toBeVisible();
+  const preview = await (
+    await page.request.get(
+      '/api/data/preview?dataset=sample-stations&region=greater-la&pollutant=PM2.5&measurementType=concentration',
+    )
+  ).json();
+  const jsonDownload = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Export JSON' }).click();
+  const jsonFile = await jsonDownload;
+  expect(jsonFile.suggestedFilename()).toMatch(
+    /^aq-sample-stations-[a-f0-9]{12}\.json$/,
+  );
+  const exported = jsonExportSchema.parse(
+    JSON.parse(await readFile((await jsonFile.path())!, 'utf8')),
+  );
+  expect(exported.manifest.selectionHash).toBe(preview.manifest.selectionHash);
+  expect(exported.data.slice(0, 10)).toEqual(preview.data);
+  expect(exported.manifest.dataMode).toBe('sample');
+  const csvDownload = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Export CSV' }).click();
+  const csvFile = await csvDownload;
+  const csv = await readFile((await csvFile.path())!, 'utf8');
+  expect(csv).toContain('"manifest"');
+  expect(csv).toContain(exported.manifest.selectionHash);
+  expect(csv).toContain('"\\N"');
+  for (const width of [1440, 1280, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+  }
+  await page.getByRole('tab', { name: 'Scientific Methodology' }).click();
+  await page
+    .getByText('Fire Hazard Severity Zones (FHSZ)', { exact: true })
+    .click();
+  await expect(page.getByText(/Unmapped is not Low/)).toBeVisible();
+  await expect(page.getByRole('tabpanel')).toHaveCount(1);
+  expect(external).toEqual([]);
+});
+test('shows measured since-start cache outcomes after known local BFF reads and excludes ArcGIS billing', async ({
+  page,
+  request,
+}) => {
+  const before = usageSummarySchema.parse(
+    await (await request.get('/api/usage/summary')).json(),
+  );
+  const key =
+    '/api/station-readings?mode=sample&pollutant=PM10&measurementType=concentration&windowHours=19&endAt=2026-01-15T20:00:00Z';
+  expect((await request.get(key)).ok()).toBe(true);
+  expect((await request.get(key)).ok()).toBe(true);
+  const after = usageSummarySchema.parse(
+    await (await request.get('/api/usage/summary')).json(),
+  );
+  expect(after.cache.misses).toBe(before.cache.misses + 1);
+  expect(after.cache.hits).toBe(before.cache.hits + 1);
+  expect(
+    after.providers.every((p) => p.requests === 0 && p.failures === 0),
+  ).toBe(true);
+  const usageResponse = page.waitForResponse(
+    (r) => new URL(r.url()).pathname === '/api/usage/summary',
+  );
+  await page.goto('/data?tab=usage');
+  const response = await usageResponse;
+  const current = response
+    ? usageSummarySchema.parse(await response.json())
+    : usageSummarySchema.parse(
+        await (await request.get('/api/usage/summary')).json(),
+      );
+  await expect(
+    page.getByText('Outbound attempts', { exact: true }).locator('..'),
+  ).toContainText(
+    String(current.providers.reduce((a, p) => a + p.requests, 0)),
+  );
+  await expect(page.getByText('ArcGIS (client)')).toBeVisible();
+  await expect(page.getByText(/Not tracked locally/)).toBeVisible();
+  await expect(page.getByText(/Counters reset whenever/)).toBeVisible();
+  await page.getByRole('button', { name: 'Refresh usage' }).click();
+  await expect(
+    page.getByText('Failed outbound', { exact: true }).locator('..'),
+  ).toContainText('0');
 });

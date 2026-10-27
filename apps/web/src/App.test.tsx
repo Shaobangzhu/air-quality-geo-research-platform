@@ -151,7 +151,9 @@ it('handles popstate and changes pollutant using one bounded BFF request per con
   expect(
     screen.getByRole('heading', { name: 'Data & Methodology' }),
   ).toBeVisible();
-  await screen.findByText('Sample · Synthetic');
+  expect(screen.getByLabelText('Data status')).toHaveTextContent(
+    'Data transparency',
+  );
 });
 it('shows unavailable live and missing historical snapshot without fallback', async () => {
   window.history.replaceState({}, '', '/map?mode=live');

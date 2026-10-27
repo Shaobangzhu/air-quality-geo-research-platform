@@ -1,4 +1,5 @@
-import { Wildfire, CaseSources, useWildfire } from './wildfire/Wildfire.js';
+import { DataWorkbench } from './data/DataWorkbench.js';
+import { Wildfire, useWildfire } from './wildfire/Wildfire.js';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { MouseEvent } from 'react';
 import { pages, parseRoute, routeSearch, routeForPage } from './route-state.js';
@@ -33,25 +34,22 @@ export function App() {
     location.route,
     location.path !== '/analysis' &&
       location.path !== '/wildfire' &&
-      !(location.path === '/data' && location.route.caseId) &&
+      location.path !== '/data' &&
       location.route.product === 'monitoring-stations',
   );
   const areas = useAreaProducts(
     location.route,
     location.path !== '/analysis' &&
       location.path !== '/wildfire' &&
-      !(location.path === '/data' && location.route.caseId) &&
+      location.path !== '/data' &&
       location.route.product !== 'monitoring-stations',
   );
   const analysis = useAnalysis(location.route, location.path === '/analysis');
   const wildfire = useWildfire(
-    location.path === '/wildfire' ||
-      (location.path === '/data' && !!location.route.caseId),
+    location.path === '/wildfire',
     location.route.mode,
   );
-  const caseActive =
-    location.path === '/wildfire' ||
-    (location.path === '/data' && !!location.route.caseId);
+  const caseActive = location.path === '/wildfire';
   const page = pages.find((item) => item.path === location.path);
   const main = useRef<HTMLElement>(null);
   useEffect(() => {
@@ -151,23 +149,29 @@ export function App() {
             </a>
           ))}
         </nav>
-        <ModeBadge
-          data={
-            caseActive
-              ? wildfire.status === 'ready'
-                ? {
-                    status: 'ready',
-                    result: { meta: { dataMode: 'historical' } },
-                  }
-                : { status: wildfire.status }
-              : location.path === '/analysis'
-                ? analysis
-                : location.route.product === 'monitoring-stations'
-                  ? data
-                  : areas
-          }
-          mode={location.route.mode}
-        />
+        {location.path === '/data' ? (
+          <div className="mode-badge" role="status" aria-label="Data status">
+            Data transparency
+          </div>
+        ) : (
+          <ModeBadge
+            data={
+              caseActive
+                ? wildfire.status === 'ready'
+                  ? {
+                      status: 'ready',
+                      result: { meta: { dataMode: 'historical' } },
+                    }
+                  : { status: wildfire.status }
+                : location.path === '/analysis'
+                  ? analysis
+                  : location.route.product === 'monitoring-stations'
+                    ? data
+                    : areas
+            }
+            mode={location.route.mode}
+          />
+        )}
       </header>
       <main id="main" ref={main} tabIndex={-1}>
         {location.path === '/map' ? (
@@ -193,24 +197,12 @@ export function App() {
             openHistorical={() => change({ mode: 'historical' })}
             navigate={navigate}
           />
-        ) : location.path === '/data' && location.route.caseId ? (
-          <section className="wildfire-page">
-            <h1>Data &amp; Methodology</h1>
-            <div className="case-card">
-              <h2>Eaton Fire historical case</h2>
-              {wildfire.result ? (
-                <CaseSources data={wildfire.result} />
-              ) : (
-                <p>Verified case data unavailable in this mode.</p>
-              )}
-              <a
-                href="/wildfire?mode=historical"
-                onClick={(e) => navigate(e, '/wildfire')}
-              >
-                Return to the historical case
-              </a>
-            </div>
-          </section>
+        ) : location.path === '/data' ? (
+          <DataWorkbench
+            route={location.route}
+            change={change}
+            navigate={navigate}
+          />
         ) : (
           <section className="placeholder-page">
             <p className="eyebrow">RESEARCH WORKBENCH · PLANNED MODULE</p>

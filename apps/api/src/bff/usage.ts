@@ -3,6 +3,7 @@ import type { DataMode } from '@aq/contracts';
 type Provider = 'airnow' | 'aqs';
 type Counters = {
   requests: number;
+  inFlight: number;
   successes: number;
   failures: number;
   totalLatencyMs: number;
@@ -12,6 +13,7 @@ type Counters = {
 };
 const counters = (): Counters => ({
   requests: 0,
+  inFlight: 0,
   successes: 0,
   failures: 0,
   totalLatencyMs: 0,
@@ -27,14 +29,21 @@ export class Usage {
     historical: { hits: 0, misses: 0, coalesced: 0, staleResponses: 0 },
     live: { hits: 0, misses: 0, coalesced: 0, staleResponses: 0 },
   };
-  constructor(now: () => number = Date.now) {
+  constructor(private readonly now: () => number = Date.now) {
     this.startedAt = new Date(now()).toISOString();
   }
-  attempt(provider: Provider, success: boolean, latencyMs: number) {
+  startAttempt(provider: Provider) {
     const metric = this.providers[provider];
     metric.requests++;
-    metric[success ? 'successes' : 'failures']++;
-    metric.totalLatencyMs += Math.max(0, latencyMs);
+    metric.inFlight++;
+    let completed = false;
+    return (success: boolean, latencyMs: number) => {
+      if (completed) return;
+      completed = true;
+      metric.inFlight--;
+      metric[success ? 'successes' : 'failures']++;
+      metric.totalLatencyMs += Math.max(0, latencyMs);
+    };
   }
   lookup(mode: DataMode, outcome: 'hit' | 'miss' | 'coalesced') {
     const counters = this.modes[mode];
@@ -65,23 +74,27 @@ export class Usage {
     );
     return {
       startedAt: this.startedAt,
+      lastUpdatedAt: new Date(this.now()).toISOString(),
       scope: 'since-process-start' as const,
       definitions: {
         requests:
-          'Completed outbound HTTP attempts, including retries. Successful attempts require 2xx, a bounded readable body and successful decoder validation. Empty validated payloads count as success.',
+          'Outbound HTTP attempts counted immediately before each send, including retries; inFlight counts unresolved attempts. Successful attempts require 2xx, a bounded readable body and successful decoder validation. Empty validated payloads count as success.',
         latency:
-          'Total attempt latency, including body read and validation, excluding retry backoff. Average = totalLatencyMs / completed requests; null with no attempts.',
+          'Total attempt latency, including body read and validation, excluding retry backoff. Average = totalLatencyMs / completed requests; null with no completed attempts.',
         cache:
-          'Hits are fresh memory-cache returns; misses start one load/revalidation; coalesced requests join an existing load and are counted separately.',
+          'Instrumented station/area TTL caches: hits are fresh memory-cache returns; misses start one load/revalidation; coalesced requests join an existing load and are counted separately.',
         hitRate:
           'hits / (hits + misses), excluding coalesced requests; null when denominator is zero.',
         exclusions:
-          'PostgreSQL reads, synthetic fixtures, documentation reads and client-side ArcGIS requests are not outbound provider attempts. Sample/historical cache decisions are never attributed to AirNow/AQS.',
+          'PostgreSQL reads, synthetic fixtures, documentation reads and client-side ArcGIS requests are not outbound provider attempts. Curated-file memoization and browser/DB caches are outside the TTL-cache counters. Sample/historical cache decisions are never attributed to AirNow/AQS.',
       },
       providers: Object.entries(this.providers).map(([provider, m]) => ({
         provider,
         ...m,
-        averageLatencyMs: m.requests ? m.totalLatencyMs / m.requests : null,
+        averageLatencyMs:
+          m.successes + m.failures
+            ? m.totalLatencyMs / (m.successes + m.failures)
+            : null,
       })),
       cache: {
         ...total,

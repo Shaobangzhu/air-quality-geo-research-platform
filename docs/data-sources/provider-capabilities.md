@@ -77,3 +77,7 @@ For each future adapter, attach the exact official specification URL and review 
 Prompt 02 execution detail: [AirNow live verification](airnow-live-verification.md). Keys are locally present, but the smoke opt-in flag remains false. All provider HTTP verification was mocked; the runtime live guard sends no request. Existing capability evidence levels remain unchanged.
 
 Milestone 07 adds separate reporting-area/forecast application contracts and explicitly synthetic Map modes. Official new-service contracts remain unverified and live/archive paths remain unavailable. See the [per-product evidence/decision table](airnow-area-products-verification.md); no authenticated endpoint was tested.
+
+## Current integrated-source status (Prompt 09, 2026-10-27)
+
+The initial-audit tables above are historical evidence records. Prompt 08 subsequently acquired official public EPA AirData and CAL FIRE/OSFM snapshots, documented in [Eaton feasibility](eaton-case-feasibility.md). The source catalog now distinguishes these working local historical artifacts, synthetic alternatives, the guarded/unavailable AirNow boundary and browser-managed ArcGIS basemaps. AQS authenticated API access and AirNow production codecs remain unverified; no CARB feed or separate elevation query is integrated. Data availability, per-row certification and service connection remain separate. [The Data page](../frontend/data-methodology.md) displays only that supported status.

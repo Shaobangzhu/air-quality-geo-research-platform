@@ -40,3 +40,38 @@ it('repeats a real historical seed without rewriting prior snapshots, and reject
   modified.manifest.limitations.push('Changed version');
   await expect(seedHistoricalCase(pool, modified)).rejects.toThrow('differs');
 });
+it('exports the full persisted historical selection through existing bounded snapshot reads', async () => {
+  const { createBff } = await import('../../apps/api/src/bff/runtime.js');
+  const { jsonExportSchema } = await import('@aq/contracts');
+  const data = loadWildfireCase();
+  const id = await seedHistoricalCase(db.pool!, data);
+  const runtime = createBff(config, db.pool!);
+  const query = {
+    dataset: 'snapshot',
+    snapshotId: id,
+    region: 'greater-la',
+    pollutant: 'PM2.5',
+    measurementType: 'concentration',
+  };
+  const preview = await runtime.data.preview(query);
+  expect(preview.manifest.rowCount).toBe(71);
+  const exported = jsonExportSchema.parse(
+    JSON.parse(
+      (
+        await runtime.data.export('json', {
+          ...query,
+          selectionHash: preview.manifest.selectionHash,
+        })
+      ).body,
+    ),
+  );
+  expect(exported.data).toHaveLength(71);
+  expect(
+    exported.data.every(
+      (r) =>
+        r.kind === 'station-observation' &&
+        r.observation.dataMode === 'historical',
+    ),
+  ).toBe(true);
+  expect(runtime.usage().providers.every((p) => p.requests === 0)).toBe(true);
+});

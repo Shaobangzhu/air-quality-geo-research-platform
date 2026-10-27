@@ -16,7 +16,7 @@ AirNow data is preliminary and subject to change; regulatory historical work req
 
 Retain provider, credential-free source identifier, origin, label and fetch UTC. Never persist signed/credential-bearing query URLs in provenance. Observation time and fetch time are distinct.
 
-`live` requests provider access; `historical` uses separately curated official snapshots with acquisition/quality metadata; `sample` is fictional synthetic data. `unavailable` is a state within the requested mode. The BFF loads explicitly synthetic sample observations and reads identified curated historical snapshots; live is contract-unverified and never silently falls back. Synthetic fixtures require SAMPLE- IDs, sample labels and unknown validation status. No official historical fixtures exist yet.
+`live` requests provider access; `historical` uses separately curated official snapshots with acquisition/quality metadata; `sample` is fictional synthetic data. `unavailable` is a state within the requested mode. The BFF loads explicitly synthetic sample observations and reads identified curated historical snapshots; live is contract-unverified and never silently falls back. Synthetic fixtures require SAMPLE- IDs, sample labels and unknown validation status. Prompt 08 bundles a checksummed official EPA AirData subset for the Eaton study; row certification remains unknown.
 
 ## Time and averaging
 
@@ -30,8 +30,10 @@ AirNow's [AQI overview](https://docs.airnowapi.org/aq101) distinguishes real-tim
 
 Official contours are provider products. Label any later interpolated surface derived and retain its method/inputs. Neither a contour nor a nearby site establishes exact exposure at an arbitrary coordinate.
 
-[CAL FIRE historical perimeters](https://www.fire.ca.gov/what-we-do/fire-resource-assessment-program/fire-perimeters) have missing fires and attribute/geometry errors; absence of a polygon is not proof of no fire. [FHSZ layers](https://osfm.fire.ca.gov/what-we-do/community-wildfire-preparedness-and-mitigation/%E2%80%8Cfire-hazard-severity-zones) provide longer-term hazard context. Preserve SRA/LRA designation/adoption context. Hazard zones are not current spread, current risk predictions or smoke exposure. Elevation is terrain context, not evidence of pollution causation. Case studies must disclose spatial/temporal alignment and cannot infer wildfire causation from coincident AQI alone.
+[CAL FIRE historical perimeters](https://www.fire.ca.gov/what-we-do/fire-resource-assessment-program/fire-perimeters) have missing fires and attribute/geometry errors; absence of a polygon is not proof of no fire. [FHSZ layers](https://osfm.fire.ca.gov/what-we-do/community-wildfire-preparedness-and-mitigation/fire-hazard-severity-zones) provide longer-term hazard context. Preserve SRA/LRA designation/adoption context. Hazard zones are not current spread, current risk predictions or smoke exposure. Elevation is terrain context, not evidence of pollution causation. Case studies must disclose spatial/temporal alignment and cannot infer wildfire causation from coincident AQI alone.
 
 Milestone 06 documents [hourly slot, period alignment and missing-count semantics](../frontend/analysis-series.md). Slot generation does not create environmental observations, and unverified/mixed averaging or units block hourly comparison.
 
 Milestone 07 separates [reporting-area aggregate AQI and forecasts](../frontend/reporting-area-products.md). They do not have station IDs or concentration fields. Date-only validity and unknown issuance are retained without inventing an hourly window; unverified area geometry remains null.
+
+Prompt 09 [exports](../architecture/data-exports.md) retain these source meanings, flags and revision descriptions. CSV includes a metadata record and lossless record JSON; null is distinct from zero. Operational request/cache metrics do not establish scientific quality or provider billing.

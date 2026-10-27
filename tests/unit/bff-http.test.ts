@@ -185,3 +185,36 @@ describe('bounded instrumented HTTP attempts (all mocked)', () => {
     expect(fetcher.mock.calls[0]![1]!.redirect).toBe('error');
   });
 });
+it('counts at actual send, exposes in-flight attempts and completes each once; a fresh process resets', async () => {
+  let resolve!: (value: Response) => void;
+  const usage = new Usage(() => Date.parse('2026-10-27T12:00:00Z'));
+  const fetcher = vi.fn<typeof fetch>().mockImplementation(
+    () =>
+      new Promise((r) => {
+        resolve = r;
+      }),
+  );
+  const pending = new ProviderHttp(usage, {
+    fetch: fetcher,
+    attempts: 1,
+  }).request('airnow', url, decode);
+  expect(usage.summary().providers[0]).toMatchObject({
+    requests: 1,
+    inFlight: 1,
+    successes: 0,
+    failures: 0,
+    averageLatencyMs: null,
+  });
+  resolve(json([1]));
+  await pending;
+  expect(usage.summary().providers[0]).toMatchObject({
+    requests: 1,
+    inFlight: 0,
+    successes: 1,
+  });
+  const reset = new Usage(() => Date.parse('2026-10-27T13:00:00Z')).summary();
+  expect(
+    reset.providers.every((p) => p.requests === 0 && p.inFlight === 0),
+  ).toBe(true);
+  expect(reset.startedAt).toBe(reset.lastUpdatedAt);
+});

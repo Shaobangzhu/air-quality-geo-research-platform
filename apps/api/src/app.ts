@@ -1,3 +1,4 @@
+import { DataWorkbench } from './data/workbench.js';
 import { loadWildfireCase } from './wildfire/case.js';
 import type { WildfireCase } from '@aq/contracts';
 import express from 'express';
@@ -15,6 +16,7 @@ export function createApp(options: {
   databaseStatus: () => Promise<DatabaseStatus>;
   bff?: BffService;
   areas?: AreaProductService;
+  data?: DataWorkbench;
 }) {
   const app = express();
   app.disable('x-powered-by');
@@ -70,6 +72,36 @@ export function createApp(options: {
   });
   if (options.bff) {
     const bff = options.bff;
+    const workbench = options.data ?? new DataWorkbench(bff, options.areas);
+    app.get('/api/data/catalog', (req, res) => {
+      if (Object.keys(req.query).length)
+        throw new BffError('INVALID_REQUEST', 400);
+      return workbench
+        .catalog()
+        .then((result) => res.set('Cache-Control', 'no-store').json(result));
+    });
+    app.get('/api/data/preview', async (req, res) =>
+      res
+        .set('Cache-Control', 'no-store')
+        .json(await workbench.preview(req.query)),
+    );
+    app.get('/api/exports/:format', async (req, res) => {
+      if (!['json', 'csv'].includes(req.params.format))
+        throw new BffError('INVALID_REQUEST', 400);
+      const result = await workbench.export(
+        req.params.format as 'json' | 'csv',
+        req.query,
+      );
+      res
+        .set({
+          'Cache-Control': 'no-store',
+          'Content-Type': result.type,
+          'Content-Disposition': `attachment; filename="${result.filename}"`,
+          'X-Content-Type-Options': 'nosniff',
+        })
+        .send(result.body);
+    });
+
     const noQuery: RequestHandler = (req, _res, next) => {
       if (Object.keys(req.query).length)
         next(new BffError('INVALID_REQUEST', 400));

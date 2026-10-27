@@ -1,5 +1,6 @@
 import {
   analysisWindowSchema,
+  dataTabSchema,
   dataProductIdSchema,
   areaIdSchema,
   dataModeSchema,
@@ -57,6 +58,7 @@ export function parseRoute(search: string) {
     z.array(stationIdSchema).max(2).safeParse(one('compare')?.split(','))
       .data ?? [];
   return {
+    dataTab: dataTabSchema.safeParse(one('tab')).data ?? 'sources',
     caseId: one('case') === 'eaton-fire-2025' ? 'eaton-fire-2025' : undefined,
     windowHours:
       analysisWindowSchema.safeParse(Number(one('windowHours'))).data ?? 24,
@@ -99,6 +101,7 @@ export function routeSearch(state: RouteState) {
     mode: state.mode,
     measurementType: state.measurementType,
   });
+  if (state.dataTab !== 'sources') params.set('tab', state.dataTab);
   if (state.caseId) params.set('case', state.caseId);
   if (state.station && state.product === 'monitoring-stations')
     params.set('stationId', state.station);

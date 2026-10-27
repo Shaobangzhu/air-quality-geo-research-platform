@@ -14,6 +14,7 @@ try {
     databaseStatus: () => database.status(),
     bff,
     areas: bff.areas,
+    data: bff.data,
   });
   const server = app.listen(config.PORT, config.HOST, () => {
     console.info(

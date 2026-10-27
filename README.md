@@ -2,7 +2,7 @@
 
 **Interdisciplinary Research & Software Engineering Workbench — v1**
 
-A local-first TypeScript research/interview PoC. Milestone 06 added bounded 24/48/72-hour Analysis charts for up to three compatible monitoring identities, preserving sparse records, gaps, source status and UTC/DST semantics. Milestone 07 adds separate explicitly synthetic reporting-area AQI and Forecast alternatives in Map Explorer; official new-service contracts and area geometry remain unverified. Map Explorer retains engineering presets, station readings and its Analyze handoff. Sample sites and values are explicitly synthetic; live AirNow access remains contract-unverified. Prompt 08 adds a verified Eaton Fire historical case with bounded CAL FIRE/OSFM layers, EPA observations and a case-specific methodology view. This is not a regulatory or emergency-response tool.
+A local-first TypeScript research/interview PoC. Milestone 06 added bounded 24/48/72-hour Analysis charts for up to three compatible monitoring identities, preserving sparse records, gaps, source status and UTC/DST semantics. Milestone 07 adds separate explicitly synthetic reporting-area AQI and Forecast alternatives in Map Explorer; official new-service contracts and area geometry remain unverified. Map Explorer retains engineering presets, station readings and its Analyze handoff. Sample sites and values are explicitly synthetic; live AirNow access remains contract-unverified. Prompt 08 adds a verified Eaton Fire historical case with bounded CAL FIRE/OSFM layers, EPA observations and a case-specific methodology view. Prompt 09 completes Data & Methodology with a truthful source catalog, bounded CSV/JSON exports, scientific guidance and measured since-start BFF metrics. This is not a regulatory or emergency-response tool.
 
 ## Run locally
 
@@ -20,7 +20,7 @@ Open [Map Explorer](http://127.0.0.1:5173/map). API health: [localhost:3001/api/
 | `/map`      | Station readings plus separate synthetic area/forecast alternatives, source-aware details and stable ArcGIS view |
 | `/analysis` | Up to three compatible station series, gap-aware chart, source summary and Data handoff                          |
 | `/wildfire` | Verified 2025 Eaton historical GIS case with local source snapshots                                              |
-| `/data`     | Case provenance view; full export/metrics still planned                                                          |
+| `/data`     | Four internal tabs: sources, bounded preview/export, methods and measured API/cache usage                        |
 
 `/` shows Map Explorer. URL state preserves validated region/pollutant/mode and optional station/snapshot context. The UI explicitly defaults to Sample and labels the fictional metadata. Select Live or Historical on the map page to see their actual availability; no sample fallback occurs. A missing or rejected ArcGIS token shows a map-unavailable state while station readings remain usable. Read [station observation semantics](docs/frontend/station-observations.md), the [frontend design system](docs/frontend/design-system.md) and [ArcGIS setup/lifecycle](docs/frontend/arcgis-map.md).
 
@@ -70,3 +70,5 @@ Read [architecture](docs/architecture/decisions.md), [provider verification matr
 - Snapshot capacity: the store stops new imports at 32 snapshots/512 identities; no data is automatically removed.
 
 Prompt 08: see [wildfire case report](docs/milestones/08-wildfire-case-study.md), [source feasibility](docs/data-sources/eaton-case-feasibility.md) and [UI/contract behavior](docs/frontend/wildfire-case.md). Open `/wildfire` for the historical case. Seed its reviewed local artifacts with `npm run db:seed:historical-case -- --target air_quality_geo_research` after `npm run db:migrate`. No source is re-fetched on launch.
+
+Prompt 09: open `/data` (or `/data?tab=usage`) for the completed transparency workspace. Read [Data UI behavior](docs/frontend/data-methodology.md), [export schema and safety](docs/architecture/data-exports.md) and [milestone verification](docs/milestones/09-data-methodology.md). Exported files include their provenance manifest and preserve nulls, units, source flags and UTC/date-only semantics. Provider metrics are operational counts rather than billing estimates.

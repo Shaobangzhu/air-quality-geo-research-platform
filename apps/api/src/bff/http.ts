@@ -25,6 +25,7 @@ export class ProviderHttp {
       const now = this.options.now ?? (() => performance.now());
       const start = now();
       let success = false;
+      let complete: ReturnType<Usage['startAttempt']> | undefined;
       let retryDelay = Math.min(100 * 2 ** attempt, 1000);
       let retryPermitted = true;
       let timer: ReturnType<typeof setTimeout> | undefined;
@@ -32,6 +33,7 @@ export class ProviderHttp {
         const operation = async () => {
           let response: Response;
           try {
+            complete = this.usage.startAttempt(provider);
             response = await (this.options.fetch ?? fetch)(url, {
               signal: controller.signal,
               redirect: 'error',
@@ -139,7 +141,7 @@ export class ProviderHttp {
           throw failure;
       } finally {
         if (timer) clearTimeout(timer);
-        this.usage.attempt(provider, success, now() - start);
+        complete?.(success, now() - start);
       }
       await (
         this.options.sleep ??

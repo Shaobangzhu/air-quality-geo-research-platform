@@ -1,3 +1,4 @@
+import { DataWorkbench } from '../data/workbench.js';
 import type { Pool } from 'pg';
 import type { Config } from '../config.js';
 import { BatchCache } from './cache.js';
@@ -38,5 +39,19 @@ export function createBff(config: Config, pool?: Pool) {
     sample: new SampleAreaProvider(),
     live: new AirNowAreaAdapter(http, config.AIRNOW_API_KEY),
   });
-  return Object.assign(bff, { areas });
+  return Object.assign(bff, {
+    areas,
+    data: new DataWorkbench(
+      bff,
+      areas,
+      undefined,
+      [
+        config.AIRNOW_API_KEY,
+        config.AQS_API_KEY,
+        config.AQS_EMAIL,
+        config.OPENAI_API_KEY,
+        config.DATABASE_URL,
+      ].filter((s): s is string => !!s),
+    ),
+  });
 }

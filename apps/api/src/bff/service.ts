@@ -323,6 +323,20 @@ export class BffService {
       warnings,
     };
   }
+  async exportSelection(raw: unknown) {
+    const query = validate(stationQuerySchema, raw);
+    if (query.mode !== 'sample' && query.mode !== 'historical')
+      throw new BffError('INVALID_REQUEST', 400);
+    const result = await this.load(raw, true);
+    if (result.mode === 'live') throw new BffError('INVALID_REQUEST', 400);
+    return {
+      batch: result.cached.batch,
+      observations: result.observations,
+      stations: result.cached.batch.stations,
+      window: result.window,
+      snapshotId: result.cached.snapshotId,
+    };
+  }
   async stations(raw: unknown) {
     const result = await this.load(raw);
     return stationsResponseSchema.parse({
