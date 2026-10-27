@@ -36,6 +36,7 @@ it('applies and repeats migrations without changing foundation data', async () =
   expect(history.rows.map((row) => row.name).sort()).toEqual([
     '001_foundation.sql',
     '002_station_bff.sql',
+    '003_historical_cases.sql',
   ]);
   expect(history.rows.every((row) => /^[a-f0-9]{64}$/.test(row.checksum))).toBe(
     true,

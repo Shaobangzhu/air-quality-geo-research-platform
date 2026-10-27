@@ -1,3 +1,5 @@
+import { loadWildfireCase } from './wildfire/case.js';
+import type { WildfireCase } from '@aq/contracts';
 import express from 'express';
 import type { ErrorRequestHandler, RequestHandler } from 'express';
 import type { DatabaseStatus } from '@aq/contracts';
@@ -16,6 +18,36 @@ export function createApp(options: {
 }) {
   const app = express();
   app.disable('x-powered-by');
+  let wildfire: WildfireCase | undefined;
+  app.get('/api/wildfire/eaton-fire-2025', (req, res) => {
+    if (
+      Object.keys(req.query).some((k) => k !== 'mode') ||
+      (req.query.mode !== undefined &&
+        !['historical', 'sample', 'live'].includes(String(req.query.mode))) ||
+      Array.isArray(req.query.mode)
+    )
+      throw new BffError('INVALID_REQUEST', 400);
+    res.set('Cache-Control', 'no-store');
+    if (req.query.mode && req.query.mode !== 'historical') {
+      res.status(409).json({
+        state: 'unavailable',
+        reason:
+          'This curated case is historical only. No live or synthetic fallback.',
+      });
+      return;
+    }
+    try {
+      wildfire ??= loadWildfireCase();
+      res.json(wildfire);
+    } catch {
+      res.status(503).json({
+        state: 'blocked',
+        reason:
+          'Historical case assets are missing or failed provenance/geometry validation.',
+      });
+    }
+  });
+
   app.get('/api/health', async (_req, res) => {
     let database: DatabaseStatus;
     try {

@@ -1,3 +1,5 @@
+import Polygon from '@arcgis/core/geometry/Polygon.js';
+import type { CaseFeature } from '@aq/contracts';
 import '@arcgis/map-components/components/arcgis-map';
 import '@arcgis/map-components/components/arcgis-zoom';
 import esriConfig from '@arcgis/core/config.js';
@@ -21,6 +23,7 @@ export type MapHandle = {
     visible: boolean,
     selectedId: string | undefined,
   ) => void;
+  updateCase?: (features: CaseFeature[], visible: string[]) => void;
   destroy: () => void;
 };
 export function mountMap(
@@ -30,10 +33,13 @@ export function mountMap(
   boundaryVisible: boolean,
   status: (value: 'ready' | 'unavailable') => void,
   select: (ids: string[]) => void = () => {},
+  caseOptions?: { select: (id: string) => void },
 ): MapHandle {
   // This token is deliberately public; never pass a server credential here.
   esriConfig.apiKey = key;
-  const map = new ArcgisMapModel({ basemap: 'arcgis/light-gray' });
+  const map = new ArcgisMapModel({
+    basemap: caseOptions ? 'arcgis/topographic' : 'arcgis/light-gray',
+  });
   const boundary = new GraphicsLayer({
     title: 'Engineering study extent',
     listMode: 'hide',
@@ -44,7 +50,57 @@ export function mountMap(
     title: 'Monitoring-site observations',
     listMode: 'hide',
   });
+  const caseLayers = new Map<string, GraphicsLayer>();
+  if (caseOptions)
+    for (const id of ['sra', 'lra', 'perimeter']) {
+      const layer = new GraphicsLayer({
+        title: `Historical case · ${id}`,
+        listMode: 'hide',
+      });
+      caseLayers.set(id, layer);
+      map.add(layer);
+    }
   map.add(stationLayer);
+  let lastFeatures: CaseFeature[] | undefined;
+  const updateCase: NonNullable<MapHandle['updateCase']> = (
+    features,
+    visible,
+  ) => {
+    if (disposed) return;
+    clickVersion++;
+    for (const [id, layer] of caseLayers) layer.visible = visible.includes(id);
+    if (features === lastFeatures) return;
+    lastFeatures = features;
+    for (const layer of caseLayers.values()) layer.removeAll();
+    for (const f of features) {
+      const color =
+        f.category === 'Moderate'
+          ? '#f3d461'
+          : f.category === 'High'
+            ? '#ed9a43'
+            : '#e45c62';
+      caseLayers.get(f.layer)?.add(
+        new Graphic({
+          attributes: { caseFeatureId: f.id },
+          geometry: new Polygon({
+            spatialReference: { wkid: 4326 },
+            rings: f.geometry.coordinates.flatMap((p) =>
+              p.map((r) => [...r].reverse()),
+            ),
+          }),
+          symbol: {
+            type: 'simple-fill',
+            color: f.layer === 'perimeter' ? [0, 0, 0, 0] : color + '70',
+            outline: {
+              type: 'simple-line',
+              color: f.layer === 'perimeter' ? '#b91c35' : color,
+              width: f.layer === 'perimeter' ? 2.5 : 0.5,
+            },
+          },
+        }),
+      );
+    }
+  };
   const graphics = new Map<string, Graphic>();
   let clickVersion = 0;
   const element = document.createElement('arcgis-map') as ArcgisMap;
@@ -139,15 +195,16 @@ export function mountMap(
     }
   };
   const click = (event: Event) => {
-    if (disposed || !element.ready || !stationLayer.visible) return;
+    if (disposed || !element.ready) return;
     const version = ++clickVersion;
     void element
       .hitTest((event as CustomEvent<ClickEvent>).detail, {
-        include: [stationLayer],
+        include: [stationLayer, ...caseLayers.values()].filter(
+          (l) => l.visible,
+        ),
       })
       .then((result) => {
-        if (disposed || version !== clickVersion || !stationLayer.visible)
-          return;
+        if (disposed || version !== clickVersion) return;
         const ids = [
           ...new Set(
             result.results.flatMap((hit) =>
@@ -161,6 +218,18 @@ export function mountMap(
           ),
         ].sort();
         if (ids.length) select(ids);
+        else {
+          const hit = result.results.find(
+            (h) =>
+              h.type === 'graphic' &&
+              typeof h.graphic.attributes?.caseFeatureId === 'string' &&
+              [...caseLayers.values()].some(
+                (l) => l === h.graphic.layer && l.visible,
+              ),
+          );
+          if (hit?.type === 'graphic')
+            caseOptions?.select(String(hit.graphic.attributes.caseFeatureId));
+        }
       })
       .catch(() => {});
   };
@@ -212,5 +281,5 @@ export function mountMap(
   element.addEventListener('arcgisLoadError', fail);
   update(bounds, boundaryVisible);
   host.append(element);
-  return { update, updateStations, destroy };
+  return { update, updateStations, updateCase, destroy };
 }

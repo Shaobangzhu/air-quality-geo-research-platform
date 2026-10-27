@@ -1,3 +1,4 @@
+import { Wildfire, CaseSources, useWildfire } from './wildfire/Wildfire.js';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { MouseEvent } from 'react';
 import { pages, parseRoute, routeSearch, routeForPage } from './route-state.js';
@@ -17,7 +18,13 @@ export function App() {
       window.location.pathname === '/' ? '/map' : window.location.pathname;
     return {
       path,
-      route: routeForPage(parseRoute(window.location.search), path),
+      route: routeForPage(
+        parseRoute(
+          window.location.search ||
+            (path === '/wildfire' ? '?mode=historical' : ''),
+        ),
+        path,
+      ),
     };
   });
   const locationRef = useRef(location);
@@ -25,14 +32,26 @@ export function App() {
   const data = useStations(
     location.route,
     location.path !== '/analysis' &&
+      location.path !== '/wildfire' &&
+      !(location.path === '/data' && location.route.caseId) &&
       location.route.product === 'monitoring-stations',
   );
   const areas = useAreaProducts(
     location.route,
     location.path !== '/analysis' &&
+      location.path !== '/wildfire' &&
+      !(location.path === '/data' && location.route.caseId) &&
       location.route.product !== 'monitoring-stations',
   );
   const analysis = useAnalysis(location.route, location.path === '/analysis');
+  const wildfire = useWildfire(
+    location.path === '/wildfire' ||
+      (location.path === '/data' && !!location.route.caseId),
+    location.route.mode,
+  );
+  const caseActive =
+    location.path === '/wildfire' ||
+    (location.path === '/data' && !!location.route.caseId);
   const page = pages.find((item) => item.path === location.path);
   const main = useRef<HTMLElement>(null);
   useEffect(() => {
@@ -40,7 +59,12 @@ export function App() {
       const next = {
         path:
           window.location.pathname === '/' ? '/map' : window.location.pathname,
-        route: parseRoute(window.location.search),
+        route: parseRoute(
+          window.location.search ||
+            (window.location.pathname === '/wildfire'
+              ? '?mode=historical'
+              : ''),
+        ),
       };
       next.route = routeForPage(next.route, next.path);
       locationRef.current = next;
@@ -118,7 +142,7 @@ export function App() {
           {pages.map((item) => (
             <a
               key={item.path}
-              href={`${item.path}${routeSearch(routeForPage(location.route, item.path))}`}
+              href={`${item.path}${routeSearch(routeForPage(item.path === '/wildfire' ? { ...location.route, mode: 'historical' } : location.route, item.path))}`}
               onClick={(event) => navigate(event, item.path)}
               aria-current={location.path === item.path ? 'page' : undefined}
             >
@@ -129,11 +153,18 @@ export function App() {
         </nav>
         <ModeBadge
           data={
-            location.path === '/analysis'
-              ? analysis
-              : location.route.product === 'monitoring-stations'
-                ? data
-                : areas
+            caseActive
+              ? wildfire.status === 'ready'
+                ? {
+                    status: 'ready',
+                    result: { meta: { dataMode: 'historical' } },
+                  }
+                : { status: wildfire.status }
+              : location.path === '/analysis'
+                ? analysis
+                : location.route.product === 'monitoring-stations'
+                  ? data
+                  : areas
           }
           mode={location.route.mode}
         />
@@ -155,6 +186,31 @@ export function App() {
             change={change}
             navigate={navigate}
           />
+        ) : location.path === '/wildfire' ? (
+          <Wildfire
+            data={wildfire}
+            mode={location.route.mode}
+            openHistorical={() => change({ mode: 'historical' })}
+            navigate={navigate}
+          />
+        ) : location.path === '/data' && location.route.caseId ? (
+          <section className="wildfire-page">
+            <h1>Data &amp; Methodology</h1>
+            <div className="case-card">
+              <h2>Eaton Fire historical case</h2>
+              {wildfire.result ? (
+                <CaseSources data={wildfire.result} />
+              ) : (
+                <p>Verified case data unavailable in this mode.</p>
+              )}
+              <a
+                href="/wildfire?mode=historical"
+                onClick={(e) => navigate(e, '/wildfire')}
+              >
+                Return to the historical case
+              </a>
+            </div>
+          </section>
         ) : (
           <section className="placeholder-page">
             <p className="eyebrow">RESEARCH WORKBENCH · PLANNED MODULE</p>

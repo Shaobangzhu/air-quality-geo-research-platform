@@ -1,3 +1,4 @@
+import type { CaseFeature } from '@aq/contracts';
 import { useEffect, useRef, useState } from 'react';
 import { GREATER_LA } from '@aq/contracts';
 import { Icon } from '../components/Icon.js';
@@ -17,7 +18,13 @@ export function MapCanvas({
   stationsVisible = true,
   selectedId,
   onSelect,
+  caseLayers,
+  visibleCaseLayers,
+  onCaseSelect,
 }: {
+  caseLayers?: CaseFeature[];
+  visibleCaseLayers?: string[];
+  onCaseSelect?: (id: string) => void;
   bounds?: Bounds;
   boundaryVisible: boolean;
   onAvailability: (available: boolean) => void;
@@ -37,6 +44,9 @@ export function MapCanvas({
     stationsVisible,
     selectedId,
     onSelect,
+    caseLayers,
+    visibleCaseLayers,
+    onCaseSelect,
   });
   latest.current = {
     bounds,
@@ -46,6 +56,9 @@ export function MapCanvas({
     stationsVisible,
     selectedId,
     onSelect,
+    caseLayers,
+    visibleCaseLayers,
+    onCaseSelect,
   };
   const key = import.meta.env.VITE_ARCGIS_API_KEY?.trim();
   const enabled = Boolean(key);
@@ -84,12 +97,20 @@ export function MapCanvas({
             }
           },
           (ids) => latest.current.onSelect?.(ids),
+          latest.current.caseLayers
+            ? { select: (id) => latest.current.onCaseSelect?.(id) }
+            : undefined,
         );
         handle.current.updateStations(
           latest.current.markers,
           latest.current.stationsVisible,
           latest.current.selectedId,
         );
+        if (latest.current.caseLayers)
+          handle.current.updateCase?.(
+            latest.current.caseLayers,
+            latest.current.visibleCaseLayers ?? [],
+          );
         if (failed) {
           handle.current.destroy();
           handle.current = null;
@@ -109,6 +130,10 @@ export function MapCanvas({
   useEffect(() => {
     handle.current?.updateStations(markers, stationsVisible, selectedId);
   }, [markers, stationsVisible, selectedId]);
+  useEffect(() => {
+    if (caseLayers)
+      handle.current?.updateCase?.(caseLayers, visibleCaseLayers ?? []);
+  }, [caseLayers, visibleCaseLayers]);
   return (
     <div className="map-canvas" aria-label="Map canvas">
       <div className="arcgis-host" ref={host} />

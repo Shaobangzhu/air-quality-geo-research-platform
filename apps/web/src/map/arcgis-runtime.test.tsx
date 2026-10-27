@@ -37,6 +37,13 @@ vi.mock('@arcgis/core/geometry/Extent.js', () => ({
     }
   },
 }));
+vi.mock('@arcgis/core/geometry/Polygon.js', () => ({
+  default: class {
+    constructor(properties: unknown) {
+      Object.assign(this, properties);
+    }
+  },
+}));
 vi.mock('@arcgis/core/geometry/Point.js', () => ({
   default: class {
     constructor(properties: unknown) {
@@ -229,4 +236,64 @@ it('ignores asynchronous hit tests from an old filter generation or after dispos
     new CustomEvent('arcgisViewClick', { detail: { x: 20, y: 20 } }),
   );
   expect(mocks.hitTest).toHaveBeenCalledOnce();
+});
+it('reuses bounded case layers on toggle updates and routes polygon hits independently of hidden stations', async () => {
+  const host = document.createElement('div');
+  const select = vi.fn();
+  const handle = mountMap(
+    host,
+    'PUBLIC_TEST_TOKEN',
+    GREATER_LA.bbox,
+    false,
+    vi.fn(),
+    vi.fn(),
+    { select },
+  );
+  const element = host.firstElementChild!;
+  const features = [
+    {
+      id: 'sra-1',
+      layer: 'sra' as const,
+      category: 'Very High' as const,
+      sourceObjectId: 1,
+      geometry: {
+        type: 'MultiPolygon' as const,
+        coordinates: [
+          [
+            [
+              [-118, 34],
+              [-117.9, 34],
+              [-117.9, 34.1],
+              [-118, 34],
+            ] as [number, number][],
+          ],
+        ],
+      },
+    },
+  ];
+  handle.updateCase!(features, ['sra']);
+  const added = mocks.addGraphic.mock.calls.length;
+  handle.updateCase!(features, []);
+  expect(mocks.addGraphic.mock.calls).toHaveLength(added);
+  const layer = mocks.layers.find((l) => l.title === 'Historical case · sra')!;
+  expect(layer.visible).toBe(false);
+  handle.updateStations([], false, undefined);
+  handle.updateCase!(features, ['sra']);
+  mocks.hitTest.mockResolvedValue({
+    results: [
+      {
+        type: 'graphic',
+        graphic: { layer, attributes: { caseFeatureId: 'sra-1' } },
+      },
+    ],
+  });
+  element.dispatchEvent(
+    new CustomEvent('arcgisViewClick', { detail: { x: 1, y: 1 } }),
+  );
+  await Promise.resolve();
+  await Promise.resolve();
+  expect(select).toHaveBeenCalledWith('sra-1');
+  handle.destroy();
+  handle.destroy();
+  expect(mocks.destroyed).toHaveBeenCalledOnce();
 });

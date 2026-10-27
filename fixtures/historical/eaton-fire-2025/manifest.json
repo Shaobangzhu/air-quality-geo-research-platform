@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "id": "eaton-fire-2025",
+  "title": "2025 Eaton Fire",
+  "mode": "historical",
+  "event": {
+    "started": "2025-01-07",
+    "contained": "2025-01-31",
+    "incidentId": "00009087",
+    "irwinId": "72660ADC-B5EF-4D96-A33F-B4EA3740A4E3",
+    "source": "https://www.fire.ca.gov/incidents/2025/1/7/eaton-fire",
+    "location": "Altadena/Pasadena, San Gabriel foothills, Los Angeles County"
+  },
+  "studyWindow": {
+    "to": "2025-01-09T08:00:00Z",
+    "from": "2025-01-06T08:00:00Z"
+  },
+  "bbox": {
+    "west": -118.25,
+    "south": 34.04,
+    "east": -117.95,
+    "north": 34.3
+  },
+  "retrievedAt": "2026-10-26T20:02:07Z",
+  "sources": [
+    {
+      "id": "perimeter",
+      "version": "firep25_1",
+      "released": "2026-04",
+      "effective": null,
+      "originalUrl": "https://services1.arcgis.com/jUJYIo9tSA7EHvfZ/arcgis/rest/services/California_Historic_Fire_Perimeters/FeatureServer/0",
+      "retrievedAt": "2026-10-26T20:02:07Z",
+      "artifact": "perimeter.geojson",
+      "sha256": "d29c4bd169d5a7920771641ea75d445e0deed6c301cc2d05dc3c4fb215b99bf3",
+      "downloadSha256": "f881da9057f19c8698fe0e0220dc0bf1a6696a818be2ff713d1637dba286dd71",
+      "attribution": "CAL FIRE / OSFM / FRAP and cooperating agencies",
+      "limitations": "Display subset of public official data. Not for parcel decisions; no warranty of accuracy. Unmapped is not Low."
+    },
+    {
+      "id": "sra",
+      "version": "FHSZSRA_23_3",
+      "released": "2023-09-29",
+      "effective": "2024-04-01",
+      "originalUrl": "https://services1.arcgis.com/jUJYIo9tSA7EHvfZ/arcgis/rest/services/FHSZSRA_23_3/FeatureServer/0",
+      "retrievedAt": "2026-10-26T20:02:07Z",
+      "artifact": "sra.geojson",
+      "sha256": "adc58530c2c82ee857af20e77e467e8a8ca0e99779027d2e9498f62ecd8fcc4b",
+      "downloadSha256": "85bb81bca7e3a213d7898b7a874a2651fd5d8a3c55330df8b844e926f4f9a27d",
+      "attribution": "CAL FIRE / OSFM / FRAP and cooperating agencies",
+      "limitations": "Display subset of public official data. Not for parcel decisions; no warranty of accuracy. Unmapped is not Low."
+    },
+    {
+      "id": "lra",
+      "version": "FHSALRA25_v1_All \u2014 2025 OSFM recommendations",
+      "released": "2025-02-10/2025-03-24",
+      "effective": null,
+      "originalUrl": "https://services1.arcgis.com/jUJYIo9tSA7EHvfZ/arcgis/rest/services/FHSALRA25_v1_All/FeatureServer/0",
+      "retrievedAt": "2026-10-26T20:02:07Z",
+      "artifact": "lra.geojson",
+      "sha256": "84cfca555988a3260381013b863b671aba7a28d686710abb12e390bb5eb856b1",
+      "downloadSha256": "575164bd855080e336cc5329d3364cdc1a5eedb5b59a5a3ba1ace70a35fcc9ac",
+      "attribution": "CAL FIRE / OSFM / FRAP and cooperating agencies",
+      "limitations": "Display subset of public official data. Not for parcel decisions; no warranty of accuracy. Unmapped is not Low."
+    },
+    {
+      "id": "observations",
+      "version": "AirData hourly_88101_2025, as of 2026-06-25",
+      "released": "2026-06-25",
+      "effective": null,
+      "originalUrl": "https://aqs.epa.gov/aqsweb/airdata/hourly_88101_2025.zip",
+      "retrievedAt": "2026-10-26T20:02:07Z",
+      "artifact": "epa-rows.json",
+      "sha256": "ac1ff388324362c0d49a4b747e6730ef33da3189928d553c6ef00c74e9ba61d0",
+      "downloadSha256": "6ba1444c76a0ce2e6b72016c6c688875c1a690782549b3bb5f99f67db4221ac2",
+      "attribution": "US EPA AirData / AQS",
+      "limitations": "Historical AQS archive, not a row-level certification assertion. Original qualifiers retained; no causal attribution."
+    }
+  ],
+  "observationArtifactSha256": "76fdbd7c893f7e09e9fec62342f8d0fbcb8e8a9e53a04361f8a208171a4eb5ba",
+  "limitations": [
+    "Study dates are Jan 6\u20138, 2025 PST, not the entire incident lifetime. Jan 8 is a later checkpoint during the incident, not post-fire.",
+    "One contextual monitor south of the fire: 06-037-1103, POC 3, parameter 88101, method 170. It does not measure exposure within the perimeter.",
+    "71 supplied hourly rows of 72 expected slots; absent records remain missing. IT/IJ qualifier codes are retained without assuming causation or regulatory validity.",
+    "Firep25_1 was released in April 2026; static historical perimeter, never an hourly fire-growth footprint.",
+    "2025 LRA recommendations postdate ignition; local adoption/effective dates are not established here. SRA effective April 1, 2024.",
+    "FHSZ is long-term hazard, not immediate risk, smoke, damage or evacuation guidance. Unmapped is not Low.",
+    "Geometry: service projection to WGS84, Shapely 2.1.2 make_valid for invalid topology, hazard polygons clipped to study bbox; no simplification. Raw download checksums retained.",
+    "Terrain is basemap relief only. Hazard, terrain and monitor co-location do not establish causation."
+  ],
+  "optional": {
+    "scene": "unavailable",
+    "contours": "unverified",
+    "smoke": "unverified"
+  }
+}

@@ -8,3 +8,5 @@ package-lock.json
 docs/0*.md
 docs/1*.md
 docs/ALL_12_CODEX_PROMPTS.md
+# Immutable curated source bytes; manifest SHA-256 checks depend on exact content.
+fixtures/historical/eaton-fire-2025/

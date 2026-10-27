@@ -57,6 +57,7 @@ export function parseRoute(search: string) {
     z.array(stationIdSchema).max(2).safeParse(one('compare')?.split(','))
       .data ?? [];
   return {
+    caseId: one('case') === 'eaton-fire-2025' ? 'eaton-fire-2025' : undefined,
     windowHours:
       analysisWindowSchema.safeParse(Number(one('windowHours'))).data ?? 24,
     compare: station
@@ -98,6 +99,7 @@ export function routeSearch(state: RouteState) {
     mode: state.mode,
     measurementType: state.measurementType,
   });
+  if (state.caseId) params.set('case', state.caseId);
   if (state.station && state.product === 'monitoring-stations')
     params.set('stationId', state.station);
   if (state.area && state.product !== 'monitoring-stations')
@@ -131,6 +133,18 @@ export const modeDescriptions = {
 } as const;
 
 export function routeForPage(state: RouteState, path: string): RouteState {
+  if (path === '/wildfire')
+    return {
+      ...state,
+      caseId: 'eaton-fire-2025',
+      product: 'monitoring-stations',
+      station: undefined,
+      area: undefined,
+      snapshotId: undefined,
+      compare: [],
+    };
+  if (path === '/map' || path === '/analysis')
+    state = { ...state, caseId: undefined };
   return path === '/analysis' && state.product !== 'monitoring-stations'
     ? {
         ...state,

@@ -65,7 +65,6 @@ test('starts both local services, browses sample identities and preserves contex
   ).toBeFocused();
   for (const [path, name] of [
     ['/analysis', 'Analysis'],
-    ['/wildfire', 'Wildfire Case Study'],
     ['/data', 'Data & Methodology'],
     ['/map', 'Map Explorer'],
   ]) {
@@ -516,4 +515,99 @@ test('rejects unavailable live and historical area products without an implicit 
     'no verified reporting-area archive',
   );
   await expect(page.getByLabel('Data status')).toContainText('Unavailable');
+});
+
+test('explores the official Eaton case offline with static layers, honest checkpoints and source handoff', async ({
+  page,
+  request,
+}) => {
+  const external: string[] = [];
+  page.on('request', (r) => {
+    if (!['localhost', '127.0.0.1'].includes(new URL(r.url()).hostname))
+      external.push(new URL(r.url()).hostname);
+  });
+  const result = await request.get(
+    '/api/wildfire/eaton-fire-2025?mode=historical',
+  );
+  expect(result.status()).toBe(200);
+  const c = await result.json();
+  expect(c.batch.observations).toHaveLength(71);
+  await page.goto('/wildfire');
+  await expect(page.getByLabel('Data status')).toHaveText('Historical');
+  await expect(
+    page.getByRole('heading', { name: '2025 Eaton Fire', exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: 'Basemap unavailable' }),
+  ).toBeVisible();
+  const map = page.getByLabel('Map canvas');
+  await map.evaluate((el) => el.setAttribute('data-case-instance', 'stable'));
+  await page.getByLabel('LRA · 2025 recommendations').uncheck();
+  await expect(
+    page
+      .getByLabel('Context selection')
+      .locator('option')
+      .filter({ hasText: 'LRA ·' }),
+  ).toHaveCount(0);
+  await page.getByLabel('LRA · 2025 recommendations').check();
+  await page
+    .getByLabel('Context selection')
+    .selectOption(
+      c.layers.find((f: { layer: string }) => f.layer === 'lra').id,
+    );
+  await expect(
+    page.getByText('Published after ignition; not an as-of-Jan-7 layer.'),
+  ).toBeVisible();
+  await page.getByRole('button', { name: /Later checkpoint/ }).click();
+  await page.getByLabel('Observation hour (PST)').selectOption('05');
+  await expect(
+    page.getByText('Missing observation', { exact: true }),
+  ).toBeVisible();
+  await expect(map).toHaveAttribute('data-case-instance', 'stable');
+  await expect(
+    page.getByRole('button', { name: '3D unavailable' }),
+  ).toBeDisabled();
+  await expect(
+    page.getByLabel('Official AirNow contours — unverified'),
+  ).toBeDisabled();
+  for (const width of [1280, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+  }
+  await page.getByRole('link', { name: 'View Data & Methodology' }).click();
+  await expect(page).toHaveURL(/\/data\?.*case=eaton-fire-2025/);
+  await expect(
+    page.getByRole('heading', { name: 'Eaton Fire historical case' }),
+  ).toBeVisible();
+  await expect(page.getByText(/71 supplied hourly rows of 72/)).toBeVisible();
+  expect(external).toEqual([]);
+});
+test('isolates unsupported wildfire modes and reports missing assets without a fallback', async ({
+  page,
+}) => {
+  await page.goto('/wildfire?mode=live');
+  await expect(
+    page.getByText('Historical case only', { exact: true }),
+  ).toBeVisible();
+  await expect(page.getByLabel('Context selection')).toHaveCount(0);
+  await page
+    .getByRole('button', { name: 'Open historical Eaton case' })
+    .click();
+  await expect(page.getByLabel('Context selection')).toBeVisible();
+  await page.route('**/api/wildfire/**', (route) =>
+    route.fulfill({
+      status: 503,
+      contentType: 'application/json',
+      body: JSON.stringify({ state: 'blocked' }),
+    }),
+  );
+  await page.reload();
+  await expect(
+    page.getByText('BLOCKED — verified case unavailable'),
+  ).toBeVisible();
+  await expect(page.getByLabel('Context selection')).toHaveCount(0);
 });
