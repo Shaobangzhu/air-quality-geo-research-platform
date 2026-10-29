@@ -1,6 +1,6 @@
 # Prompt 11 — read-only Research Assistant
 
-Baseline: `eef45b7` (V1 freeze audit). User explicitly selected Prompt 11 on October 29, 2026. **Implemented with offline verification; paid OpenAI integration not exercised.** No commit/push, schema migration, container change or Prompt 12 work.
+Baseline: `eef45b7` (V1 freeze audit). User explicitly selected Prompt 11 on October 29, 2026. The original implementation was verified offline; a separately authorized paid smoke subsequently passed as recorded below. No schema migration, container change or Prompt 12 work.
 
 ## Acceptance
 
@@ -50,6 +50,12 @@ The verification logs are local `/private/tmp/aq11-*.log`; they contain command 
 During development, UI tests initially needed explicit fixture injection in the browser test environment; that was corrected. The existing V1 no-extra-fetch test also caught eager assistant configuration loading; checking status only after panel expansion restored the constraint. No failing test was disabled.
 
 ## Remaining work and Prompt 12 boundary
+
+### Authorized live verification — October 29, 2026
+
+Against local commit `9f56db3`, one explicitly authorized `ALLOW_LIVE_LLM_TESTS=true npm run research:smoke` execution succeeded at approximately 22:44 UTC. The pinned OpenAI model selected the validated read-only tool and the sample workflow returned `partial` with one resolvable evidence citation. The response reported 150 input tokens and 16 output tokens; actual billing was not inspected. `partial` reflects gaps in the synthetic data, not a failed model call. The test used sample data, did not connect to PostgreSQL, and did not enable the UI feature or change persistent configuration. This single case does not validate all supported questions, real environmental data or provider availability.
+
+OpenAI's [model documentation](https://developers.openai.com/api/docs/models/gpt-4.1-mini) now marks the pinned `gpt-4.1-mini-2025-04-14` snapshot deprecated. A model migration and its own tests remain future work; this verification used the existing configured model.
 
 No live integration is required for deterministic CI. Before demonstrating actual model routing, deliberately enable the feature/key and optionally run the gated smoke; inspect the sanitized status and actual token counts. AirNow/AQS metrics exclude these LLM calls, and no dollar estimate is advertised. Current local review does not verify account permissions, distributed abuse controls, full browser accessibility or provider billing.
 
