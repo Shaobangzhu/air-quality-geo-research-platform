@@ -7,6 +7,7 @@ import type { AnalysisState } from './use-analysis.js';
 import { formatLocalTime } from '../map/station-presentation.js';
 import { reasonLabels } from './presentation.js';
 import { Icon } from '../components/Icon.js';
+import { ResearchAssistant } from './ResearchAssistant.js';
 const SeriesChart = lazy(() => import('./SeriesChart.js'));
 export function Analysis({
   route,
@@ -422,6 +423,16 @@ export function Analysis({
           </section>
         </aside>
       </div>
+      {result && (
+        <ResearchAssistant
+          key={JSON.stringify([
+            route,
+            result.meta.window,
+            result.meta.snapshotId,
+          ])}
+          data={result}
+        />
+      )}
     </>
   );
 }

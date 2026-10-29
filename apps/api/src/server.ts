@@ -3,6 +3,8 @@ import { readConfig } from './config.js';
 import { createDatabase } from './database.js';
 import { loadEnvironment } from './environment.js';
 import { createBff } from './bff/runtime.js';
+import { ResearchAssistant } from './assistant/service.js';
+import { openAIResearchModel } from './assistant/model.js';
 
 loadEnvironment();
 try {
@@ -15,6 +17,21 @@ try {
     bff,
     areas: bff.areas,
     data: bff.data,
+    assistant: new ResearchAssistant(
+      bff,
+      config.RESEARCH_ASSISTANT_ENABLED && config.OPENAI_API_KEY
+        ? openAIResearchModel(config.OPENAI_API_KEY)
+        : undefined,
+      {
+        secrets: [
+          config.OPENAI_API_KEY,
+          config.AIRNOW_API_KEY,
+          config.AQS_API_KEY,
+          config.AQS_EMAIL,
+          config.DATABASE_URL,
+        ].filter((s): s is string => !!s),
+      },
+    ),
   });
   const server = app.listen(config.PORT, config.HOST, () => {
     console.info(

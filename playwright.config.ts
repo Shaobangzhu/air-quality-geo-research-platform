@@ -11,6 +11,8 @@ const env = {
   AQS_EMAIL: '',
   AQS_API_KEY: '',
   OPENAI_API_KEY: '',
+  RESEARCH_ASSISTANT_ENABLED: 'false',
+  ALLOW_LIVE_LLM_TESTS: 'false',
   VITE_ARCGIS_API_KEY: '',
   AQ_API_PROXY_TARGET: 'http://127.0.0.1:3103',
 };

@@ -10,6 +10,8 @@ import type { AreaProductService } from './bff/area-service.js';
 import type { BffService } from './bff/service.js';
 import { BffError, safeError } from './bff/errors.js';
 import { errorEnvelopeSchema } from '@aq/contracts';
+import { researchRequestSchema } from '@aq/contracts';
+import type { ResearchAssistant } from './assistant/service.js';
 
 export function createApp(options: {
   config: Pick<Config, 'DATA_MODE'>;
@@ -17,9 +19,44 @@ export function createApp(options: {
   bff?: BffService;
   areas?: AreaProductService;
   data?: DataWorkbench;
+  assistant?: ResearchAssistant;
 }) {
   const app = express();
   app.disable('x-powered-by');
+  app.get('/api/research/status', (_req, res) =>
+    res
+      .set('Cache-Control', 'no-store')
+      .json({ enabled: options.assistant?.enabled ?? false }),
+  );
+  app.post(
+    '/api/research/answer',
+    (req, res, next) => {
+      const origin = req.get('origin');
+      if (
+        req.get('x-research-request') !== '1' ||
+        (origin && !/^http:\/\/(127\.0\.0\.1|localhost):517[34]$/.test(origin))
+      ) {
+        res.status(403).json({ error: 'Research request rejected.' });
+        return;
+      }
+      next();
+    },
+    express.json({ limit: '4kb' }),
+    async (req, res) => {
+      const input = researchRequestSchema.safeParse(req.body);
+      if (!input.success) {
+        res.status(400).json({ error: 'Invalid research context.' });
+        return;
+      }
+      if (!options.assistant) {
+        res.status(503).json({ error: 'Research Assistant disabled.' });
+        return;
+      }
+      res
+        .set('Cache-Control', 'no-store')
+        .json(await options.assistant.ask(input.data));
+    },
+  );
   let wildfire: WildfireCase | undefined;
   app.get('/api/wildfire/eaton-fire-2025', (req, res) => {
     if (

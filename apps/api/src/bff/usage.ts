@@ -86,7 +86,7 @@ export class Usage {
         hitRate:
           'hits / (hits + misses), excluding coalesced requests; null when denominator is zero.',
         exclusions:
-          'PostgreSQL reads, synthetic fixtures, documentation reads and client-side ArcGIS requests are not outbound provider attempts. Curated-file memoization and browser/DB caches are outside the TTL-cache counters. Sample/historical cache decisions are never attributed to AirNow/AQS.',
+          'PostgreSQL reads, synthetic fixtures, documentation reads and client-side ArcGIS requests are not outbound provider attempts. OpenAI Research Assistant calls and token costs are not tracked in these AirNow/AQS counters. Curated-file memoization and browser/DB caches are outside the TTL-cache counters. Sample/historical cache decisions are never attributed to AirNow/AQS.',
       },
       providers: Object.entries(this.providers).map(([provider, m]) => ({
         provider,

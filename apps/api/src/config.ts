@@ -45,6 +45,14 @@ export const configSchema = z
     ),
     AQS_API_KEY: optionalText,
     OPENAI_API_KEY: optionalText,
+    RESEARCH_ASSISTANT_ENABLED: z
+      .enum(['true', 'false'])
+      .default('false')
+      .transform((v) => v === 'true'),
+    ALLOW_LIVE_LLM_TESTS: z
+      .enum(['true', 'false'])
+      .default('false')
+      .transform((v) => v === 'true'),
   })
   .superRefine((config, ctx) => {
     if (!config.DATABASE_URL) return;

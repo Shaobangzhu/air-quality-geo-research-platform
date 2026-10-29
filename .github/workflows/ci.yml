@@ -19,6 +19,8 @@ jobs:
     env:
       DATA_MODE: sample
       ALLOW_LIVE_API_TESTS: 'false'
+      RESEARCH_ASSISTANT_ENABLED: 'false'
+      ALLOW_LIVE_LLM_TESTS: 'false'
       DATABASE_URL: postgresql://aq_ci:ephemeral_ci_only@127.0.0.1:5432/air_quality_geo_research_test
       DB_TARGET_CONFIRMED: air-quality-geo-research-platform
       ALLOW_DB_TESTS: 'true'

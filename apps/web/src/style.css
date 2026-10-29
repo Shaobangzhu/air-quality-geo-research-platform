@@ -1185,6 +1185,28 @@ dd {
   font-size: 13px;
   line-height: 1.8;
 }
+.research-assistant {
+  margin: 24px 0;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: white;
+  overflow-wrap: anywhere;
+}
+.research-assistant summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.research-assistant select {
+  max-width: 100%;
+}
+.research-assistant button {
+  margin: 12px 0 12px 12px;
+}
+.research-assistant pre {
+  max-height: 320px;
+  overflow: auto;
+}
 .observation-notes a {
   display: inline-flex;
   align-items: center;
