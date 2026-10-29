@@ -1620,6 +1620,10 @@ dd {
 .source-layout.has-detail {
   grid-template-columns: minmax(0, 1fr) 350px;
 }
+.source-layout td:last-child button,
+.source-layout .data-chip {
+  white-space: nowrap;
+}
 .data-table-wrap {
   max-width: 100%;
   overflow-x: auto;

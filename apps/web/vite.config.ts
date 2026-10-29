@@ -1,11 +1,19 @@
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
+import { fileURLToPath } from 'node:url';
 import react from '@vitejs/plugin-react';
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [react()],
   envDir: '../..',
-  envPrefix: ['VITE_ARCGIS_API_KEY'],
-  // Only VITE_* is eligible for the browser; server env stays in the root .env.
+  // envPrefix matches prefixes, not exact names. Expose only the reviewed token,
+  // so a similarly named server variable cannot accidentally enter the bundle.
+  envPrefix: [],
+  define: {
+    'import.meta.env.VITE_ARCGIS_API_KEY': JSON.stringify(
+      loadEnv(mode, fileURLToPath(new URL('../..', import.meta.url)), '')
+        .VITE_ARCGIS_API_KEY ?? '',
+    ),
+  },
   server: {
     port: 5173,
     strictPort: true,
@@ -13,4 +21,4 @@ export default defineConfig({
       '/api': process.env.AQ_API_PROXY_TARGET ?? 'http://127.0.0.1:3001',
     },
   },
-});
+}));

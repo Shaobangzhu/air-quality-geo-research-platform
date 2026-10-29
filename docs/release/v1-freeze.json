@@ -1,0 +1,322 @@
+{
+  "marker": "core-v1-local-freeze-2026-10-29",
+  "outcome": "PASS WITH FOLLOW-UP",
+  "scope": "Local four-page interview release candidate; not a production or live-provider release.",
+  "date": "2026-10-29",
+  "timezone": "America/Los_Angeles",
+  "baselineCommit": "5e05806e9c6671c777267090191ab99aad41770b",
+  "candidate": "Baseline plus uncommitted reviewed changes; no Git tag, commit or push.",
+  "environment": {
+    "node": "24.19.0",
+    "npm": "11.17.0",
+    "os": "macOS",
+    "localPostgresql": "18.6",
+    "browser": "Playwright Chromium"
+  },
+  "localChecks": {
+    "cleanInstall": "pass",
+    "lint": "pass",
+    "typecheck": "pass",
+    "unitTests": 193,
+    "unitFiles": 23,
+    "build": "pass",
+    "databaseTests": 6,
+    "databaseFiles": 3,
+    "e2eTests": 19,
+    "e2eSeconds": 11.5,
+    "databaseStatus": "connected",
+    "migrationRuns": 2,
+    "sampleSeedRuns": 2,
+    "historicalSeedRuns": 2,
+    "dependencyAdvisories": 0
+  },
+  "remoteCI": {
+    "head": "5e05806e9c6671c777267090191ab99aad41770b",
+    "result": "success",
+    "url": "https://github.com/Shaobangzhu/air-quality-geo-research-platform/actions/runs/40535979940",
+    "completedAt": "2026-10-27T16:07:46Z",
+    "uncommittedCandidate": "not run"
+  },
+  "docker": {
+    "name": "air-quality-geo-research-platform-postgresql",
+    "image": "postgres:18.6-bookworm",
+    "state": "running",
+    "health": "healthy",
+    "binding": "127.0.0.1:55436",
+    "changed": false
+  },
+  "databases": [
+    {
+      "target": {
+        "database": "air_quality_geo_research",
+        "role": "aq_workbench_app",
+        "version": "18.6 (Debian 18.6-1.pgdg12+2)"
+      },
+      "rolePrivileges": {
+        "rolsuper": false,
+        "rolcreatedb": false,
+        "rolcreaterole": false,
+        "rolreplication": false,
+        "rolbypassrls": false
+      },
+      "migrations": [
+        {
+          "name": "001_foundation.sql",
+          "checksum": "1295a2f828b702e8348c4783e866855b2db4a66a33cd7df4c2bb7c5e57fe2aea"
+        },
+        {
+          "name": "002_station_bff.sql",
+          "checksum": "a97af6af9ef66716eaa613e5013afd24b6dc731e2e02f6e0defb7102a11a36fb"
+        },
+        {
+          "name": "003_historical_cases.sql",
+          "checksum": "af64265b1e32e51f5642136d1d123628a27faf7271546b8b91d74eadd8e85618"
+        }
+      ],
+      "snapshots": [
+        {
+          "id": "332c4c1e-9ccf-40d7-bfbd-4444744e7af7",
+          "data_mode": "historical",
+          "origin": "official-historical",
+          "observation_count": 71,
+          "content_hash": "86afa06d47516e0f8367b258084ba896d8978f6160999d26b162d29fc305fecf"
+        },
+        {
+          "id": "95fca99d-e1e1-4488-bcd2-ff21825ed948",
+          "data_mode": "sample",
+          "origin": "synthetic",
+          "observation_count": 69,
+          "content_hash": "e8d6f4f74e02ad6da2a58ea8e68f34d0566bf2bf5ea17b781db9f52564e640ef"
+        }
+      ],
+      "cases": [
+        {
+          "case_id": "eaton-fire-2025",
+          "snapshot_id": "332c4c1e-9ccf-40d7-bfbd-4444744e7af7",
+          "manifest_hash": "3c1158dbc0cd86de50e49b5ab914d1bffce18974ebe1632799bb236f8f9698fa"
+        }
+      ]
+    },
+    {
+      "target": {
+        "database": "air_quality_geo_research_test",
+        "role": "aq_workbench_test",
+        "version": "18.6 (Debian 18.6-1.pgdg12+2)"
+      },
+      "rolePrivileges": {
+        "rolsuper": false,
+        "rolcreatedb": false,
+        "rolcreaterole": false,
+        "rolreplication": false,
+        "rolbypassrls": false
+      },
+      "migrations": [
+        {
+          "name": "001_foundation.sql",
+          "checksum": "1295a2f828b702e8348c4783e866855b2db4a66a33cd7df4c2bb7c5e57fe2aea"
+        },
+        {
+          "name": "002_station_bff.sql",
+          "checksum": "a97af6af9ef66716eaa613e5013afd24b6dc731e2e02f6e0defb7102a11a36fb"
+        },
+        {
+          "name": "003_historical_cases.sql",
+          "checksum": "af64265b1e32e51f5642136d1d123628a27faf7271546b8b91d74eadd8e85618"
+        }
+      ],
+      "snapshots": [
+        {
+          "id": "2dd492e2-2d5a-4f0a-854e-530cd2e1b8cf",
+          "data_mode": "sample",
+          "origin": "synthetic",
+          "observation_count": 69,
+          "content_hash": "e8d6f4f74e02ad6da2a58ea8e68f34d0566bf2bf5ea17b781db9f52564e640ef"
+        },
+        {
+          "id": "68a229b7-e3bb-434f-bb94-b583249a4746",
+          "data_mode": "sample",
+          "origin": "synthetic",
+          "observation_count": 2,
+          "content_hash": "ec5e8076cafa257e0fcd198082d1feb7cc649daa11a10de6ff716a0a8df5c807"
+        },
+        {
+          "id": "6bb70bf7-62ce-4e94-b505-a0a38929df29",
+          "data_mode": "historical",
+          "origin": "official-historical",
+          "observation_count": 71,
+          "content_hash": "86afa06d47516e0f8367b258084ba896d8978f6160999d26b162d29fc305fecf"
+        }
+      ],
+      "cases": [
+        {
+          "case_id": "eaton-fire-2025",
+          "snapshot_id": "6bb70bf7-62ce-4e94-b505-a0a38929df29",
+          "manifest_hash": "3c1158dbc0cd86de50e49b5ab914d1bffce18974ebe1632799bb236f8f9698fa"
+        }
+      ]
+    }
+  ],
+  "browser": {
+    "pages": [
+      {
+        "name": "map",
+        "width": 1440,
+        "documentOverflow": false
+      },
+      {
+        "name": "map",
+        "width": 1280,
+        "documentOverflow": false
+      },
+      {
+        "name": "analysis",
+        "width": 1440,
+        "documentOverflow": false
+      },
+      {
+        "name": "analysis",
+        "width": 1280,
+        "documentOverflow": false
+      },
+      {
+        "name": "wildfire",
+        "width": 1440,
+        "documentOverflow": false
+      },
+      {
+        "name": "wildfire",
+        "width": 1280,
+        "documentOverflow": false
+      },
+      {
+        "name": "data",
+        "width": 1440,
+        "documentOverflow": false
+      },
+      {
+        "name": "data",
+        "width": 1280,
+        "documentOverflow": false
+      },
+      {
+        "name": "export",
+        "width": 1440,
+        "documentOverflow": false
+      },
+      {
+        "name": "export",
+        "width": 1280,
+        "documentOverflow": false
+      },
+      {
+        "name": "usage",
+        "width": 1440,
+        "documentOverflow": false
+      },
+      {
+        "name": "usage",
+        "width": 1280,
+        "documentOverflow": false
+      }
+    ],
+    "pageErrors": 0,
+    "externalHosts": [
+      "basemaps-api.arcgis.com",
+      "basemapstyles-api.arcgis.com",
+      "cdn.arcgis.com",
+      "ibasemaps-api.arcgis.com",
+      "js.arcgis.com",
+      "static.arcgis.com"
+    ],
+    "apiRequests": {
+      "/api/station-readings": 4,
+      "/api/analysis-series": 4,
+      "/api/wildfire/eaton-fire-2025": 1,
+      "/api/data/catalog": 2,
+      "/api/data/preview": 1,
+      "/api/exports/json": 1,
+      "/api/exports/csv": 1,
+      "/api/usage/summary": 2
+    },
+    "capturedAt": "2026-10-29T04:23:04.955Z",
+    "database": "connected",
+    "mapBasemap": "online",
+    "mapPersistentAcrossFilters": true,
+    "analysisNullGaps": true,
+    "wildfireBasemap": "online",
+    "eatonAbsentHour": true,
+    "idleApiReads": 0,
+    "outboundProviderAttempts": 0,
+    "cache": {
+      "hits": 9,
+      "misses": 5,
+      "coalesced": 0,
+      "staleResponses": 0,
+      "hitRate": 0.6428571428571429,
+      "byMode": {
+        "sample": {
+          "hits": 9,
+          "misses": 5,
+          "coalesced": 0,
+          "staleResponses": 0
+        },
+        "historical": {
+          "hits": 0,
+          "misses": 0,
+          "coalesced": 0,
+          "staleResponses": 0
+        },
+        "live": {
+          "hits": 0,
+          "misses": 0,
+          "coalesced": 0,
+          "staleResponses": 0
+        }
+      }
+    }
+  },
+  "secretScan": {
+    "currentBuildAssets": 1121,
+    "sourceFiles": 175,
+    "configuredSecretFieldsChecked": 8,
+    "secretHits": [],
+    "publicArcgisTokenExcluded": true,
+    "scope": "Configured server values in current client assets and tracked/nonignored text; not a full security certification."
+  },
+  "candidateCodeSha256": {
+    ".github/workflows/ci.yml": "400bbba135600a15122c6ad6657b244fce2d8ba909e91c3e33ee939ba03201f9",
+    "apps/web/vite.config.ts": "88e646b9ffd9b904c0e993dddea574ff625ae853b13854648a72cf8b94ae4efc",
+    "apps/web/src/style.css": "d52eefb1b96c56c2efa9957bdae903b06300ed53a6f294f9f66e269d7a6fb179",
+    "package.json": "500152759961b72229195573704eba9fc8b16bb11e0ef86ba7115471a2f8a978",
+    "scripts/seed-sample.ts": "ae980031bd5715f322bc400cdf5b15d8f81b2dda804d7f5bfec03966c340777c",
+    "scripts/capture-v1.mjs": "d15a11683cf3d9685b8329480f098141a1dafa77cd1e941b9ae0df183ed1ca61",
+    "scripts/audit-artifacts.mjs": "6f029daa51072eb425027adc815d473921465b55cdd8d6476cdb0fc32cc5a543",
+    "tests/unit/browser-environment.test.ts": "561ae04d6b661a8b4f6bba0150391dfa641ee2383ae42523db3b2a23e8890375",
+    "tests/e2e/release-readiness.spec.ts": "7417a63ff1a3c0999c0b20e3c787ea34f778c51842d1a57ee528da3007c41ae8"
+  },
+  "screenshotsSha256": {
+    "analysis-1280.png": "2b664a3cb13f9e9f370689d48c121dde4b1f8076cc9edb5b7c938b5ac76d6ecf",
+    "analysis-1440.png": "b1bff8cb9a85aafa236eaad5e79cded5f7d3de3c867c81f68c3422a1b46ea982",
+    "data-1280.png": "c92be67fca7fe51184834c7c59bfab81d25805e663e2b4ad359cba4df7b7201e",
+    "data-1440.png": "611e4647833ab292c25827c733efe685a564f96faa7194d51f2aa3d56277ce97",
+    "export-1280.png": "885acc3f545f0947d168ca5f336ff2a09ffdcd4fc6fb3119334cc371070ce334",
+    "export-1440.png": "0ee6a71ffb9c5b0d7c5e7bad9b37cef537e6c23f5aab330735a3d3d39cc87fbc",
+    "map-1280.png": "2ac8085e3e00161bb7712bd87c05307b8b2a28dd3fde2944462e5f78ab91e6c4",
+    "map-1440.png": "1d1c7e0a3c47991c5ec4e12ca858d96aa8d6c6e3ad66b50d3c0f953a39272ebf",
+    "usage-1280.png": "28a5291ff48a5c59b59ae69f55122629a0ee72bc021135b2d5f976bcb835a55c",
+    "usage-1440.png": "65c361c277e413a3304ffc0cc550e4040b186b0eaac39193e3a363d61b09e855",
+    "wildfire-1280.png": "677af79733df371e8581f021bfdf5d40d966c89d0fe8b7fa5b244bcd6b085eaa",
+    "wildfire-1440.png": "87e6eaa1ff8201457f7c8a5e0ab21fc47b6c352ebd8fedfe0d03064f63e1e3ff"
+  },
+  "remainingMandatoryLocalRepairs": [],
+  "followUp": [
+    "Verify remote CI for a new SHA only after authorized commit/push."
+  ],
+  "notVerified": [
+    "Authenticated AirNow/AQS/OpenAI integration",
+    "New-machine database provisioning in this audit",
+    "Provider-dashboard ArcGIS referrer settings",
+    "Firefox/WebKit, complete mobile, full screen-reader or WCAG audit",
+    "Long-duration load or formal latency benchmark"
+  ]
+}

@@ -58,18 +58,29 @@ The URL guard accepts only `postgres:`/`postgresql:`, loopback (`localhost`, `12
 
 Migrations use one transaction, a project advisory lock, bounded timeouts, SHA-256 checksums and fully qualified tables. Existing `aq_workbench` schemas must have the comment `air-quality-geo-research-platform`; unmarked schemas are refused. Changed/missing history, out-of-order migrations and SQL/permission errors roll back. Add ordered `NNN_description.sql` files; never edit applied SQL. No drops, down migrations or resets exist.
 
-`001_foundation.sql` adds only a singleton project identity row; the runner maintains `aq_workbench.schema_migrations`. No domain ingestion exists. The schema comment is an accidental-adoption guard, not protection against a hostile DB owner. Driver errors are redacted; do not wipe data to resolve checksum errors.
+`001_foundation.sql` adds the singleton project identity row; the runner maintains `aq_workbench.schema_migrations`. Migration 002 adds bounded snapshots/observations, and 003 adds immutable historical cases. The schema comment is an accidental-adoption guard, not protection against a hostile DB owner. Driver errors are redacted; do not wipe data to resolve checksum errors.
 
 ## Tests and CI
 
 `npm run test:db:local` explicitly loads the ignored test-only configuration and invokes `npm run test:db`. The integration test refuses the development database, requires `ALLOW_DB_TESTS=true`, checks connection/migration repeatability/checksum metadata/unchanged foundation data, and performs no drops. Default `npm test` remains independent of PostgreSQL.
 
-Local verification additionally checked restricted role flags and denied cross-database CONNECT privileges. The API health endpoint reports `database: connected`; data mode remains `sample` with air-quality data unavailable because no provider adapter exists.
+Local verification additionally checked restricted role flags and denied cross-database CONNECT privileges. The API health endpoint reports database connectivity independently from data availability. Sample and checked-in Eaton history remain usable without a database; stored snapshot replay requires PostgreSQL.
 
-GitHub Actions still defines its own ephemeral PostgreSQL 17 service. Local PostgreSQL 18 verification is complete; the remote workflow remains **configured, not verified remotely**.
+GitHub Actions defines an ephemeral PostgreSQL 17 service; the local target uses PostgreSQL 18. The Prompt 10 review independently verified the successful remote baseline run at commit `5e05806`. Review changes are tested locally; see the [dated release report](../milestones/10-v1-freeze-review.md) for precise remote/local scope.
 
 ## Milestone 02 station BFF schema
 
 `002_station_bff.sql` adds source/site/observation/snapshot/import tables within the same project schema. `001_foundation.sql` and its identity row are preserved. Both migrations were applied/repeated on the existing development target; the separate test DB also verifies snapshot round trips, monitor/averaging-period identity and parameterized SQL-shaped values. No Docker resources or unrelated database were changed.
 
-The store permits 32 snapshots, 512 identities and 2,000 observations per snapshot, enforced under an advisory-locked transaction. Content hashes make identical imports idempotent; there is no automatic pruning. The development database contains only an explicitly labeled synthetic BFF snapshot, not official historical or acquired live data. Use `npm run snapshots:import -- --file fixtures/synthetic/bff-hourly.json` to repeat that import safely. See [BFF architecture](provider-bff.md) and [mode/import rules](data-modes.md).
+The store permits 32 snapshots, 512 identities and 2,000 observations per snapshot, enforced under an advisory-locked transaction. Content hashes make identical imports idempotent; there is no automatic pruning. Development now contains the labeled synthetic BFF snapshot and the separately sourced Eaton historical snapshot. No live data was acquired.
+
+## Repeatable project-only seeds
+
+After migrations, run each command twice to demonstrate idempotency:
+
+```sh
+npm run db:seed:sample -- --target air_quality_geo_research
+npm run db:seed:historical-case -- --target air_quality_geo_research
+```
+
+Each requires an explicit target matching the configured, confirmed loopback project database. Sample stores the same 69 synthetic observations used by the keyless app; it cannot become historical. Eaton validates asset checksums and stores 71 official EPA rows plus its immutable case manifest. An existing different case version is refused. Neither seed resets data, re-fetches providers or removes snapshots. CI runs both against `air_quality_geo_research_test` twice, alongside integration assertions of immutable IDs and data. For custom reviewed imports use the existing `snapshots:import -- --file` command. See [BFF architecture](provider-bff.md) and [mode/import rules](data-modes.md).
