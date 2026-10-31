@@ -29,7 +29,11 @@
     "db:migrate": "npm run build -w @aq/contracts && node --import tsx scripts/db-migrate.ts",
     "db:seed:historical-case": "npm run build -w @aq/contracts && node --import tsx scripts/seed-historical-case.ts",
     "db:seed:sample": "npm run build -w @aq/contracts && node --import tsx scripts/seed-sample.ts",
-    "research:smoke": "npm run build -w @aq/contracts && node --import tsx scripts/research-smoke.ts"
+    "research:smoke": "npm run build -w @aq/contracts && node --import tsx scripts/research-smoke.ts",
+    "corpus:build": "npm run build -w @aq/contracts && node --import tsx scripts/corpus.ts --build",
+    "corpus:check": "npm run build -w @aq/contracts && node --import tsx scripts/corpus.ts --check",
+    "corpus:fetch": "npm run build -w @aq/contracts && node --import tsx scripts/corpus.ts --fetch",
+    "retrieval:eval": "npm run build -w @aq/contracts && node --import tsx scripts/retrieval-eval.ts"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

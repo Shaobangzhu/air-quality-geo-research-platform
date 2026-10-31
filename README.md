@@ -67,7 +67,7 @@ With the app and project database running, `node scripts/capture-v1.mjs` regener
 
 - Eaton is a bounded Jan 6–8, 2025 PST study at one monitor; the incident lasted Jan 7–31. The final perimeter is static; 2025 LRA recommendations postdate ignition. Neither describes hourly fire growth or present risk.
 - EPA provenance does not establish per-row certification. Source qualifiers, UTC timestamps and revisions remain available. No smoke/traffic source attribution is calculated.
-- Live AirNow, official area forecasts/contours, 3D, independent elevation analysis, RAG and cloud deployment remain unavailable or outside Core V1. Prompt 11 is the optional extension below; Prompt 12 remains future work.
+- Live AirNow, official area forecasts/contours, 3D, independent elevation analysis and cloud deployment remain unavailable or outside Core V1. Prompts 11–12 are optional extensions below.
 - Exports select at most 500 rows/3 MB. Usage resets on server restart and excludes browser ArcGIS traffic and billing. Online tiles are not cached for offline use.
 
 Source tree: `apps/web` (React/ArcGIS), `apps/api` (Express/providers/storage), `packages/contracts` (Zod), `fixtures` (synthetic and historical), `db/migrations` (append-only), `tests` (unit/API/DB/browser).
@@ -76,6 +76,8 @@ Details: [provider evidence](docs/data-sources/provider-capabilities.md), [scien
 
 ## Optional AI extension — Prompt 11
 
-Analysis now includes a collapsed, optional **Research Assistant** for three preset questions about selected station ranges, missingness and comparison. It is disabled by default. With a server-only `OPENAI_API_KEY` and `RESEARCH_ASSISTANT_ENABLED=true`, clicking **Ask Research Assistant** makes one bounded paid OpenAI tool-routing call. Source records stay local; numbers and citations come from validated domain services. No fifth page, free-form chatbot or RAG is added. Core V1 remains usable without a key.
+Analysis includes a collapsed, optional **Research Assistant** for preset questions about selected station ranges, missingness and comparison. It is disabled by default. With a server-only `OPENAI_API_KEY` and `RESEARCH_ASSISTANT_ENABLED=true`, clicking **Ask Research Assistant** makes one bounded paid OpenAI tool-routing call. Source records stay local; numbers and citations come from validated domain services. Core V1 remains usable without a key.
 
 See [architecture, setup, limits and gated smoke](docs/architecture/research-assistant.md) and the [Prompt 11 verification report](docs/milestones/11-read-only-assistant.md). The V1 freeze report remains a record of its original baseline; it does not certify this extension.
+
+Prompt 12 adds three methodology presets and one combined observation/methodology question, with separate data/document citations. The local corpus contains five reviewed factual summaries from three EPA/AirNow pages. It uses deterministic lexical cosine retrieval, not paid neural embeddings; CARB text is excluded pending reuse review. `/data` lists the same methodology sources on demand. Run `npm run corpus:check` and `npm run retrieval:eval` offline. See [retrieval architecture and limits](docs/architecture/methodology-retrieval.md) and [verification](docs/milestones/12-methodology-retrieval.md).

@@ -1,0 +1,41 @@
+{
+  "version": "retrieval-eval-v1",
+  "cases": [
+    {
+      "question": "AirNow preliminary regulatory compliance",
+      "topic": "validity"
+    },
+    { "question": "validation certification AQS AirNow", "topic": "validity" },
+    {
+      "question": "Does preliminary data establish compliance?",
+      "topic": "validity"
+    },
+    {
+      "question": "AQS monitor site pollutant POC identity",
+      "topic": "monitor"
+    },
+    {
+      "question": "Parameter Occurrence Code instruments same site",
+      "topic": "monitor"
+    },
+    { "question": "What identifies a monitor?", "topic": "monitor" },
+    {
+      "question": "AQI index versus concentration physical units",
+      "topic": "aqi"
+    },
+    { "question": "health concern AQI categories", "topic": "aqi" },
+    {
+      "question": "sampling interval processing delays timestamps",
+      "topic": "latency"
+    },
+    { "question": "old reading acquisition latency", "topic": "latency" },
+    {
+      "question": "pollutant standard averaging statistical form",
+      "topic": "standards"
+    },
+    {
+      "question": "summary calculations standard attainment mean",
+      "topic": "standards"
+    }
+  ]
+}

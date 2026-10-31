@@ -5,3 +5,4 @@ export * from './area-products.js';
 export * from './wildfire.js';
 export * from './transparency.js';
 export * from './assistant.js';
+export * from './documents.js';

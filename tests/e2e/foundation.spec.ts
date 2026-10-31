@@ -353,7 +353,10 @@ test('Map → Analysis → 72-hour gap chart → Data preserves scientific conte
   await expect(
     page.getByRole('region', { name: 'Observation inspection' }),
   ).toContainText('2026-01-15T17:00:00Z');
+  await page.getByLabel('Inspect observation time').focus();
   await page.getByLabel('Inspect observation time').selectOption('69'); // 18:00Z, explicit null
+  // A late hover event must not override explicit inspector focus/selection.
+  await page.locator('.recharts-line-dots .recharts-dot').first().hover();
   await expect(
     page.getByRole('region', { name: 'Observation inspection' }),
   ).toContainText('Missing value');

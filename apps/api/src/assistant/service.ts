@@ -9,6 +9,7 @@ import {
 } from '@aq/contracts';
 import type { ResearchAnswer, ResearchRequest } from '@aq/contracts';
 import type { BffService } from '../bff/service.js';
+import { retrieve, verifyDocumentEvidence } from '../retrieval/corpus.js';
 
 export const intentInput = z.strictObject({ intent: researchIntentSchema });
 export const toolDefinition = {
@@ -18,7 +19,13 @@ export const toolDefinition = {
   schema: intentInput,
 };
 export const routingPrompt =
-  'Select exactly one get_selected_station_series call for the supplied supported question. Choose summary, missingness or comparison. Do not answer with facts or invent arguments. No other tools are available.';
+  'Select exactly one tool call. For summary, missingness or comparison use get_selected_station_series. For preliminary compliance use retrieve_methodology with intent methodology; for monitor identity use intent monitor; for AQI meaning use intent aqi; for observations plus preliminary-data limitation use intent combined. Do not answer with facts. Never invent arguments.';
+export const documentToolDefinition = {
+  name: 'retrieve_methodology',
+  description:
+    'Retrieve reviewed local methodology. methodology explains preliminary data, monitor explains AQS identity, aqi explains index versus concentration; combined also reads server-bound selected station observations. No URLs, writes or arbitrary queries.',
+  schema: intentInput,
+};
 export type ModelResult = {
   calls: { name: string; args: unknown }[];
   inputTokens?: number;
@@ -39,6 +46,7 @@ export class ResearchAssistant {
       timeoutMs?: number;
       now?: () => number;
       secrets?: string[];
+      retrieve?: typeof retrieve;
     } = {},
   ) {}
   get enabled() {
@@ -98,11 +106,63 @@ export class ResearchAssistant {
       )
         throw new Error('Invalid bounded model result');
       const call = proposed.calls[0]!;
+      const needsDocs = ['methodology', 'monitor', 'aqi', 'combined'].includes(
+        intent,
+      );
       if (
-        call.name !== toolDefinition.name ||
+        call.name !==
+          (needsDocs ? documentToolDefinition.name : toolDefinition.name) ||
         intentInput.parse(call.args).intent !== intent
       )
         throw new Error('Unsupported tool request');
+      let documents;
+      if (needsDocs) {
+        try {
+          documents = verifyDocumentEvidence(
+            (this.settings.retrieve ?? retrieve)(
+              intent === 'monitor'
+                ? 'monitor'
+                : intent === 'aqi'
+                  ? 'aqi'
+                  : 'validity',
+            ),
+          );
+          if (
+            documents.chunks.length !== 1 ||
+            documents.chunks[0]?.topic !==
+              (intent === 'monitor'
+                ? 'monitor'
+                : intent === 'aqi'
+                  ? 'aqi'
+                  : 'validity')
+          )
+            throw Error('Wrong methodology topic');
+        } catch {
+          return base(
+            'insufficient',
+            'Insufficient evidence for this selection.',
+          );
+        }
+        if (intent !== 'combined') {
+          const answer = {
+            ...base(
+              'grounded',
+              'Reviewed methodology is cited below; it does not certify measurements.',
+            ),
+            documents,
+            limitations: [
+              'Reviewed paraphrases, not legal or regulatory advice. Publication/version may be unknown. Document evidence cannot establish an observed pollutant value.',
+            ],
+          };
+          if (
+            this.settings.secrets?.some(
+              (s) => s && JSON.stringify(answer).includes(s),
+            )
+          )
+            throw Error('Unsafe document evidence');
+          return researchAnswerSchema.parse(answer);
+        }
+      }
       // Scope is server-bound, never derived from model arguments. Results are
       // untrusted data and are never sent back to the model for another turn.
       const read = tool(async (args) => {
@@ -140,6 +200,13 @@ export class ResearchAssistant {
                 : 'Compare only the compatible station ranges below; no regional AQI is calculated.',
         ),
         evidence,
+        ...(documents
+          ? {
+              documents,
+              shortAnswer:
+                'Selected observations and independent methodology evidence are shown below.' as const,
+            }
+          : {}),
         citations: evidence.series.map((s) => ({
           type: 'data',
           id: s.station.id,

@@ -1,0 +1,65 @@
+{
+  "version": "methodology-v1",
+  "reviewedAt": "2026-10-30T03:19:44Z",
+  "indexedAt": "2026-10-31T21:57:53Z",
+  "sources": [
+    {
+      "id": "airnow-data",
+      "organization": "EPA / AirNow",
+      "title": "About the Data",
+      "url": "https://www.airnow.gov/about-the-data/",
+      "version": null,
+      "publishedAt": null,
+      "reuse": "Original bounded factual paraphrases for this educational PoC; no source HTML, images or verbatim paragraphs redistributed. No blanket public-domain claim.",
+      "sections": [
+        {
+          "section": "About the Data — validation and purpose",
+          "topic": "validity",
+          "text": "AirNow observations receive preliminary checks but do not undergo the complete validation and certification process associated with regulatory AQS submissions. AirNow communicates AQI to the public; it does not establish regulatory compliance. This methodological distinction cannot certify any individual historical observation."
+        },
+        {
+          "section": "About the Data — reporting latency",
+          "topic": "latency",
+          "text": "AirNow reporting includes acquisition and processing delays. A displayed observation time can describe an earlier sampling interval rather than the moment a user reads the page. Use supplied interval boundaries and acquisition timestamps; do not infer present conditions from an old reading."
+        }
+      ]
+    },
+    {
+      "id": "epa-airdata",
+      "organization": "US EPA",
+      "title": "AirData Download Files Documentation",
+      "url": "https://aqs.epa.gov/aqsweb/airdata/FileFormats.html",
+      "version": "3.0.0",
+      "publishedAt": "2015-12-01",
+      "reuse": "Bounded original factual paraphrases. EPA copyright notice permits non-commercial scientific/educational use subject to individual document conditions: https://www.epa.gov/web-policies-and-procedures/epa-disclaimers. No source files redistributed.",
+      "sections": [
+        {
+          "section": "1.1 Monitors",
+          "topic": "monitor",
+          "text": "An AQS monitor identity combines the geographic site, pollutant parameter and Parameter Occurrence Code (POC). Different instruments measuring the same pollutant at one site can have different POCs. A site alone is therefore not a complete monitor identity."
+        },
+        {
+          "section": "1.2 Pollutant Standards",
+          "topic": "standards",
+          "text": "A pollutant standard specifies an averaging duration and statistical form. EPA summary calculations depend on the applicable standard, and the same underlying measurements can produce several different summaries. A simple selected-station range or arithmetic mean does not establish attainment of a standard."
+        }
+      ]
+    },
+    {
+      "id": "airnow-aqi",
+      "organization": "EPA / AirNow",
+      "title": "Air Quality Index (AQI) Basics",
+      "url": "https://www.airnow.gov/aqi/aqi-basics/",
+      "version": null,
+      "publishedAt": null,
+      "reuse": "Original bounded factual paraphrase for educational use; no table, image or verbatim source paragraph redistributed. Publication date and document version were not supplied.",
+      "sections": [
+        {
+          "section": "What is the U.S. Air Quality Index / How does the AQI work?",
+          "topic": "aqi",
+          "text": "The AQI is an index for communicating outdoor air quality and associated health concern. Its categories convey increasing concern as the index rises. An AQI index value is not a pollutant concentration with physical units; preserve the supplied measurement type rather than treating them interchangeably."
+        }
+      ]
+    }
+  ]
+}

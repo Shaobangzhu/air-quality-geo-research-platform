@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import {
   CartesianGrid,
   Line,
@@ -84,6 +84,7 @@ export default function SeriesChart({
   const visible = result.series.filter((item) => !item.reason);
   const rows = chartRows(result.series);
   const [selected, setSelected] = useState(rows.length - 1);
+  const inspector = useRef<HTMLDivElement>(null);
   const row = rows[selected];
   const unit = visible[0]?.interpretation?.unit;
   const axis = `${result.meta.measurementType === 'aqi' ? 'AQI' : 'Concentration'} (${unit ?? 'unit unavailable'})`;
@@ -116,7 +117,12 @@ export default function SeriesChart({
             data={rows}
             accessibilityLayer
             margin={{ top: 12, right: 18, left: 4, bottom: 24 }}
-            onMouseMove={(state) => selectTime(state.activeLabel)}
+            onMouseMove={(state) => {
+              // A queued chart hover must not overwrite explicit keyboard/select
+              // inspection while focus remains in the inspector controls.
+              if (!inspector.current?.contains(document.activeElement))
+                selectTime(state.activeLabel);
+            }}
             onClick={(state) => selectTime(state.activeLabel)}
           >
             <CartesianGrid stroke="#dce5f1" strokeDasharray="3 3" />
@@ -226,7 +232,7 @@ export default function SeriesChart({
         slots break lines. Straight segments connect adjacent supplied hours
         only; no values are interpolated.
       </p>
-      <div className="observation-inspector">
+      <div className="observation-inspector" ref={inspector}>
         <label>
           Inspect observation time
           <select

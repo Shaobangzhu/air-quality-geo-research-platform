@@ -1,0 +1,30 @@
+{
+  "sources": [
+    {
+      "id": "airnow-data",
+      "url": "https://www.airnow.gov/about-the-data/",
+      "receivedAt": "2026-10-30T03:21:44.115Z",
+      "sourceSha256": "62a7c26b90735f599fdc39b5cccda12787b784b6917fb100936884f7c855d401",
+      "bytes": 53824,
+      "extraction": "HTML tag-stripped review copy; entities/navigation may remain; never automatically indexed"
+    },
+    {
+      "id": "epa-airdata",
+      "url": "https://aqs.epa.gov/aqsweb/airdata/FileFormats.html",
+      "receivedAt": "2026-10-30T03:21:44.946Z",
+      "sourceSha256": "a3e79ac6d940b73a3c29e5a389b59e708f7c16f126d7c929342abfa91aa629b4",
+      "bytes": 147724,
+      "extraction": "HTML tag-stripped review copy; entities/navigation may remain; never automatically indexed"
+    },
+    {
+      "id": "airnow-aqi",
+      "url": "https://www.airnow.gov/aqi/aqi-basics/",
+      "receivedAt": "2026-10-30T03:21:44.976Z",
+      "sourceSha256": "da1a0025e22c795806170d5b130437efceb5d591c71a0c6636ef921db495b072",
+      "bytes": 57817,
+      "extraction": "HTML tag-stripped review copy; entities/navigation may remain; never automatically indexed"
+    }
+  ],
+  "rawCopies": "Ignored local review only; checked-in corpus consists of original reviewed factual paraphrases.",
+  "carb": "Excluded: AQMIS page verified, but Conditions of Use returned an anti-bot challenge; no CARB text indexed."
+}

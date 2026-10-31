@@ -1,6 +1,11 @@
 import { ChatOpenAI } from '@langchain/openai';
 import { tool } from '@langchain/core/tools';
-import { intentInput, routingPrompt, toolDefinition } from './service.js';
+import {
+  intentInput,
+  routingPrompt,
+  toolDefinition,
+  documentToolDefinition,
+} from './service.js';
 import type { ResearchModel } from './service.js';
 import { z } from 'zod';
 
@@ -18,7 +23,10 @@ export function openAIResearchModel(apiKey: string): ResearchModel {
     verbose: false,
     configuration: { baseURL: 'https://api.openai.com/v1', logLevel: 'off' },
   }).bindTools(
-    [tool(() => 'Server executes after validation.', toolDefinition)],
+    [
+      tool(() => 'Server executes after validation.', toolDefinition),
+      tool(() => 'Server executes after validation.', documentToolDefinition),
+    ],
     { strict: true, parallel_tool_calls: false },
   );
   return async (question, signal) => {
@@ -37,6 +45,11 @@ export function openAIResearchModel(apiKey: string): ResearchModel {
           name: toolDefinition.name,
           description: toolDefinition.description,
           schema: z.toJSONSchema(intentInput),
+          documentTool: {
+            name: documentToolDefinition.name,
+            description: documentToolDefinition.description,
+            schema: z.toJSONSchema(intentInput),
+          },
         }),
       ) > 3072
     )

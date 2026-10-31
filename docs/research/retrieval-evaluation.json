@@ -1,0 +1,125 @@
+{
+  "suite": "retrieval-eval-v1",
+  "embedding": "local-hash-tf-512-v1",
+  "total": 12,
+  "top1": 12,
+  "hitAt3": 12,
+  "cases": [
+    {
+      "question": "AirNow preliminary regulatory compliance",
+      "expectedTopic": "validity",
+      "top1": true,
+      "hitAt3": true,
+      "chunkIds": [
+        "doc_487e45148d7653b4f7bed661d400b7f10a7ab3315d7f77764fa6ba0cbc13428b"
+      ]
+    },
+    {
+      "question": "validation certification AQS AirNow",
+      "expectedTopic": "validity",
+      "top1": true,
+      "hitAt3": true,
+      "chunkIds": [
+        "doc_487e45148d7653b4f7bed661d400b7f10a7ab3315d7f77764fa6ba0cbc13428b",
+        "doc_919714beec2ed428e991e1bbba941cdaad275f6f2ac61905907a717f44b784e6"
+      ]
+    },
+    {
+      "question": "Does preliminary data establish compliance?",
+      "expectedTopic": "validity",
+      "top1": true,
+      "hitAt3": true,
+      "chunkIds": [
+        "doc_487e45148d7653b4f7bed661d400b7f10a7ab3315d7f77764fa6ba0cbc13428b"
+      ]
+    },
+    {
+      "question": "AQS monitor site pollutant POC identity",
+      "expectedTopic": "monitor",
+      "top1": true,
+      "hitAt3": true,
+      "chunkIds": [
+        "doc_2811821add6247595c159e9953772d058bc4381fc74dddf513c97124b0b0c73c",
+        "doc_d365e147e1306c9167b8dfd49cd289e4b5a43fac47b78d5d55b0434f2b5a8ac3",
+        "doc_487e45148d7653b4f7bed661d400b7f10a7ab3315d7f77764fa6ba0cbc13428b"
+      ]
+    },
+    {
+      "question": "Parameter Occurrence Code instruments same site",
+      "expectedTopic": "monitor",
+      "top1": true,
+      "hitAt3": true,
+      "chunkIds": [
+        "doc_2811821add6247595c159e9953772d058bc4381fc74dddf513c97124b0b0c73c"
+      ]
+    },
+    {
+      "question": "What identifies a monitor?",
+      "expectedTopic": "monitor",
+      "top1": true,
+      "hitAt3": true,
+      "chunkIds": [
+        "doc_2811821add6247595c159e9953772d058bc4381fc74dddf513c97124b0b0c73c"
+      ]
+    },
+    {
+      "question": "AQI index versus concentration physical units",
+      "expectedTopic": "aqi",
+      "top1": true,
+      "hitAt3": true,
+      "chunkIds": [
+        "doc_9053f3e65962bc14a5fd6e27f0d49d44b9260ed3a6a0d4ca76f8af63551bd587",
+        "doc_487e45148d7653b4f7bed661d400b7f10a7ab3315d7f77764fa6ba0cbc13428b"
+      ]
+    },
+    {
+      "question": "health concern AQI categories",
+      "expectedTopic": "aqi",
+      "top1": true,
+      "hitAt3": true,
+      "chunkIds": [
+        "doc_9053f3e65962bc14a5fd6e27f0d49d44b9260ed3a6a0d4ca76f8af63551bd587",
+        "doc_487e45148d7653b4f7bed661d400b7f10a7ab3315d7f77764fa6ba0cbc13428b"
+      ]
+    },
+    {
+      "question": "sampling interval processing delays timestamps",
+      "expectedTopic": "latency",
+      "top1": true,
+      "hitAt3": true,
+      "chunkIds": [
+        "doc_919714beec2ed428e991e1bbba941cdaad275f6f2ac61905907a717f44b784e6",
+        "doc_487e45148d7653b4f7bed661d400b7f10a7ab3315d7f77764fa6ba0cbc13428b"
+      ]
+    },
+    {
+      "question": "old reading acquisition latency",
+      "expectedTopic": "latency",
+      "top1": true,
+      "hitAt3": true,
+      "chunkIds": [
+        "doc_919714beec2ed428e991e1bbba941cdaad275f6f2ac61905907a717f44b784e6"
+      ]
+    },
+    {
+      "question": "pollutant standard averaging statistical form",
+      "expectedTopic": "standards",
+      "top1": true,
+      "hitAt3": true,
+      "chunkIds": [
+        "doc_d365e147e1306c9167b8dfd49cd289e4b5a43fac47b78d5d55b0434f2b5a8ac3",
+        "doc_2811821add6247595c159e9953772d058bc4381fc74dddf513c97124b0b0c73c"
+      ]
+    },
+    {
+      "question": "summary calculations standard attainment mean",
+      "expectedTopic": "standards",
+      "top1": true,
+      "hitAt3": true,
+      "chunkIds": [
+        "doc_d365e147e1306c9167b8dfd49cd289e4b5a43fac47b78d5d55b0434f2b5a8ac3"
+      ]
+    }
+  ],
+  "limitation": "Small curated lexical smoke set; not a general retrieval reliability estimate."
+}

@@ -12,6 +12,7 @@ import { BffError, safeError } from './bff/errors.js';
 import { errorEnvelopeSchema } from '@aq/contracts';
 import { researchRequestSchema } from '@aq/contracts';
 import type { ResearchAssistant } from './assistant/service.js';
+import { loadIndex } from './retrieval/corpus.js';
 
 export function createApp(options: {
   config: Pick<Config, 'DATA_MODE'>;
@@ -23,6 +24,16 @@ export function createApp(options: {
 }) {
   const app = express();
   app.disable('x-powered-by');
+  app.get('/api/research/corpus', (_req, res) => {
+    res.set('Cache-Control', 'no-store');
+    try {
+      res.json(loadIndex().chunks.map((e) => e.chunk));
+    } catch {
+      res
+        .status(503)
+        .json({ error: 'Reviewed methodology corpus unavailable.' });
+    }
+  });
   app.get('/api/research/status', (_req, res) =>
     res
       .set('Cache-Control', 'no-store')

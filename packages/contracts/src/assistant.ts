@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { documentEvidenceSchema } from './documents.js';
 import {
   analysisSeriesResponseSchema,
   analysisWindowSchema,
@@ -15,11 +16,20 @@ export const researchQuestions = {
   summary: 'Summarize the selected station observations.',
   missingness: 'Which selected observations are missing or stale?',
   comparison: 'Compare the selected station ranges and coverage.',
+  methodology: 'Can AirNow preliminary data establish regulatory compliance?',
+  monitor: 'What identifies an AQS monitor?',
+  aqi: 'How does AQI differ from concentration?',
+  combined:
+    'Summarize selected observations and explain the preliminary-data limitation.',
 } as const;
 export const researchIntentSchema = z.enum([
   'summary',
   'missingness',
   'comparison',
+  'methodology',
+  'monitor',
+  'aqi',
+  'combined',
 ]);
 export const researchContextSchema = z.strictObject({
   region: regionIdSchema,
@@ -58,9 +68,12 @@ export const researchAnswerSchema = z
       'This question or data mode is outside the supported research scope.',
       'Research Assistant is disabled. Configure it on the local server.',
       'Research Assistant could not verify an answer. Try again later.',
+      'Reviewed methodology is cited below; it does not certify measurements.',
+      'Selected observations and independent methodology evidence are shown below.',
     ]),
     generatedAt: utcTimestampSchema,
     evidence: analysisSeriesResponseSchema.nullable(),
+    documents: documentEvidenceSchema.optional(),
     citations: z
       .array(z.strictObject({ type: z.literal('data'), id: stationIdSchema }))
       .max(3),
@@ -74,7 +87,9 @@ export const researchAnswerSchema = z
       (v.evidence &&
         (ids.length !== v.citations.length ||
           !['grounded', 'partial', 'insufficient'].includes(v.status))) ||
-      (['grounded', 'partial'].includes(v.status) && !v.evidence)
+      (['grounded', 'partial'].includes(v.status) &&
+        !v.evidence &&
+        !v.documents?.chunks.length)
     )
       ctx.addIssue({
         code: 'custom',

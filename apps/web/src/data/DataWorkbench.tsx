@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { CorpusSources } from './CorpusSources.js';
 import type { KeyboardEvent, MouseEvent } from 'react';
 import {
   transparencyCatalogSchema,
@@ -153,6 +154,7 @@ export function DataWorkbench({
       >
         {tab === 'sources' ? (
           <>
+            <CorpusSources />
             <div className="data-section-heading">
               <h2>Integrated data sources</h2>
               <label>

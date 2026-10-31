@@ -156,6 +156,31 @@ export function ResearchAssistant({ data }: { data: AnalysisSeriesResponse }) {
                 {answer.evidence.meta.cache.status}
               </p>
             )}
+            {answer.documents && (
+              <section aria-label="Methodology document evidence">
+                <h3>Document citations · methodology only</h3>
+                <p>
+                  Reviewed paraphrases; not evidence of an observed
+                  concentration. Index: {answer.documents.indexVersion}
+                </p>
+                {answer.documents.chunks.map((chunk) => (
+                  <article key={chunk.id}>
+                    <a href={chunk.url} target="_blank" rel="noreferrer">
+                      {chunk.title}
+                    </a>
+                    <p>
+                      {chunk.organization} · {chunk.section} · version{' '}
+                      {chunk.version ?? 'not supplied'} · retrieved{' '}
+                      {chunk.retrievedAt}
+                    </p>
+                    <p>{chunk.text}</p>
+                    <small>
+                      Document citation: {chunk.id} · checksum {chunk.checksum}
+                    </small>
+                  </article>
+                ))}
+              </section>
+            )}
             {answer.citations.map((c) => {
               const s = answer.evidence!.series.find(
                 (s) => s.station.id === c.id,
